@@ -6,7 +6,7 @@ export const products = [
         name: "TriAD Storage Container (400ml)",
         color: "White",
         price: 98000,
-        image: "../images/21.jpg",
+        image: "images/21.jpg",
         filter: ""
     },
     {
@@ -14,7 +14,7 @@ export const products = [
         name: "TriAD Storage Container (400ml)",
         color: "White",
         price: 98000,
-        image: "../images/22.jpg",
+        image: "images/22.jpg",
         filter: ""
     },
     {
@@ -22,7 +22,7 @@ export const products = [
         name: "TriAD Storage Container (800ml)",
         color: "White",
         price: 188000,
-        image: "../images/23.jpg",
+        image: "images/23.jpg",
         filter: ""
     },
     {
@@ -30,7 +30,7 @@ export const products = [
         name: "TriAD Storage Container (400ml)",
         color: "White",
         price: 98000,
-        image: "../images/24.jpg",
+        image: "images/24.jpg",
         filter: ""
     },
     {
@@ -38,7 +38,7 @@ export const products = [
         name: "TriAD Storage Container (400ml)",
         color: "White",
         price: 378000,
-        image: "../images/25.jpg",
+        image: "images/25.jpg",
         filter: ""
     }
 ];
