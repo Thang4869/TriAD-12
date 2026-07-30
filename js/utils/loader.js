@@ -3,11 +3,19 @@
 /**
  * Load HTML component vào element
  */
+// js/utils/loader.js
 export async function loadComponent(elementId, filePath, callback = null) {
     try {
-        console.log(`Loading: ${filePath}`);
+        //Xác định base path
+        const basePath = window.location.pathname.includes('/subfolder/') 
+            ? './' 
+            : './';
         
-        const response = await fetch(filePath);
+        //Thêm basePath
+        const url = `${basePath}${filePath}`;
+        console.log(`Loading: ${url}`);
+        
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -17,11 +25,11 @@ export async function loadComponent(elementId, filePath, callback = null) {
         
         if (element) {
             element.innerHTML = html;
-            console.log(`Loaded: ${filePath} (${html.length} bytes)`);
+            console.log(`Loaded: ${filePath}`);
             if (callback) callback();
             return html;
         } else {
-            console.warn(`Element #${elementId} not found for ${filePath}`);
+            console.warn(`Element #${elementId} not found`);
             return null;
         }
     } catch (error) {
