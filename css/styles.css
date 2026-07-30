@@ -260,3 +260,15 @@ input[type="range"]::-moz-range-track {
     top: 0 !important;
     z-index: 9999 !important;
 }
+
+/* =========================
+   PRODUCT CARD - BO GÓC ẢNH
+   ========================= */
+.product-card .product-image {
+    border-radius: 20px !important;
+}
+
+.product-card .bg-gray-50 {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}

@@ -119,7 +119,7 @@ export function renderCart() {
         cartBody.innerHTML = `
             <div class="text-center py-20">
                 <i class="ph ph-shopping-cart text-6xl text-gray-300"></i>
-                <p class="mt-4 text-gray-500">Giỏ hàng đang trống</p>
+                <p class="mt-4 text-gray-500">The shopping cart is empty.</p>
             </div>
         `;
         updateTotal();

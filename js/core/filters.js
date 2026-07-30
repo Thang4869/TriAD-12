@@ -69,7 +69,7 @@ export function renderProducts() {
         return;
     }
     
-    console.log(`🔄 Rendering ${filteredProducts.length} products...`);
+    console.log(`Rendering ${filteredProducts.length} products...`);
     
     const end = currentPage * ITEMS_PER_PAGE;
     const items = filteredProducts.slice(0, end);
@@ -82,7 +82,7 @@ export function renderProducts() {
         grid.innerHTML = `
             <div class="col-span-full text-center py-20">
                 <i class="ph ph-magnifying-glass text-6xl text-gray-300"></i>
-                <p class="mt-4 text-gray-500">Không tìm thấy sản phẩm</p>
+                <p class="mt-4 text-gray-500">No products found</p>
                 <button id="clear-search-btn" class="mt-4 text-brand-accent hover:underline">
                     Clear filters
                 </button>
@@ -111,10 +111,11 @@ function createProductCard(product) {
     div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
     div.innerHTML = `
         <div onclick="window.openProductModal(${product.id})" class="cursor-pointer">
-            <div class="bg-gray-50 p-8 relative overflow-hidden">
+            <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
                 <img src="${product.image}" 
                      alt="${product.name}" 
-                     class="product-image w-full h-72 object-contain transition-transform duration-500 ${product.filter || ''}"
+                     class="product-image w-full h-72 object-contain transition-transform duration-500 rounded-2xl group-hover:scale-150 ${product.filter || ''}"
+                     style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
                      loading="lazy">
             </div>
             <div class="p-6">
@@ -141,7 +142,7 @@ function updateLoadMore(hasMore) {
 
 function updateProductCount(count) {
     const el = document.getElementById('product-count');
-    if (el) el.textContent = `${count} sản phẩm`;
+    if (el) el.textContent = `${count} products`;
 }
 
 export function loadMore() {
