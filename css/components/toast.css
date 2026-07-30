@@ -1,0 +1,136 @@
+/* components/toast.css */
+
+#toast-container {
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 320px;
+    max-width: 420px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transform: translateX(100%);
+    opacity: 0;
+    animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-success {
+    background: #22c55e;
+}
+
+.toast-error {
+    background: #ef4444;
+}
+
+.toast-warning {
+    background: #f59e0b;
+}
+
+.toast-info {
+    background: #3b82f6;
+}
+
+.toast .icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.toast .content {
+    flex: 1;
+}
+
+.toast .title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.toast .message {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+
+.toast .close-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toast .close-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.toast .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 0 0 12px 12px;
+    animation: progress 3s linear forwards;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes progress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}
+
+.toast-exit {
+    animation: slideOut 0.3s ease-in forwards !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .toast {
+        min-width: unset;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        padding: 14px 16px;
+    }
+    
+    #toast-container {
+        left: 0;
+        right: 0;
+        padding: 0 12px;
+    }
+}

@@ -1,0 +1,58 @@
+/* components/checkout.css */
+
+#checkout-modal form input:focus {
+    border-color: #1a1a1a;
+    box-shadow: 0 0 0 3px rgba(26,26,26,0.1);
+}
+
+#checkout-modal form input.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+#checkout-items .item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #4b5563;
+    padding: 4px 0;
+}
+
+/* Payment method radio styling */
+#checkout-modal input[type="radio"] {
+    accent-color: #1a1a1a;
+    width: 18px;
+    height: 18px;
+}
+
+#checkout-modal .payment-option {
+    transition: all 0.2s;
+}
+
+#checkout-modal .payment-option:hover {
+    background: #f9fafb;
+}
+
+#checkout-modal .payment-option.selected {
+    border-color: #1a1a1a;
+    background: #f9fafb;
+}
+
+/* Success animation */
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#success-modal .w-20 {
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

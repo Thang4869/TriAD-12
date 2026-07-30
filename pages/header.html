@@ -1,0 +1,57 @@
+<!-- pages/header.html -->
+<header id="main-header" class="sticky top-0 w-full bg-white/95 backdrop-blur-md z-40 border-b border-brand-border transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20 transition-all duration-300">
+            <!-- Logo -->
+            <a href="#home" class="flex-shrink-0 flex items-center">
+                <span class="font-bold text-2xl tracking-widest uppercase transition-all duration-300">AURA</span>
+            </a>
+            
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex space-x-10">
+                <a href="#home" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
+                <a href="#about" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
+                <a href="#products" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
+                <a href="#contact" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
+            </nav>
+            
+            <!-- Icons -->
+            <div class="hidden md:flex items-center space-x-6">
+                <div class="relative">
+                    <input id="search-input" type="text" placeholder="Search product..." 
+                           class="border rounded-full px-5 py-2 w-72 focus:outline-none focus:border-brand-accent transition-all duration-300">
+                    <div id="search-suggestion" class="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg w-full hidden max-h-60 overflow-y-auto"></div>
+                </div>
+                <button class="hover:text-brand-accent transition-colors relative" title="Thông báo">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <button id="cart-icon-btn" class="hover:text-brand-accent transition-colors relative" title="Giỏ hàng">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+            
+            <!-- Mobile -->
+            <div class="md:hidden flex items-center gap-4">
+                <button id="mobile-cart-btn" class="relative">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button id="mobile-menu-btn" class="focus:outline-none">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
+        <div class="px-4 py-4 space-y-3">
+            <a href="#home" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
+            <a href="#about" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
+            <a href="#products" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
+            <a href="#contact" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
+        </div>
+    </div>
+</header>

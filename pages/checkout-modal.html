@@ -1,0 +1,95 @@
+<div id="checkout-modal" class="fixed inset-0 bg-black/60 z-[90] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl p-8 transform scale-95 transition-transform duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Checkout</h2>
+            <button id="close-checkout-btn" class="text-gray-400 hover:text-black">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+        
+        <form id="checkout-form" class="space-y-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="font-semibold mb-3">Order Summary</h3>
+                <div id="checkout-items" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                <div class="border-t border-gray-200 mt-3 pt-3 flex justify-between font-bold">
+                    <span>Total:</span>
+                    <span id="checkout-total">0 ₫</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                    <input type="text" id="first-name" required 
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                    <input type="text" id="last-name" required
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input type="email" id="email" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                <input type="tel" id="phone" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                <input type="text" id="address" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
+                <div class="space-y-2">
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="cod" checked class="mr-3">
+                        <span>Cash on Delivery (COD)</span>
+                    </label>
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="card" class="mr-3">
+                        <span>Credit / Debit Card</span>
+                    </label>
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="banking" class="mr-3">
+                        <span>Bank Transfer</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="card-details" class="hidden space-y-4 border-t border-gray-200 pt-4">
+                <h3 class="font-semibold">Card Details</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456"
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input type="text" id="card-expiry" placeholder="MM/YY"
+                               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                        <input type="text" id="card-cvv" placeholder="123"
+                               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-black text-white py-4 font-medium rounded hover:bg-gray-800 transition-colors text-lg">
+                Place Order
+            </button>
+        </form>
+    </div>
+</div>

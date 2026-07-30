@@ -1,0 +1,72 @@
+<div id="product-modal-overlay" class="fixed inset-0 bg-black/60 z-[80] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div id="product-modal-content" class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col md:flex-row transform scale-95 transition-transform duration-300 relative">
+        <button id="close-modal-btn" class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+            <i class="ph ph-x text-lg"></i>
+        </button>
+        
+        <div class="w-full md:w-1/2 bg-[#f8f8f8] p-8 flex items-center justify-center min-h-[300px]">
+            <img id="modal-img" src="" alt="Product" class="w-full max-w-sm h-auto object-contain transition-all duration-300">
+        </div>
+        
+        <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
+            <h2 id="modal-title" class="text-3xl font-bold mb-2">AURA ThermoBox</h2>
+            <p id="modal-price" class="text-xl text-gray-600 font-medium mb-8">399.000 ₫</p>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Số lượng *</label>
+                <div class="flex items-center border border-gray-300 w-max rounded-sm">
+                    <button id="qty-minus" class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg">-</button>
+                    <span id="modal-quantity" class="px-6 py-2 border-x border-gray-300 font-medium">1</span>
+                    <button id="qty-plus" class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg">+</button>
+                </div>
+            </div>
+            
+            <button id="add-cart-btn" class="w-full bg-black text-white py-4 font-medium hover:bg-gray-800 transition-colors tracking-wide mb-3 rounded-sm text-lg">
+                Add to cart
+            </button>
+            <button id="modal-buy-now-btn" class="w-full bg-brand-orange text-white py-4 font-medium hover:bg-orange-600 transition-colors tracking-wide mb-8 rounded-sm text-lg">
+                Buy now
+            </button>
+            
+            <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                Trải nghiệm bữa ăn chuẩn vị với AURA ThermoBox, thiết kế dành cho dân văn phòng năng động.
+            </p>
+            
+            <div class="border-t border-gray-200">
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Information
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Công nghệ chân không giữ nhiệt 12h.</li>
+                            <li>Inox 304 tiêu chuẩn thực phẩm.</li>
+                            <li>Chia 3 ngăn rời linh hoạt.</li>
+                            <li>Gioăng silicon chống tràn.</li>
+                            <li>Vật liệu thân thiện môi trường.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Return & Refund Policy
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        Đổi trả miễn phí trong vòng 7 ngày nếu lỗi từ nhà sản xuất. Bảo hành giữ nhiệt 6 tháng.
+                    </div>
+                </div>
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Shipping Policy
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        Giao hàng toàn quốc từ 2-4 ngày làm việc. Miễn phí vận chuyển cho đơn hàng trên 500.000đ.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
