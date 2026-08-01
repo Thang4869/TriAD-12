@@ -7,7 +7,6 @@ export function initScrollReveal() {
     const sections = document.querySelectorAll('section:not(#home)');
     
     sections.forEach((section, index) => {
-        // Đặt trạng thái ban đầu: ẨN
         section.style.opacity = '0';
         section.style.transform = 'translateY(50px)';
         section.style.transition = `all 0.8s cubic-bezier(0.4, 0, 0.2, 1)`;
@@ -19,7 +18,6 @@ export function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                // KHI VÀO VIEWPORT: TỪ TỪ HIỆN RA
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
                 console.log('Revealed section:', entry.target.id || 'section');
@@ -67,7 +65,6 @@ export function initScrollReveal() {
                 const cardObserver = new IntersectionObserver((entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
-                            // KHI VÀO VIEWPORT: TỪ TỪ HIỆN RA
                             entry.target.style.opacity = '1';
                             entry.target.style.transform = 'translateY(0) scale(1)';
                             cardObserver.unobserve(entry.target);
@@ -87,7 +84,7 @@ export function initScrollReveal() {
     }
     
     // =========================
-    // HIỆU ỨNG CHO HERO (HIỆN NGAY)
+    // HIỆU ỨNG CHO HERO
     // =========================
     const hero = document.querySelector('#home');
     if (hero) {

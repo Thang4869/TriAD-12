@@ -1,0 +1,3755 @@
+====================================================================================================
+PROJECT EXPORT FOR LLMs
+====================================================================================================
+
+PROJECT INFORMATION:
+--------------------------------------------------
+Project Name: Duong
+Generated On: 2026-08-01 18:54:32 (Asia/Saigon / GMT+07:00)
+Total Files Processed: 41
+Export Tool: Easy Whole Project to Single Text File for LLMs v1.1.0
+Tool Author: Jota / José Guilherme Pandolfi
+
+EXPORT CONFIGURATION:
+--------------------------------------------------
+Language: en
+Max File Size: 1 MB
+Include Hidden Files: false
+Output Format: both
+Notification Level: minimal
+Custom File Name Pattern: {workspaceName}-output
+
+================================================================================
+PROJECT STRUCTURE
+================================================================================
+├── 📁 css/
+│   ├── 📁 animations/
+│   │   └── 📄 fly-to-cart.css (605 B)
+│   ├── 📁 components/
+│   │   ├── 📄 checkout.css (1.11 KB)
+│   │   ├── 📄 product-card.css (819 B)
+│   │   └── 📄 toast.css (2.35 KB)
+│   └── 📄 styles.css (5.52 KB)
+├── 📁 images/
+│   ├── 📄 11.jpg (382.8 KB)
+│   ├── 📄 12.jpg (260.68 KB)
+│   ├── 📄 13.jpg (211.14 KB)
+│   ├── 📄 21.jpg (83.03 KB)
+│   ├── 📄 22.jpg (90.37 KB)
+│   ├── 📄 23.jpg (84.63 KB)
+│   ├── 📄 24.jpg (73.9 KB)
+│   └── 📄 25.jpg (124 KB)
+├── 📁 js/
+│   ├── 📁 config/
+│   │   ├── 📄 products.js (1.06 KB)
+│   │   └── 📄 settings.js (733 B)
+│   ├── 📁 core/
+│   │   ├── 📄 cart.js (5.59 KB)
+│   │   ├── 📄 checkout.js (5.63 KB)
+│   │   ├── 📄 drawer.js (933 B)
+│   │   ├── 📄 filters.js (7.25 KB)
+│   │   ├── 📄 fly-to-cart.js (4.98 KB)
+│   │   ├── 📄 header.js (2.29 KB)
+│   │   ├── 📄 modal.js (2.92 KB)
+│   │   ├── 📄 scroll-reveal.js (3.78 KB)
+│   │   └── 📄 toast.js (5.25 KB)
+│   ├── 📁 utils/
+│   │   ├── 📄 dom.js (1.49 KB)
+│   │   ├── 📄 helpers.js (1.5 KB)
+│   │   ├── 📄 loader.js (2.25 KB)
+│   │   └── 📄 storage.js (1.47 KB)
+│   ├── 📄 app.js (10.27 KB)
+│   └── 📄 index.js (2.3 KB)
+├── 📁 pages/
+│   ├── 📄 about.html (3.56 KB)
+│   ├── 📄 cart-drawer.html (1.5 KB)
+│   ├── 📄 checkout-modal.html (5.33 KB)
+│   ├── 📄 features.html (1.68 KB)
+│   ├── 📄 footer.html (2.64 KB)
+│   ├── 📄 header.html (3.71 KB)
+│   ├── 📄 hero.html (3.46 KB)
+│   ├── 📄 product-modal.html (5.42 KB)
+│   ├── 📄 products.html (2.68 KB)
+│   └── 📄 success-modal.html (872 B)
+└── 📄 index.html (2.94 KB)
+
+================================================================================
+PROJECT STATISTICS
+================================================================================
+Total Files: 41
+Total Directories: 9
+Text Files: 33
+Binary Files: 8
+Total Size: 1.38 MB
+
+FILE TYPES DISTRIBUTION:
+------------------------------
+.js             : 17
+.html           : 11
+.jpg            : 8
+.css            : 5
+
+================================================================================
+FILE CODE CONTENTS
+================================================================================
+
+
+================================================================================
+FILE: css/animations/fly-to-cart.css
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 605 B
+Extension: .css
+Language: css
+Location: css/animations/fly-to-cart.css
+Relative Path: css/animations
+Created: 2026-07-29 06:02:12 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 01:41:31 (Asia/Saigon / GMT+07:00)
+MD5: e45cccda5415e29c6638433562363f0d
+SHA256: 73c873ac9b2aaa8cd8ed1d8c2242f448a41d102d953006aa24fc7cd48a95ed37
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+/* css/animations/fly-to-cart.css */
+
+.fly-element {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    transition: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    will-change: transform, opacity;
+    background: white;
+    padding: 8px;
+    object-fit: contain;
+}
+
+@keyframes flyPulse {
+    0% { 
+        transform: scale(1); 
+    }
+    50% { 
+        transform: scale(1.4); 
+    }
+    100% { 
+        transform: scale(1); 
+    }
+}
+
+.cart-badge-pulse {
+    animation: flyPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+================================================================================
+
+
+================================================================================
+FILE: css/components/checkout.css
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.11 KB
+Extension: .css
+Language: css
+Location: css/components/checkout.css
+Relative Path: css/components
+Created: 2026-07-29 06:01:53 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:08:51 (Asia/Saigon / GMT+07:00)
+MD5: 302d2591a0f407e5ecee49540b4cce99
+SHA256: 0100248fac01abc635ad1d1cd5262140fb759b05f9eb1ce219240b62a88bd688
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+/* components/checkout.css */
+
+#checkout-modal form input:focus {
+    border-color: #1a1a1a;
+    box-shadow: 0 0 0 3px rgba(26,26,26,0.1);
+}
+
+#checkout-modal form input.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+#checkout-items .item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #4b5563;
+    padding: 4px 0;
+}
+
+/* Payment method radio styling */
+#checkout-modal input[type="radio"] {
+    accent-color: #1a1a1a;
+    width: 18px;
+    height: 18px;
+}
+
+#checkout-modal .payment-option {
+    transition: all 0.2s;
+}
+
+#checkout-modal .payment-option:hover {
+    background: #f9fafb;
+}
+
+#checkout-modal .payment-option.selected {
+    border-color: #1a1a1a;
+    background: #f9fafb;
+}
+
+/* Success animation */
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#success-modal .w-20 {
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+================================================================================
+
+
+================================================================================
+FILE: css/components/product-card.css
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 819 B
+Extension: .css
+Language: css
+Location: css/components/product-card.css
+Relative Path: css/components
+Created: 2026-07-29 06:01:58 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 10:41:08 (Asia/Saigon / GMT+07:00)
+MD5: 67d1810039122e071433a693c647b626
+SHA256: d177320878d3aa9b1d91d7ed6e71c1fd2dd7be1c744d43e62a6c6112459bf584
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+/* components/product-card.css */
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.product-card .product-image {
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 20px !important;
+}
+
+.product-card .bg-gray-50 {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+
+.product-card .add-to-cart-btn {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .add-to-cart-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .product-card .add-to-cart-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+================================================================================
+
+
+================================================================================
+FILE: css/components/toast.css
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.35 KB
+Extension: .css
+Language: css
+Location: css/components/toast.css
+Relative Path: css/components
+Created: 2026-07-29 06:01:48 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 01:41:41 (Asia/Saigon / GMT+07:00)
+MD5: 143b28507a06c9525e6bbfb551a8b383
+SHA256: ebeacde64034f874da3dbeaad734b1ddbaa3b28a1f400b7d23b63729ae745a23
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+/* components/toast.css */
+
+#toast-container {
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 320px;
+    max-width: 420px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transform: translateX(100%);
+    opacity: 0;
+    animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-success {
+    background: #22c55e;
+}
+
+.toast-error {
+    background: #ef4444;
+}
+
+.toast-warning {
+    background: #f59e0b;
+}
+
+.toast-info {
+    background: #3b82f6;
+}
+
+.toast .icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.toast .content {
+    flex: 1;
+}
+
+.toast .title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.toast .message {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+
+.toast .close-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toast .close-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.toast .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 0 0 12px 12px;
+    animation: progress 3s linear forwards;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes progress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}
+
+.toast-exit {
+    animation: slideOut 0.3s ease-in forwards !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .toast {
+        min-width: unset;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        padding: 14px 16px;
+    }
+    
+    #toast-container {
+        left: 0;
+        right: 0;
+        padding: 0 12px;
+    }
+}
+================================================================================
+
+
+================================================================================
+FILE: css/styles.css
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.52 KB
+Extension: .css
+Language: css
+Location: css/styles.css
+Relative Path: css
+Created: 2026-07-29 01:31:26 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 13:55:06 (Asia/Saigon / GMT+07:00)
+MD5: 6089c240621cc59f7d36c974a8b6e915
+SHA256: 8f98336c700cf30a31f3286eeccf6386481b0ece3f8378a0cbeaf039e7abc6f9
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+/* ========================================
+   STYLES.CSS - AURA THERMOBOX
+   ======================================== */
+
+/* =========================
+   BASE STYLES
+   ========================= */
+
+body {
+    color: #1a1a1a;
+    background-color: #ffffff;
+}
+
+.hero-gradient {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f0f4f8 100%);
+}
+
+/* =========================
+   HEADER - LUÔN HIỂN THỊ TRÊN CÙNG
+   ========================= */
+
+#main-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e5e5e5;
+    z-index: 40;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow, height;
+    
+    /* LUÔN HIỂN THỊ - KHÔNG BAO GIỜ ẨN */
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+}
+
+/* Khi cuộn xuống - thu nhỏ header */
+.header-shrink {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+}
+
+.header-shrink .h-20 {
+    height: 60px !important;
+}
+
+.header-shrink .text-2xl {
+    font-size: 1.25rem !important;
+}
+
+.header-shrink .py-2 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.header-shrink .px-5 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+.header-shrink .space-x-10 {
+    gap: 1.5rem !important;
+}
+
+.header-shrink .w-72 {
+    width: 200px !important;
+}
+
+/* =========================
+   MENU NAVIGATION
+   ========================= */
+
+nav a {
+    position: relative;
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* Hiệu ứng gạch chân khi hover */
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #4a90e2;
+    border-radius: 2px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* Active menu item */
+nav a.active {
+    color: #4a90e2 !important;
+}
+
+nav a.active::after {
+    width: 100% !important;
+}
+
+/* =========================
+   SMOOTH SCROLL
+   ========================= */
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Bù trừ cho header */
+}
+
+section {
+    scroll-margin-top: 80px; /* Khi click link, cuộn đúng vị trí */
+}
+
+/* =========================
+   ACCORDION
+   ========================= */
+
+.accordion-content {
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.accordion-active .accordion-content {
+    max-height: 200px;
+    padding-bottom: 1rem;
+}
+
+.accordion-active .ph-plus {
+    transform: rotate(45deg);
+}
+
+/* =========================
+   CART SCROLLBAR
+   ========================= */
+
+.cart-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.cart-scroll::-webkit-scrollbar-thumb {
+    background-color: #e5e5e5;
+    border-radius: 4px;
+}
+
+.cart-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* =========================
+   RANGE SLIDER
+   ========================= */
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    cursor: pointer;
+    margin-top: -6px;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #1a1a1a;
+    border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    cursor: pointer;
+    border: none;
+}
+
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #1a1a1a;
+    border-radius: 2px;
+}
+
+/* =========================
+   LOADING SHIMMER
+   ========================= */
+
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+    html {
+        scroll-padding-top: 64px;
+    }
+    
+    section {
+        scroll-margin-top: 64px;
+    }
+    
+    #main-header .h-20 {
+        height: 64px !important;
+    }
+    
+    .header-shrink .h-20 {
+        height: 56px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .header-shrink .w-72 {
+        width: 140px !important;
+    }
+    
+    .header-shrink .space-x-10 {
+        gap: 1rem !important;
+    }
+}
+
+#main-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
+}
+
+/* =========================
+   PRODUCT CARD - BO GÓC ẢNH
+   ========================= */
+.product-card .product-image {
+    border-radius: 20px !important;
+}
+
+.product-card .bg-gray-50 {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+================================================================================
+
+
+================================================================================
+BINARY/EXCLUDED FILES (not included in text content)
+================================================================================
+- images/11.jpg
+- images/12.jpg
+- images/13.jpg
+- images/21.jpg
+- images/22.jpg
+- images/23.jpg
+- images/24.jpg
+- images/25.jpg
+
+
+================================================================================
+FILE: js/config/products.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.06 KB
+Extension: .js
+Language: javascript
+Location: js/config/products.js
+Relative Path: js/config
+Created: 2026-07-30 11:46:05 (Asia/Saigon / GMT+07:00)
+Modified: 2026-08-01 12:26:01 (Asia/Saigon / GMT+07:00)
+MD5: d084534b90e0e15d1ea89991629a44e9
+SHA256: 962d4d89528b94dd7d25e2926eed0b4afb382a4de508994b1b6686246c2dc590
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// config/products.js
+
+export const products = [
+    {
+        id: 1,
+        name: "TriAD Storage Container (1000ml/37oz)",
+        color: "White",
+        price: 150000,
+        image: "images/21.jpg",
+        filter: ""
+    },
+    {
+        id: 2,
+        name: "TriAD Storage Container (400ml/13.5oz)",
+        color: "White",
+        price: 110000,
+        image: "images/22.jpg",
+        filter: ""
+    },
+    {
+        id: 3,
+        name: "TriAD Storage Container (800ml/27oz)",
+        color: "White",
+        price: 130000,
+        image: "images/23.jpg",
+        filter: ""
+    },
+    {
+        id: 4,
+        name: "TriAD Storage Container (400ml/13.5oz)",
+        color: "White",
+        price: 110000,
+        image: "images/24.jpg",
+        filter: ""
+    },
+    {
+        id: 5,
+        name: "TriAD Storage Container (Combo TriAD)",
+        color: "White",
+        price: 350000,
+        image: "images/25.jpg",
+        filter: ""
+    }
+];
+window.products = products;
+
+console.log(`Loaded ${products.length} products`);
+================================================================================
+
+
+================================================================================
+FILE: js/config/settings.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 733 B
+Extension: .js
+Language: javascript
+Location: js/config/settings.js
+Relative Path: js/config
+Created: 2026-07-29 06:02:26 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:24:21 (Asia/Saigon / GMT+07:00)
+MD5: c39540c65bbed985ab9ded5c535787bf
+SHA256: b679aeba1d7b6021a8e8844ec6b6d8f02e33fc3a29a4a41d8bf85a9bc6bcf406
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// config/settings.js
+
+export const APP_CONFIG = {
+    // Pagination
+    ITEMS_PER_PAGE: 12,
+    LOAD_MORE_INCREMENT: 12,
+    
+    // Toast
+    TOAST_DURATION: 3000,
+    MAX_TOASTS: 4,
+    
+    // Animation
+    FLY_DURATION: 800,
+    
+    // Storage keys
+    STORAGE_KEYS: {
+        CART: 'aura_cart',
+        FILTERS: 'aura_filters',
+        CHECKOUT: 'aura_checkout'
+    },
+    
+    // Checkout
+    MIN_ORDER_AMOUNT: 0,
+    SHIPPING_FEE: 30000,
+    FREE_SHIPPING_THRESHOLD: 500000,
+    
+    // API (simulated)
+    API_BASE_URL: '/api',
+    
+    // Product image placeholder
+    PLACEHOLDER_IMAGE: 'https://via.placeholder.com/400x400/cccccc/ffffff?text=No+Image'
+};
+
+window.APP_CONFIG = APP_CONFIG;
+================================================================================
+
+
+================================================================================
+FILE: js/core/cart.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.59 KB
+Extension: .js
+Language: javascript
+Location: js/core/cart.js
+Relative Path: js/core
+Created: 2026-07-29 05:25:44 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 13:47:12 (Asia/Saigon / GMT+07:00)
+MD5: ca974776242bc8acd007a538ebf2891f
+SHA256: ac2caa3b9372adfa1e2174f0ad9c74e4c620362c8f2b09cb8657c63916e18053
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// core/cart.js
+import { getProductById, formatPrice, calculateTotal, calculateItemCount } from '../utils/helpers.js';
+import { getCartStorage, setCartStorage } from '../utils/storage.js';
+
+let cart = getCartStorage();
+window.cart = cart;
+
+export function addToCart(productId, quantity = 1, flyElement = null) {
+    try {
+        const product = getProductById(productId);
+        if (!product) {
+            console.error('Product not found:', productId);
+            if (window.toast) {
+                window.toast.error('Error', 'Product not found!');
+            }
+            return false;
+        }
+        
+        const existing = cart.find(item => item.id === productId);
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            cart.push({ ...product, quantity });
+        }
+        
+        saveCart();
+        renderCart();
+        updateBadge();
+        
+        // Show toast
+        if (window.toast) {
+            window.toast.success('Added to cart', `${product.name} x${quantity}`);
+        }
+        
+        // Fly animation
+        if (flyElement && window.flyToCart) {
+            console.log('Starting fly animation...');
+            setTimeout(() => {
+                window.flyToCart.fly(flyElement);
+            }, 150);
+        } else {
+            console.warn('Fly animation not available:', {
+                flyElement: !!flyElement,
+                flyToCart: !!window.flyToCart
+            });
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        if (window.toast) {
+            window.toast.error('Error', 'Failed to add to cart. Please try again.');
+        }
+        return false;
+    }
+}
+
+export function removeItem(id) {
+    cart = cart.filter(item => item.id !== id);
+    saveCart();
+    renderCart();
+    updateBadge();
+}
+
+export function increaseQuantity(id) {
+    const item = cart.find(item => item.id === id);
+    if (!item) return;
+    item.quantity++;
+    saveCart();
+    renderCart();
+    updateBadge();
+}
+
+export function decreaseQuantity(id) {
+    const item = cart.find(item => item.id === id);
+    if (!item) return;
+    item.quantity--;
+    if (item.quantity <= 0) {
+        removeItem(id);
+        return;
+    }
+    saveCart();
+    renderCart();
+    updateBadge();
+}
+
+export function clearCart() {
+    cart = [];
+    saveCart();
+    renderCart();
+    updateBadge();
+}
+
+export function getCartTotal() {
+    return calculateTotal(cart);
+}
+
+export function getCartCount() {
+    return calculateItemCount(cart);
+}
+
+export function getCartItems() {
+    return [...cart];
+}
+
+function saveCart() {
+    setCartStorage(cart);
+    window.cart = cart;
+}
+
+export function renderCart() {
+    const cartBody = document.querySelector('.cart-scroll');
+    if (!cartBody) return;
+    
+    cartBody.innerHTML = '';
+    
+    if (cart.length === 0) {
+        cartBody.innerHTML = `
+            <div class="text-center py-20">
+                <i class="ph ph-shopping-cart text-6xl text-gray-300"></i>
+                <p class="mt-4 text-gray-500">The shopping cart is empty.</p>
+            </div>
+        `;
+        updateTotal();
+        return;
+    }
+    
+    cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'flex gap-4 border-b border-gray-100 pb-6';
+        div.innerHTML = `
+            <div class="w-20 h-24 bg-gray-50 rounded flex items-center justify-center overflow-hidden">
+                <img src="${item.image}" class="w-full h-full object-contain ${item.filter || ''}" alt="${item.name}">
+            </div>
+            <div class="flex-1">
+                <div class="flex justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium">${item.name}</h3>
+                        <p class="text-gray-500">${formatPrice(item.price)}</p>
+                    </div>
+                    <button onclick="window.removeItem(${item.id})" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <i class="ph ph-trash text-lg"></i>
+                    </button>
+                </div>
+                <div class="flex justify-between mt-4 items-center">
+                    <div class="flex items-center border rounded">
+                        <button onclick="window.decreaseQuantity(${item.id})" class="px-3 py-1 hover:bg-gray-100 transition-colors">-</button>
+                        <span class="px-4 min-w-[32px] text-center">${item.quantity}</span>
+                        <button onclick="window.increaseQuantity(${item.id})" class="px-3 py-1 hover:bg-gray-100 transition-colors">+</button>
+                    </div>
+                    <strong>${formatPrice(item.price * item.quantity)}</strong>
+                </div>
+            </div>
+        `;
+        cartBody.appendChild(div);
+    });
+    
+    updateTotal();
+}
+
+function updateTotal() {
+    const totalEl = document.getElementById('cart-total');
+    if (totalEl) {
+        totalEl.textContent = formatPrice(calculateTotal(cart));
+    }
+}
+
+export function updateBadge() {
+    const badge = document.getElementById('cart-badge');
+    if (!badge) return;
+    const count = calculateItemCount(cart);
+    badge.textContent = count;
+}
+
+window.addToCart = addToCart;
+window.removeItem = removeItem;
+window.increaseQuantity = increaseQuantity;
+window.decreaseQuantity = decreaseQuantity;
+window.clearCart = clearCart;
+window.renderCart = renderCart;
+window.updateBadge = updateBadge;
+window.getCartItems = getCartItems;
+================================================================================
+
+
+================================================================================
+FILE: js/core/checkout.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.63 KB
+Extension: .js
+Language: javascript
+Location: js/core/checkout.js
+Relative Path: js/core
+Created: 2026-07-29 06:02:53 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:26:43 (Asia/Saigon / GMT+07:00)
+MD5: aafc59c2f730b09b2171afc9893027c6
+SHA256: 03e90e71b4b33c6724fdf2a3ea9cc29cb3a5e9edc640c20c739717af2b7f23f4
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// core/checkout.js
+import { getCartItems, clearCart, getCartTotal } from './cart.js';
+import { formatPrice, generateOrderId, validateEmail, validatePhone } from '../utils/helpers.js';
+import { toast } from './toast.js';
+import { closeCart } from './drawer.js';
+
+let checkoutItems = [];
+
+export function openCheckout() {
+    const items = getCartItems();
+    if (items.length === 0) {
+        toast.warning('Empty Cart', 'Please add items to your cart before checking out.');
+        return;
+    }
+    
+    checkoutItems = items;
+    
+    const modal = document.getElementById('checkout-modal');
+    const content = modal.querySelector('.bg-white');
+    
+    const itemsContainer = document.getElementById('checkout-items');
+    itemsContainer.innerHTML = items.map(item => `
+        <div class="item-row flex justify-between text-sm py-1">
+            <span>${item.name} x${item.quantity}</span>
+            <span>${formatPrice(item.price * item.quantity)}</span>
+        </div>
+    `).join('');
+    
+    const total = getCartTotal();
+    const shipping = total >= 500000 ? 0 : 30000;
+    document.getElementById('checkout-total').textContent = formatPrice(total + shipping);
+    
+    document.getElementById('checkout-form').reset();
+    document.getElementById('card-details').classList.add('hidden');
+    
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+    });
+    document.body.style.overflow = 'hidden';
+}
+
+export function closeCheckout() {
+    const modal = document.getElementById('checkout-modal');
+    const content = modal.querySelector('.bg-white');
+    
+    modal.classList.add('opacity-0');
+    content.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+}
+
+export function handleCheckoutSubmit(e) {
+    e.preventDefault();
+    
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName = document.getElementById('last-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'cod';
+    
+    if (!firstName || !lastName || !email || !phone || !address) {
+        toast.error('Missing Information', 'Please fill in all required fields.');
+        return;
+    }
+    
+    if (!validateEmail(email)) {
+        toast.error('Invalid Email', 'Please enter a valid email address.');
+        return;
+    }
+    
+    if (!validatePhone(phone)) {
+        toast.error('Invalid Phone', 'Please enter a valid phone number (10-12 digits).');
+        return;
+    }
+    
+    if (paymentMethod === 'card') {
+        const cardNumber = document.getElementById('card-number').value.trim();
+        const cardExpiry = document.getElementById('card-expiry').value.trim();
+        const cardCvv = document.getElementById('card-cvv').value.trim();
+        
+        if (!cardNumber || !cardExpiry || !cardCvv) {
+            toast.error('Missing Card Details', 'Please fill in all card details.');
+            return;
+        }
+        
+        if (cardNumber.replace(/\s/g, '').length < 16) {
+            toast.error('Invalid Card', 'Please enter a valid 16-digit card number.');
+            return;
+        }
+    }
+    
+    toast.info('Processing', 'Please wait while we process your order...');
+    
+    setTimeout(() => {
+        const orderId = generateOrderId();
+        const orderData = {
+            id: orderId,
+            date: new Date().toISOString(),
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            paymentMethod,
+            items: checkoutItems,
+            total: getCartTotal()
+        };
+        
+        const orders = JSON.parse(localStorage.getItem('aura_orders') || '[]');
+        orders.push(orderData);
+        localStorage.setItem('aura_orders', JSON.stringify(orders));
+        
+        clearCart();
+        closeCheckout();
+        closeCart();
+        showSuccess(orderId);
+        toast.success('Order Placed!', `Order #${orderId} confirmed.`);
+    }, 1500);
+}
+
+function showSuccess(orderId) {
+    const modal = document.getElementById('success-modal');
+    const content = modal.querySelector('.bg-white');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+    });
+}
+
+export function closeSuccess() {
+    const modal = document.getElementById('success-modal');
+    const content = modal.querySelector('.bg-white');
+    modal.classList.add('opacity-0');
+    content.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+    if (window.applyFilters) window.applyFilters();
+}
+
+export function toggleCardDetails() {
+    const selected = document.querySelector('input[name="payment"]:checked');
+    const cardDetails = document.getElementById('card-details');
+    if (selected && selected.value === 'card') {
+        cardDetails.classList.remove('hidden');
+    } else {
+        cardDetails.classList.add('hidden');
+    }
+}
+
+window.openCheckout = openCheckout;
+window.closeCheckout = closeCheckout;
+window.closeSuccess = closeSuccess;
+window.handleCheckoutSubmit = handleCheckoutSubmit;
+window.toggleCardDetails = toggleCardDetails;
+================================================================================
+
+
+================================================================================
+FILE: js/core/drawer.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 933 B
+Extension: .js
+Language: javascript
+Location: js/core/drawer.js
+Relative Path: js/core
+Created: 2026-07-29 05:26:06 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:26:09 (Asia/Saigon / GMT+07:00)
+MD5: 7d807f1e9062fdeb8bbdb71403c73e78
+SHA256: 0edaaec5184a96f26ec16fd50f8e252026c70b999df08cd8b004a02f9ae1ee5e
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// core/drawer.js
+export function openCart() {
+    const overlay = document.getElementById('cart-overlay');
+    const drawer = document.getElementById('cart-drawer');
+    
+    if (!overlay || !drawer) return;
+    
+    overlay.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        overlay.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+    });
+    document.body.style.overflow = 'hidden';
+}
+
+export function closeCart() {
+    const overlay = document.getElementById('cart-overlay');
+    const drawer = document.getElementById('cart-drawer');
+    
+    if (!overlay || !drawer) return;
+    
+    overlay.classList.add('opacity-0');
+    drawer.classList.add('translate-x-full');
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+}
+
+window.openCart = openCart;
+window.closeCart = closeCart;
+================================================================================
+
+
+================================================================================
+FILE: js/core/filters.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 7.25 KB
+Extension: .js
+Language: javascript
+Location: js/core/filters.js
+Relative Path: js/core
+Created: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+MD5: cacdd85e6b1a2f71d96e689106bc2bca
+SHA256: f6689e44a228a8f930fd8b0f7893d1c11669869f48e819d29dd6648828d8e616
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// core/filters.js
+import { getFiltersStorage, setFiltersStorage } from '../utils/storage.js';
+import { formatPrice } from '../utils/helpers.js';
+import { debounce } from '../utils/dom.js';
+
+let filteredProducts = [];
+let filterState = getFiltersStorage();
+let allProducts = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 12;
+let isLoading = false;
+
+window.filterState = filterState;
+
+export function initFilters(products) {
+    allProducts = products;
+    filteredProducts = [...products];
+    applyFiltersFromState();
+}
+
+export function searchProducts(keyword) {
+    filterState.keyword = keyword.trim();
+    saveFilterState();
+    applyFilters();
+}
+
+export function applyFilters() {
+    const { keyword, minPrice, maxPrice } = filterState;
+    
+    filteredProducts = allProducts.filter(product => {
+        const matchKeyword = !keyword || 
+            product.name.toLowerCase().includes(keyword.toLowerCase()) ||
+            product.color.toLowerCase().includes(keyword.toLowerCase());
+        const matchPrice = product.price >= minPrice && product.price <= maxPrice;
+        return matchKeyword && matchPrice;
+    });
+    
+    sortProducts();
+}
+
+export function sortProducts() {
+    const { sort } = filterState;
+    
+    switch (sort) {
+        case 'price-asc':
+            filteredProducts.sort((a, b) => a.price - b.price);
+            break;
+        case 'price-desc':
+            filteredProducts.sort((a, b) => b.price - a.price);
+            break;
+        case 'name-asc':
+            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case 'name-desc':
+            filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+    }
+    
+    currentPage = 1;
+    renderProducts();
+}
+
+// core/filters.js - phần renderProducts
+
+export function renderProducts() {
+    const grid = document.getElementById('product-grid');
+    if (!grid) {
+        console.error('Product grid not found!');
+        return;
+    }
+    
+    console.log(`Rendering ${filteredProducts.length} products...`);
+    
+    const end = currentPage * ITEMS_PER_PAGE;
+    const items = filteredProducts.slice(0, end);
+    
+    if (currentPage === 1) {
+        grid.innerHTML = '';
+    }
+    
+    if (items.length === 0 && currentPage === 1) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-20">
+                <i class="ph ph-magnifying-glass text-6xl text-gray-300"></i>
+                <p class="mt-4 text-gray-500">No products found</p>
+                <button id="clear-search-btn" class="mt-4 text-brand-accent hover:underline">
+                    Clear filters
+                </button>
+            </div>
+        `;
+        document.getElementById('clear-search-btn')?.addEventListener('click', resetFilters);
+        updateProductCount(0);
+        updateLoadMore(false);
+        return;
+    }
+    
+    items.forEach((product, index) => {
+        const card = createProductCard(product);
+        grid.appendChild(card);
+    });
+    
+    console.log(`Rendered ${items.length} products`);
+    
+    const hasMore = filteredProducts.length > currentPage * ITEMS_PER_PAGE;
+    updateLoadMore(hasMore);
+    updateProductCount(filteredProducts.length);
+}
+
+function createProductCard(product) {
+    const div = document.createElement('div');
+    div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
+    div.innerHTML = `
+        <div onclick="window.openProductModal(${product.id})" class="cursor-pointer">
+            <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
+                <img src="${product.image}" 
+                     alt="${product.name}" 
+                     class="product-image w-full h-72 object-contain transition-transform duration-500 rounded-2xl group-hover:scale-150 ${product.filter || ''}"
+                     style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
+                     loading="lazy">
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-semibold">${product.name}</h3>
+                <p class="text-gray-500 mt-1 text-sm">${product.color}</p>
+                <div class="flex justify-between items-center mt-6">
+                    <span class="text-2xl font-bold">${formatPrice(product.price)}</span>
+                    <button onclick="event.stopPropagation();window.addToCart(${product.id}, 1, this.closest('.product-card').querySelector('img'))" 
+                            class="add-to-cart-btn bg-black text-white px-5 py-3 rounded-full hover:bg-gray-800 transition-all">
+                        <i class="ph ph-shopping-cart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    return div;
+}
+
+function updateLoadMore(hasMore) {
+    const container = document.getElementById('load-more-container');
+    if (!container) return;
+    container.classList.toggle('hidden', !hasMore);
+}
+
+function updateProductCount(count) {
+    const el = document.getElementById('product-count');
+    if (el) el.textContent = `${count} products`;
+}
+
+export function loadMore() {
+    if (isLoading) return;
+    isLoading = true;
+    
+    const hasMore = filteredProducts.length > currentPage * ITEMS_PER_PAGE;
+    if (!hasMore) {
+        isLoading = false;
+        return;
+    }
+    
+    currentPage++;
+    renderProducts();
+    setTimeout(() => { isLoading = false; }, 300);
+}
+
+function saveFilterState() {
+    setFiltersStorage(filterState);
+}
+
+function applyFiltersFromState() {
+    const { keyword, maxPrice, sort } = filterState;
+    
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.value = keyword || '';
+    
+    const slider = document.getElementById('price-slider');
+    if (slider) {
+        slider.value = maxPrice || 499000;
+        const priceDisplay = document.getElementById('price-value');
+        if (priceDisplay) priceDisplay.textContent = formatPrice(maxPrice || 499000);
+    }
+    
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) sortSelect.value = sort || 'default';
+    
+    applyFilters();
+}
+
+export function resetFilters() {
+    filterState = {
+        keyword: '',
+        minPrice: 0,
+        maxPrice: 499000,
+        sort: 'default'
+    };
+    
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.value = '';
+    
+    const slider = document.getElementById('price-slider');
+    if (slider) slider.value = 499000;
+    
+    const priceDisplay = document.getElementById('price-value');
+    if (priceDisplay) priceDisplay.textContent = formatPrice(499000);
+    
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) sortSelect.value = 'default';
+    
+    saveFilterState();
+    applyFilters();
+}
+
+export function setPriceFilter(value) {
+    filterState.maxPrice = Number(value);
+    saveFilterState();
+    applyFilters();
+}
+
+window.searchProducts = searchProducts;
+window.resetFilters = resetFilters;
+window.setPriceFilter = setPriceFilter;
+window.loadMore = loadMore;
+window.applyFilters = applyFilters;
+================================================================================
+
+
+================================================================================
+FILE: js/core/fly-to-cart.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 4.98 KB
+Extension: .js
+Language: javascript
+Location: js/core/fly-to-cart.js
+Relative Path: js/core
+Created: 2026-07-29 06:02:49 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 17:32:48 (Asia/Saigon / GMT+07:00)
+MD5: 6550489f9e4809930e58a3d049b8088b
+SHA256: a88eaf23ee5c6b64c47209c682045fe27fb36a83bab016f3ca32d93a52a8dbc1
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// js/core/fly-to-cart.js
+import { APP_CONFIG } from '../config/settings.js';
+
+const { FLY_DURATION } = APP_CONFIG;
+
+class FlyToCart {
+    constructor() {
+        this.isFlying = false;
+        this.cartBadge = document.getElementById('cart-badge');
+        
+        // Debug
+        console.log('FlyToCart initialized');
+        console.log('Cart badge found:', !!this.cartBadge);
+        
+        if (!this.cartBadge) {
+            // Fallback: tìm cart icon
+            this.cartBadge = document.querySelector('#cart-icon-btn') || 
+                            document.querySelector('#mobile-cart-btn');
+            console.log('Fallback cart target:', !!this.cartBadge);
+        }
+    }
+    
+    fly(element, callback = null) {
+        console.log('Fly animation triggered');
+        
+        if (this.isFlying) {
+            console.warn('Fly animation already in progress');
+            if (callback) callback();
+            return;
+        }
+        
+        if (!element) {
+            console.warn('No element to fly');
+            if (callback) callback();
+            return;
+        }
+        
+        // Lấy ảnh từ element
+        let imageSrc = '';
+        if (element.tagName === 'IMG') {
+            imageSrc = element.src;
+        } else {
+            const img = element.querySelector('img');
+            if (img) imageSrc = img.src;
+        }
+        
+        console.log('Image source:', imageSrc);
+        
+        if (!imageSrc) {
+            console.warn('No image source found');
+            if (callback) callback();
+            return;
+        }
+        
+        // Kiểm tra target
+        const targetRect = this.cartBadge?.getBoundingClientRect();
+        if (!targetRect) {
+            console.warn('Cart target not found');
+            this.isFlying = false;
+            if (callback) callback();
+            return;
+        }
+        
+        this.isFlying = true;
+        
+        // Get source position
+        const sourceRect = element.getBoundingClientRect();
+        console.log('Source rect:', sourceRect);
+        console.log('Target rect:', targetRect);
+        
+        // Create flying element
+        const flyEl = document.createElement('img');
+        flyEl.src = imageSrc;
+        flyEl.className = 'fly-element';
+        flyEl.style.width = Math.min(sourceRect.width, 120) + 'px';
+        flyEl.style.height = Math.min(sourceRect.height, 120) + 'px';
+        flyEl.style.left = sourceRect.left + 'px';
+        flyEl.style.top = sourceRect.top + 'px';
+        flyEl.style.borderRadius = '12px';
+        flyEl.style.objectFit = 'contain';
+        flyEl.style.backgroundColor = '#f8f8f8';
+        flyEl.style.padding = '8px';
+        flyEl.style.boxShadow = '0 8px 30px rgba(0,0,0,0.3)';
+        flyEl.style.zIndex = '9999';
+        flyEl.style.pointerEvents = 'none';
+        
+        document.body.appendChild(flyEl);
+        console.log('Fly element created');
+        
+        // Force reflow
+        flyEl.offsetHeight;
+        
+        // Calculate end position
+        const endX = targetRect.left + targetRect.width / 2 - sourceRect.width / 2;
+        const endY = targetRect.top + targetRect.height / 2 - sourceRect.height / 2;
+        
+        // Animate
+        const startTime = performance.now();
+        const startX = sourceRect.left;
+        const startY = sourceRect.top;
+        
+        function animate(time) {
+            const progress = Math.min((time - startTime) / FLY_DURATION, 1);
+            // Ease in-out cubic
+            const ease = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            
+            const currentX = startX + (endX - startX) * ease;
+            const currentY = startY + (endY - startY) * ease;
+            const currentScale = 1 - ease * 0.7;
+            const currentOpacity = 1 - ease * 0.3;
+            const currentRotation = ease * 30;
+            
+            flyEl.style.left = currentX + 'px';
+            flyEl.style.top = currentY + 'px';
+            flyEl.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
+            flyEl.style.opacity = currentOpacity;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                flyEl.remove();
+                this.isFlying = false;
+                console.log('Fly animation completed');
+                
+                // Pulse cart badge
+                if (this.cartBadge) {
+                    this.cartBadge.classList.add('cart-badge-pulse');
+                    setTimeout(() => {
+                        this.cartBadge?.classList.remove('cart-badge-pulse');
+                    }, 500);
+                }
+                
+                if (callback) callback();
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    }
+}
+
+export const flyToCart = new FlyToCart();
+window.flyToCart = flyToCart;
+================================================================================
+
+
+================================================================================
+FILE: js/core/header.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.29 KB
+Extension: .js
+Language: javascript
+Location: js/core/header.js
+Relative Path: js/core
+Created: 2026-07-29 08:36:33 (Asia/Saigon / GMT+07:00)
+Modified: 2026-08-01 12:03:22 (Asia/Saigon / GMT+07:00)
+MD5: 3b4495a73514bf248c865af3cbaf4a3d
+SHA256: 4abd38fd630c6f0a7261b99d0a59060c835db3baae443c419f6e972bf7dfc87c
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// js/core/header.js
+
+export function initHeaderScroll() {
+    const header = document.getElementById('main-header');
+    if (!header) {
+        console.warn('Header not found!');
+        return;
+    }
+    
+    console.log('Initializing Header (Sticky + Shrink)...');
+    
+    let ticking = false;
+    let lastScroll = 0;
+    
+    function handleScroll() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > 60) {
+            header.classList.add('header-shrink');
+        } else {
+            header.classList.remove('header-shrink');
+        }
+        
+        // Cập nhật active menu
+        updateActiveMenu(currentScroll);
+        
+        lastScroll = currentScroll;
+        ticking = false;
+    }
+    
+    // Cập nhật active menu item
+    function updateActiveMenu(scrollY) {
+        const sections = ['home', 'about', 'products', 'contact'];
+        const navLinks = document.querySelectorAll('nav a, #mobile-menu a');
+        let currentSection = 'home';
+        const viewportHeight = window.innerHeight;
+        
+        sections.forEach(id => {
+            const section = document.getElementById(id);
+            if (section) {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= viewportHeight / 2 && rect.bottom >= viewportHeight / 2) {
+                    currentSection = id;
+                }
+            }
+        });
+        
+        // Cập nhật class active
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === `#${currentSection}`) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+    
+    // Optimize scroll với requestAnimationFrame
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                handleScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Kiểm tra vị trí ban đầu
+    setTimeout(() => handleScroll(), 100);
+    
+    console.log('Header initialized!');
+}
+
+window.initHeaderScroll = initHeaderScroll;
+================================================================================
+
+
+================================================================================
+FILE: js/core/modal.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.92 KB
+Extension: .js
+Language: javascript
+Location: js/core/modal.js
+Relative Path: js/core
+Created: 2026-07-29 05:26:00 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:26:15 (Asia/Saigon / GMT+07:00)
+MD5: 9cec425628409cdb1c07a7cb5184d55b
+SHA256: acec3b68bdec912f29cb74211eb6c225d6d6be7cc3ab6029cb617ace829176cd
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// core/modal.js
+import { getProductById, formatPrice } from '../utils/helpers.js';
+import { addToCart } from './cart.js';
+import { openCart } from './drawer.js';
+
+let currentProductId = null;
+let currentQuantity = 1;
+
+export function openProductModal(productId) {
+    const product = getProductById(productId);
+    if (!product) return;
+    
+    currentProductId = product.id;
+    currentQuantity = 1;
+    
+    const modalOverlay = document.getElementById('product-modal-overlay');
+    const modalContent = document.getElementById('product-modal-content');
+    const title = document.getElementById('modal-title');
+    const price = document.getElementById('modal-price');
+    const img = document.getElementById('modal-img');
+    const quantityEl = document.getElementById('modal-quantity');
+    
+    title.textContent = product.name;
+    price.textContent = formatPrice(product.price);
+    img.src = product.image;
+    img.className = `w-full max-w-sm h-auto object-contain transition-all duration-300 filter ${product.filter || ''}`;
+    quantityEl.textContent = 1;
+    
+    modalOverlay.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modalOverlay.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+    });
+    document.body.style.overflow = 'hidden';
+}
+
+export function closeModal() {
+    const overlay = document.getElementById('product-modal-overlay');
+    const content = document.getElementById('product-modal-content');
+    
+    overlay.classList.add('opacity-0');
+    content.classList.add('scale-95');
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+}
+
+export function updateModalQuantity(delta) {
+    currentQuantity = Math.max(1, currentQuantity + delta);
+    const el = document.getElementById('modal-quantity');
+    if (el) el.textContent = currentQuantity;
+}
+
+export function handleAddToCart() {
+    if (!currentProductId) return;
+    const product = getProductById(currentProductId);
+    if (!product) return;
+    
+    const img = document.getElementById('modal-img');
+    addToCart(currentProductId, currentQuantity, img);
+    closeModal();
+    setTimeout(() => openCart(), 400);
+}
+
+export function handleBuyNow() {
+    if (!currentProductId) return;
+    const product = getProductById(currentProductId);
+    if (!product) return;
+    
+    const img = document.getElementById('modal-img');
+    addToCart(currentProductId, currentQuantity, img);
+    closeModal();
+    setTimeout(() => {
+        openCart();
+        setTimeout(() => {
+            document.getElementById('checkout-btn')?.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+    }, 400);
+}
+
+window.openProductModal = openProductModal;
+window.closeModal = closeModal;
+window.updateModalQuantity = updateModalQuantity;
+window.handleAddToCart = handleAddToCart;
+window.handleBuyNow = handleBuyNow;
+================================================================================
+
+
+================================================================================
+FILE: js/core/scroll-reveal.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 3.78 KB
+Extension: .js
+Language: javascript
+Location: js/core/scroll-reveal.js
+Relative Path: js/core
+Created: 2026-07-29 08:36:46 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 13:50:32 (Asia/Saigon / GMT+07:00)
+MD5: b83cccb23a86e0819140746427845e59
+SHA256: f5b5d902e58a6648b27ccf5e45dd59381968e7d3edf9abd76e50ab0fc6faac22
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// js/core/scroll-reveal.js
+
+export function initScrollReveal() {
+    console.log('Initializing Scroll Reveal...');
+    
+    // Chỉ áp dụng cho các section (không bao gồm hero)
+    const sections = document.querySelectorAll('section:not(#home)');
+    
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(50px)';
+        section.style.transition = `all 0.8s cubic-bezier(0.4, 0, 0.2, 1)`;
+        section.style.transitionDelay = `${index * 0.1}s`;
+        section.classList.add('scroll-reveal');
+    });
+    
+    // Observer để phát hiện khi phần tử vào viewport
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                console.log('Revealed section:', entry.target.id || 'section');
+            }
+        });
+    }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe tất cả sections
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+    
+    // =========================
+    // HIỆU ỨNG CHO PRODUCT CARDS
+    // =========================
+    const grid = document.getElementById('product-grid');
+    if (grid) {
+        // Lắng nghe khi grid thay đổi
+        const mutationObserver = new MutationObserver(() => {
+            observeProductCards();
+        });
+        mutationObserver.observe(grid, { 
+            childList: true, 
+            subtree: false 
+        });
+        
+        // Observe product cards
+        function observeProductCards() {
+            const cards = grid.querySelectorAll('.product-card:not(.observed)');
+            console.log(`Observing ${cards.length} new product cards`);
+            
+            cards.forEach((card, index) => {
+                card.classList.add('observed');
+                
+                // Đặt trạng thái ban đầu: ẨN
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px) scale(0.97)';
+                card.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1)`;
+                card.style.transitionDelay = `${(index % 6) * 80}ms`;
+                
+                // Observer cho từng card
+                const cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0) scale(1)';
+                            cardObserver.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -30px 0px'
+                });
+                
+                cardObserver.observe(card);
+            });
+        }
+        
+        // Observe lần đầu
+        setTimeout(observeProductCards, 200);
+    }
+    
+    // =========================
+    // HIỆU ỨNG CHO HERO
+    // =========================
+    const hero = document.querySelector('#home');
+    if (hero) {
+        hero.style.opacity = '0';
+        hero.style.transform = 'translateY(30px)';
+        hero.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        setTimeout(() => {
+            hero.style.opacity = '1';
+            hero.style.transform = 'translateY(0)';
+            console.log('Hero revealed!');
+        }, 400);
+    }
+    
+    console.log('Scroll Reveal initialized!');
+}
+
+window.initScrollReveal = initScrollReveal;
+================================================================================
+
+
+================================================================================
+FILE: js/core/toast.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.25 KB
+Extension: .js
+Language: javascript
+Location: js/core/toast.js
+Relative Path: js/core
+Created: 2026-07-29 06:02:43 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 17:34:25 (Asia/Saigon / GMT+07:00)
+MD5: 49793a8efcbb4354e9c5fcea00f3f15a
+SHA256: 7b25ee95c45fad89300e7481e6bd162dfab2dd55c17ea1b0d1491a4bc43b61a9
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// js/core/toast.js
+import { APP_CONFIG } from '../config/settings.js';
+
+const { TOAST_DURATION, MAX_TOASTS } = APP_CONFIG;
+
+class ToastManager {
+    constructor() {
+        this.container = document.getElementById('toast-container');
+        if (!this.container) {
+            this.container = document.createElement('div');
+            this.container.id = 'toast-container';
+            this.container.className = 'fixed top-20 right-4 z-50 space-y-2 pointer-events-none';
+            document.body.appendChild(this.container);
+        }
+        this.toasts = [];
+    }
+    
+    show({ title, message, type = 'info', duration = TOAST_DURATION, icon = null }) {
+        // Kiểm tra nếu đã có toast trùng lặp
+        const existing = this.toasts.find(t => 
+            t.querySelector('.title')?.textContent === title &&
+            t.querySelector('.message')?.textContent === message
+        );
+        if (existing) {
+            // Reset timer của toast cũ
+            this.resetToastTimer(existing);
+            return existing;
+        }
+        
+        const toast = this.createToast({ title, message, type, duration, icon });
+        this.container.appendChild(toast);
+        this.toasts.push(toast);
+        
+        // Limit max toasts
+        while (this.toasts.length > MAX_TOASTS) {
+            const oldest = this.toasts.shift();
+            this.removeToast(oldest);
+        }
+        
+        // Auto remove
+        const timer = setTimeout(() => {
+            this.removeToast(toast);
+        }, duration);
+        toast._timer = timer;
+        
+        return toast;
+    }
+    
+    resetToastTimer(toast) {
+        if (toast._timer) {
+            clearTimeout(toast._timer);
+        }
+        const duration = parseInt(toast.dataset.duration) || TOAST_DURATION;
+        toast._timer = setTimeout(() => {
+            this.removeToast(toast);
+        }, duration);
+        
+        // Reset progress bar
+        const progress = toast.querySelector('.progress-bar');
+        if (progress) {
+            progress.style.animation = 'none';
+            progress.offsetHeight; // Trigger reflow
+            progress.style.animation = `progress ${duration}ms linear forwards`;
+        }
+    }
+    
+    createToast({ title, message, type, duration, icon }) {
+        const icons = {
+            success: 'ph-fill ph-check-circle',
+            error: 'ph-fill ph-x-circle',
+            warning: 'ph-fill ph-warning',
+            info: 'ph-fill ph-info'
+        };
+        
+        const iconClass = icon || icons[type] || icons.info;
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = `toast toast-${type}`;
+        wrapper.setAttribute('role', 'alert');
+        wrapper.setAttribute('aria-live', 'polite');
+        wrapper.dataset.duration = duration;
+        
+        wrapper.innerHTML = `
+            <i class="ph ${iconClass} icon"></i>
+            <div class="content">
+                <div class="title">${title}</div>
+                ${message ? `<div class="message">${message}</div>` : ''}
+            </div>
+            <button class="close-btn" aria-label="Close notification">
+                <i class="ph ph-x"></i>
+            </button>
+            <div class="progress-bar" style="animation-duration: ${duration}ms"></div>
+        `;
+        
+        // Close button
+        wrapper.querySelector('.close-btn').addEventListener('click', () => {
+            this.removeToast(wrapper);
+        });
+        
+        // Pause on hover
+        wrapper.addEventListener('mouseenter', () => {
+            const progress = wrapper.querySelector('.progress-bar');
+            if (progress) {
+                progress.style.animationPlayState = 'paused';
+            }
+            if (wrapper._timer) {
+                clearTimeout(wrapper._timer);
+            }
+        });
+        
+        wrapper.addEventListener('mouseleave', () => {
+            const progress = wrapper.querySelector('.progress-bar');
+            if (progress) {
+                progress.style.animationPlayState = 'running';
+            }
+            const duration = parseInt(wrapper.dataset.duration) || TOAST_DURATION;
+            wrapper._timer = setTimeout(() => {
+                this.removeToast(wrapper);
+            }, duration);
+        });
+        
+        return wrapper;
+    }
+    
+    removeToast(toast) {
+        if (!toast || !toast.parentNode) return;
+        if (toast._timer) {
+            clearTimeout(toast._timer);
+        }
+        toast.classList.add('toast-exit');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+            this.toasts = this.toasts.filter(t => t !== toast);
+        }, 300);
+    }
+    
+    success(title, message) {
+        return this.show({ title, message, type: 'success' });
+    }
+    
+    error(title, message) {
+        return this.show({ title, message, type: 'error' });
+    }
+    
+    warning(title, message) {
+        return this.show({ title, message, type: 'warning' });
+    }
+    
+    info(title, message) {
+        return this.show({ title, message, type: 'info' });
+    }
+}
+
+export const toast = new ToastManager();
+window.toast = toast;
+================================================================================
+
+
+================================================================================
+FILE: js/utils/dom.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.49 KB
+Extension: .js
+Language: javascript
+Location: js/utils/dom.js
+Relative Path: js/utils
+Created: 2026-07-29 06:55:14 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:25:00 (Asia/Saigon / GMT+07:00)
+MD5: aad37d16e6ea6a4fcd2bce8513f5f2d1
+SHA256: dce2984cc32b435d9979ed5d263ecc66d4f93f74b3910dd8e298b5109e85f7d8
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// utils/dom.js
+export function $(selector, context = document) {
+    return context.querySelector(selector);
+}
+
+export function $$(selector, context = document) {
+    return [...context.querySelectorAll(selector)];
+}
+
+export function createElement(tag, classes = '', attributes = {}, children = '') {
+    const el = document.createElement(tag);
+    if (classes) el.className = classes;
+    Object.entries(attributes).forEach(([key, value]) => el.setAttribute(key, value));
+    if (typeof children === 'string') {
+        el.innerHTML = children;
+    } else if (Array.isArray(children)) {
+        children.forEach(child => el.appendChild(child));
+    }
+    return el;
+}
+
+export function debounce(fn, delay = 300) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+export function throttle(fn, limit = 300) {
+    let inThrottle;
+    return (...args) => {
+        if (!inThrottle) {
+            fn(...args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+export function getElementRect(el) {
+    return el.getBoundingClientRect();
+}
+
+export function isVisible(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
+// Expose for inline usage
+window.$ = $;
+window.$$ = $$;
+window.createElement = createElement;
+window.debounce = debounce;
+window.throttle = throttle;
+================================================================================
+
+
+================================================================================
+FILE: js/utils/helpers.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.5 KB
+Extension: .js
+Language: javascript
+Location: js/utils/helpers.js
+Relative Path: js/utils
+Created: 2026-07-29 05:26:21 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 11:21:58 (Asia/Saigon / GMT+07:00)
+MD5: 917cdea7b7de3487f2e2799e05bbf89f
+SHA256: 159f45bbaefd050922cd3ae6e8e45ff5036ea0e935f4c6f9b7524ab7bf49e908
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// utils/helpers.js
+export function formatPrice(price) {
+    return price.toLocaleString('vi-VN') + ' ₫';
+}
+
+export function formatNumber(num) {
+    return num.toLocaleString('vi-VN');
+}
+
+export function calculateTotal(cart) {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+export function calculateItemCount(cart) {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+export function getProductById(id) {
+    return window.products?.find(p => p.id === id) || null;
+}
+
+export function generateOrderId() {
+    return 'ORD-' + Date.now().toString(36).toUpperCase() + 
+           '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+}
+
+export function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export function validatePhone(phone) {
+    return /^[0-9]{10,12}$/.test(phone.replace(/\s/g, ''));
+}
+
+export function formatDate(date) {
+    return new Date(date).toLocaleDateString('vi-VN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Expose for inline usage
+window.formatPrice = formatPrice;
+window.formatNumber = formatNumber;
+window.calculateTotal = calculateTotal;
+window.calculateItemCount = calculateItemCount;
+window.getProductById = getProductById;
+window.generateOrderId = generateOrderId;
+window.validateEmail = validateEmail;
+window.validatePhone = validatePhone;
+window.formatDate = formatDate;
+================================================================================
+
+
+================================================================================
+FILE: js/utils/loader.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.25 KB
+Extension: .js
+Language: javascript
+Location: js/utils/loader.js
+Relative Path: js/utils
+Created: 2026-07-29 07:37:09 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 06:35:00 (Asia/Saigon / GMT+07:00)
+MD5: 19cb934dfad2d2fea2824a31db6a370f
+SHA256: abd7ef17245e748b6a8ce366ab8fc08fd4672d009ee718b75e358bebd0a851f1
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// utils/loader.js
+
+/**
+ * Load HTML component vào element
+ */
+// js/utils/loader.js
+export async function loadComponent(elementId, filePath, callback = null) {
+    try {
+        //Xác định base path
+        const basePath = window.location.pathname.includes('/subfolder/') 
+            ? './' 
+            : './';
+        
+        //Thêm basePath
+        const url = `${basePath}${filePath}`;
+        console.log(`Loading: ${url}`);
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const html = await response.text();
+        const element = document.getElementById(elementId);
+        
+        if (element) {
+            element.innerHTML = html;
+            console.log(`Loaded: ${filePath}`);
+            if (callback) callback();
+            return html;
+        } else {
+            console.warn(`Element #${elementId} not found`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error loading ${filePath}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Load nhiều components cùng lúc
+ */
+export async function loadComponents(components) {
+    const results = [];
+    for (const config of components) {
+        const result = await loadComponent(
+            config.elementId,
+            config.filePath,
+            config.callback
+        );
+        results.push({ ...config, success: !!result });
+    }
+    return results;
+}
+
+/**
+ * Load component và inject vào DOM tại vị trí chỉ định
+ */
+export function injectComponent(selector, filePath, position = 'afterbegin') {
+    fetch(filePath)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.text();
+        })
+        .then(html => {
+            const target = document.querySelector(selector);
+            if (target) {
+                target.insertAdjacentHTML(position, html);
+                console.log(`Injected: ${filePath}`);
+            } else {
+                console.warn(`Selector not found: ${selector}`);
+            }
+        })
+        .catch(err => console.error('Error injecting component:', err));
+}
+================================================================================
+
+
+================================================================================
+FILE: js/utils/storage.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.47 KB
+Extension: .js
+Language: javascript
+Location: js/utils/storage.js
+Relative Path: js/utils
+Created: 2026-07-29 06:55:08 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 17:37:17 (Asia/Saigon / GMT+07:00)
+MD5: 7a9cd17820f3c3d127ea3810efe8d716
+SHA256: cb63ebc8afa738493ec56e4a464abce01355e6ed767e5d58f0f173cdb81cb1f6
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+// utils/storage.js
+import { APP_CONFIG } from '../config/settings.js';
+
+const { STORAGE_KEYS } = APP_CONFIG;
+
+export function storageGet(key, defaultValue = null) {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : defaultValue;
+    } catch {
+        return defaultValue;
+    }
+}
+
+export function storageSet(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export function storageRemove(key) {
+    try {
+        localStorage.removeItem(key);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export function getCartStorage() {
+    return storageGet(STORAGE_KEYS.CART, []);
+}
+
+export function setCartStorage(cart) {
+    storageSet(STORAGE_KEYS.CART, cart);
+}
+
+export function getFiltersStorage() {
+    const defaultFilters = {
+        keyword: '',
+        minPrice: 0,
+        maxPrice: 499000,
+        sort: 'default'
+    };
+    return storageGet(STORAGE_KEYS.FILTERS, defaultFilters);
+}
+
+export function setFiltersStorage(filters) {
+    storageSet(STORAGE_KEYS.FILTERS, filters);
+}
+
+// Expose for inline usage
+window.storageGet = storageGet;
+window.storageSet = storageSet;
+window.storageRemove = storageRemove;
+window.getCartStorage = getCartStorage;
+window.setCartStorage = setCartStorage;
+window.getFiltersStorage = getFiltersStorage;
+window.setFiltersStorage = setFiltersStorage;
+================================================================================
+
+
+================================================================================
+FILE: js/app.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 10.27 KB
+Extension: .js
+Language: javascript
+Location: js/app.js
+Relative Path: js
+Created: 2026-07-29 05:26:30 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 17:30:44 (Asia/Saigon / GMT+07:00)
+MD5: 5f841447d1ff89d5d7be562de833ccd7
+SHA256: 95d5bb9ab53d0643762022b47e9eeff06a92a3bce5d9b7b0172be06abc1008f2
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+// js/app.js
+import { initFilters, resetFilters, setPriceFilter, loadMore } from './core/filters.js';
+import { renderCart, updateBadge } from './core/cart.js';
+import { openCart, closeCart } from './core/drawer.js';
+import { closeModal, updateModalQuantity, handleAddToCart, handleBuyNow } from './core/modal.js';
+import { openCheckout, handleCheckoutSubmit, toggleCardDetails, closeCheckout, closeSuccess } from './core/checkout.js';
+import { toast } from './core/toast.js';
+import { debounce } from './utils/dom.js';
+
+// Hàm khởi tạo - export để index.js gọi
+export function initApp() {
+    console.log('Initializing app...');
+    
+    // Kiểm tra product grid có tồn tại không
+    const grid = document.getElementById('product-grid');
+    if (!grid) {
+        console.error('Product grid not found! Retrying in 100ms...');
+        setTimeout(initApp, 100);
+        return;
+    }
+    
+    const products = window.products || [];
+    console.log(`Found ${products.length} products`);
+    
+    if (products.length === 0) {
+        console.error('No products found! Check products.js');
+        return;
+    }
+    
+    // KHỞI TẠO FILTERS (sẽ render products)
+    initFilters(products);
+    
+    // DOM Events...
+    setupEventListeners();
+    
+    // Initial render
+    renderCart();
+    updateBadge();
+    
+    setTimeout(() => {
+        toast.info('Welcome!', 'Start exploring our premium thermal lunch boxes.');
+    }, 1000);
+}
+
+function setupEventListeners() {
+    // Mobile Menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let isMenuOpen = false;
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenuBtn.innerHTML = '<i class="ph ph-x text-2xl"></i>';
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.innerHTML = '<i class="ph ph-list text-2xl"></i>';
+            }
+        });
+        
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.innerHTML = '<i class="ph ph-list text-2xl"></i>';
+            });
+        });
+    }
+    
+    // Cart Drawer
+    const cartOverlay = document.getElementById('cart-overlay');
+    const closeCartBtn = document.getElementById('close-cart-btn');
+    const cartIconBtn = document.getElementById('cart-icon-btn');
+    const mobileCartBtn = document.getElementById('mobile-cart-btn');
+    
+    if (cartIconBtn) cartIconBtn.addEventListener('click', openCart);
+    if (mobileCartBtn) mobileCartBtn.addEventListener('click', openCart);
+    if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
+    if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+    
+    // Modal
+    const modalOverlay = document.getElementById('product-modal-overlay');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+    }
+    
+    const qtyPlus = document.getElementById('qty-plus');
+    const qtyMinus = document.getElementById('qty-minus');
+    if (qtyPlus) qtyPlus.addEventListener('click', () => updateModalQuantity(1));
+    if (qtyMinus) qtyMinus.addEventListener('click', () => updateModalQuantity(-1));
+    
+    const addCartBtn = document.getElementById('add-cart-btn');
+    const buyNowBtn = document.getElementById('modal-buy-now-btn');
+    if (addCartBtn) addCartBtn.addEventListener('click', handleAddToCart);
+    if (buyNowBtn) buyNowBtn.addEventListener('click', handleBuyNow);
+    
+    // Checkout
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const closeCheckoutBtn = document.getElementById('close-checkout-btn');
+    const checkoutForm = document.getElementById('checkout-form');
+    const successCloseBtn = document.getElementById('success-close-btn');
+    
+    if (checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
+    if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', closeCheckout);
+    if (checkoutForm) checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+    if (successCloseBtn) successCloseBtn.addEventListener('click', closeSuccess);
+    
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.addEventListener('change', toggleCardDetails);
+    });
+    
+    // Search
+    const searchInput = document.getElementById('search-input');
+    const searchSuggestion = document.getElementById('search-suggestion');
+    
+    if (searchInput) {
+        const debouncedSearch = debounce((value) => {
+            if (window.searchProducts) window.searchProducts(value);
+            renderSuggestions(value);
+        }, 300);
+        
+        searchInput.addEventListener('input', (e) => debouncedSearch(e.target.value));
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => searchSuggestion?.classList.add('hidden'), 200);
+        });
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value) renderSuggestions(searchInput.value);
+        });
+    }
+    
+    function renderSuggestions(keyword) {
+        if (!searchSuggestion) return;
+        if (!keyword || keyword.length < 1) {
+            searchSuggestion.classList.add('hidden');
+            searchSuggestion.innerHTML = '';
+            return;
+        }
+        
+        const products = window.products || [];
+        const results = products.filter(p => 
+            p.name.toLowerCase().includes(keyword.toLowerCase())
+        ).slice(0, 5);
+        
+        if (results.length === 0) {
+            searchSuggestion.classList.add('hidden');
+            searchSuggestion.innerHTML = '';
+            return;
+        }
+        
+        searchSuggestion.innerHTML = results.map(p => `
+            <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3" data-id="${p.id}">
+                <img src="${p.image}" alt="" class="w-10 h-10 object-contain rounded">
+                <div>
+                    <div class="font-medium text-sm">${p.name}</div>
+                    <div class="text-xs text-gray-500">${p.color}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        searchSuggestion.querySelectorAll('[data-id]').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = Number(el.dataset.id);
+                const product = products.find(p => p.id === id);
+                if (product && window.openProductModal) window.openProductModal(id);
+                searchSuggestion.classList.add('hidden');
+                searchInput.value = product?.name || '';
+            });
+        });
+        
+        searchSuggestion.classList.remove('hidden');
+    }
+    
+    // Filters
+    const sortSelect = document.getElementById('sort-select');
+    const priceSlider = document.getElementById('price-slider');
+    const resetFilterBtn = document.getElementById('reset-filter');
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            if (window.filterState) window.filterState.sort = e.target.value;
+            if (window.applyFilters) window.applyFilters();
+        });
+    }
+    
+    if (priceSlider) {
+        priceSlider.addEventListener('input', (e) => {
+            const value = Number(e.target.value);
+            const priceDisplay = document.getElementById('price-value');
+            if (priceDisplay) priceDisplay.textContent = window.formatPrice(value);
+            if (window.setPriceFilter) window.setPriceFilter(value);
+        });
+    }
+    
+    if (resetFilterBtn) resetFilterBtn.addEventListener('click', resetFilters);
+    
+    // Load More with Intersection Observer
+    const loadMoreContainer = document.getElementById('load-more-container');
+    if (loadMoreContainer && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !loadMoreContainer.classList.contains('hidden')) {
+                    if (window.loadMore) window.loadMore();
+                }
+            });
+        }, { threshold: 0.1 });
+        observer.observe(loadMoreContainer);
+    }
+    
+    // Accordion
+    const firstAccordion = document.querySelector('.accordion-item');
+    if (firstAccordion) firstAccordion.classList.add('accordion-active');
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modalOpen = !document.getElementById('product-modal-overlay')?.classList.contains('hidden');
+            const checkoutOpen = !document.getElementById('checkout-modal')?.classList.contains('hidden');
+            const successOpen = !document.getElementById('success-modal')?.classList.contains('hidden');
+            const cartOpen = !document.getElementById('cart-drawer')?.classList.contains('translate-x-full');
+            
+            if (modalOpen) closeModal();
+            else if (checkoutOpen) closeCheckout();
+            else if (successOpen) closeSuccess();
+            else if (cartOpen) closeCart();
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('search-input')?.focus();
+        }
+    });
+}
+
+// Error handling
+window.addEventListener('error', (e) => {
+    console.error('Uncaught error:', e.error || e.message);
+    if (window.toast) {
+        window.toast.error('Something went wrong', 'Please try again or refresh the page.');
+    }
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('Unhandled rejection:', e.reason);
+    if (window.toast) {
+        window.toast.error('Error', 'An unexpected error occurred.');
+    }
+});
+================================================================================
+
+
+================================================================================
+FILE: js/index.js
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.3 KB
+Extension: .js
+Language: javascript
+Location: js/index.js
+Relative Path: js
+Created: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+MD5: 436e2b84c27d33a525c877fa77cabf79
+SHA256: 7e5fc7d705d0c7e48dced02b6932b65b2d97d6b3f5d2067a7cb2256fa0a115ce
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+import { loadComponents } from './utils/loader.js';
+import './config/products.js';
+import './config/settings.js';
+import './utils/dom.js';
+import './utils/storage.js';
+import './utils/helpers.js';
+import './core/toast.js';
+import './core/fly-to-cart.js';
+import './core/cart.js';
+import './core/drawer.js';
+import './core/modal.js';
+import './core/filters.js';
+import './core/checkout.js';
+import './core/header.js';
+import './core/scroll-reveal.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Loading components...');
+    
+    try {
+        // 1. Load HTML components
+        await loadComponents([
+            { elementId: 'header-container', filePath: './pages/header.html' },
+            { elementId: 'hero-container', filePath: './pages/hero.html' },
+            { elementId: 'about-container', filePath: './pages/about.html' },
+            { elementId: 'products-container', filePath: './pages/products.html' },
+            { elementId: 'features-container', filePath: './pages/features.html' },
+            { elementId: 'footer-container', filePath: './pages/footer.html' },
+            { elementId: 'cart-drawer-container', filePath: './pages/cart-drawer.html' },
+            { elementId: 'product-modal-container', filePath: './pages/product-modal.html' },
+            { elementId: 'checkout-modal-container', filePath: './pages/checkout-modal.html' },
+            { elementId: 'success-modal-container', filePath: './pages/success-modal.html' }
+        ]);
+        
+        console.log('All components loaded!');
+        
+        // 2. Khởi tạo app
+        const { initApp } = await import('./app.js');
+        initApp();
+        
+        // 3. Khởi tạo header (sau khi header đã load)
+        setTimeout(() => {
+            if (window.initHeaderScroll) {
+                console.log('Starting header...');
+                window.initHeaderScroll();
+            }
+        }, 100);
+        
+        // 4. Khởi tạo scroll reveal (sau khi products đã load)
+        setTimeout(() => {
+            if (window.initScrollReveal) {
+                console.log('Starting scroll reveal...');
+                window.initScrollReveal();
+            }
+        }, 400);
+        
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+================================================================================
+
+
+================================================================================
+FILE: pages/about.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 3.56 KB
+Extension: .html
+Language: html
+Location: pages/about.html
+Relative Path: pages
+Created: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+Modified: 2026-08-01 18:54:31 (Asia/Saigon / GMT+07:00)
+MD5: a1b150d6479a4500fc4aa89741966cc9
+SHA256: 5c69d9fffbea212fe57db38f041c7ce8d8c699c4d035d377b23e686fd645462d
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+<section id="about" class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-6">
+            <h2 class="text-1xl font-bold tracking-widest text-brand-gray uppercase">Built on Winter Wonderland</h2>
+            <h3 class="text-2xl font-bold uppercase tracking-wider">ABOUT US | TriAD</h3>
+        </div>
+        <!-- grid-cols-12 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <!-- Cột nội dung - chiếm 5/12 -->
+            <div class="md:col-span-5 pr-4 md:pr-8">
+                <h4 class="text-2xl font-bold mb-4">Our Story</h4>
+                <div class="space-y-1 text-brand-gray leading-relaxed text-sm text-justify">
+                    <div>
+                        <h5 class="text-base font-bold text-gray-900">Who We Are</h5>
+                        <p>At TriAD Kitchenware, we believe that safe, sustainable food storage should be effortless and accessible to every household. We are passionate about creating practical kitchen solutions that combine quality, functionality, and modern design to support healthier everyday living.</p>
+                    </div>
+                    <div>
+                        <h5 class="text-base font-bold text-gray-900">What We Offer</h5>
+                        <p>Our collection features premium borosilicate glass food containers designed for durability, convenience, and versatility. Leak-proof and resistant to extreme temperatures, our containers are safe for use in microwaves, ovens, freezers, and dishwashers, making meal preparation and food storage simple and reliable.</p>
+                    </div>
+                    <div>
+                        <h5 class="text-base font-bold text-gray-900">Our Mission</h5>
+                        <p>Our mission is to inspire healthier lifestyles while contributing to a greener future. By providing reusable, eco-friendly kitchenware, we help families reduce single-use plastic waste without compromising on convenience or performance.</p>
+                    </div>
+                    <div>
+                        <h5 class="text-base font-bold text-gray-900">Our Commitment</h5>
+                        <p>Quality and customer satisfaction are at the heart of everything we do. We are committed to delivering reliable products, exceptional service, and innovative designs that simplify everyday food storage and stand the test of time.</p>
+                    </div>
+                    <div>
+                        <h5 class="text-base font-bold text-gray-900">Our Vision</h5>
+                        <p>We aspire to become a trusted kitchenware brand recognized for quality, sustainability, and innovation. Our vision is to help every customer enjoy fresher food, better organization, and safer storage solutions in every kitchen.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cột hình ảnh - 7/12 -->
+            <div class="md:col-span-7 relative bg-[#7ec8d4]/20 rounded-3xl p-8 flex items-end justify-end h-[420px] overflow-hidden">
+                <img src="images/13.jpg" 
+                    alt="Plant" loading="lazy" 
+                    class="absolute bottom-6 left-6 w-56 h-56 object-cover rounded-full shadow-lg z-10 border-4 border-white">
+                <img src="images/12.jpg" 
+                    alt="ThermoBox" loading="lazy"
+                    class="w-[780px] h-auto object-cover rounded-xl shadow-2xl relative z-0 mb-2 filter drop-shadow-xl">
+            </div>
+        </div>
+    </div>
+</section>
+================================================================================
+
+
+================================================================================
+FILE: pages/cart-drawer.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.5 KB
+Extension: .html
+Language: html
+Location: pages/cart-drawer.html
+Relative Path: pages
+Created: 2026-07-29 07:36:33 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:20:22 (Asia/Saigon / GMT+07:00)
+MD5: 83c716f94a2ebd70c057ea4cf053b7ae
+SHA256: 43e5e0218ded03316591e6109ddb0919747a05d0aa754462bd82aa9e2320f867
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+<div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white z-[70] transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+    <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50">
+        <h2 class="text-xl font-medium tracking-wide">Shopping cart</h2>
+        <button id="close-cart-btn" class="text-gray-400 hover:text-black transition-colors">
+            <i class="ph ph-x text-2xl"></i>
+        </button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto p-6 cart-scroll"></div>
+    
+    <div class="p-6 bg-white border-t border-gray-100 space-y-4">
+        <button class="flex items-center text-brand-orange text-sm font-medium gap-2 mb-4 hover:underline">
+            <i class="ph ph-tag text-lg"></i> Enter Discount Code
+        </button>
+        <div class="flex justify-between text-lg font-medium">
+            <p>Total</p>
+            <p id="cart-total">0 ₫</p>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Taxes and shipping fees are calculated at checkout.</p>
+        <button id="checkout-btn" class="w-full bg-brand-orange text-white py-4 font-medium rounded hover:bg-orange-600 transition-colors tracking-wide text-lg">
+            Checkout
+        </button>
+        <button class="w-full bg-white text-brand-orange border border-brand-orange py-4 font-medium rounded hover:bg-orange-50 transition-colors tracking-wide">
+            View cart
+        </button>
+    </div>
+</div>
+================================================================================
+
+
+================================================================================
+FILE: pages/checkout-modal.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.33 KB
+Extension: .html
+Language: html
+Location: pages/checkout-modal.html
+Relative Path: pages
+Created: 2026-07-29 07:36:43 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 08:45:52 (Asia/Saigon / GMT+07:00)
+MD5: e2120bc5e18dd4b6f33962635ea38f54
+SHA256: 5e393d246ca56ecafe9d7466783eb4d26e8d5435b50905350fa717833a6099f0
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<div id="checkout-modal" class="fixed inset-0 bg-black/60 z-[90] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl p-8 transform scale-95 transition-transform duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Checkout</h2>
+            <button id="close-checkout-btn" class="text-gray-400 hover:text-black">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+        
+        <form id="checkout-form" class="space-y-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="font-semibold mb-3">Order Summary</h3>
+                <div id="checkout-items" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                <div class="border-t border-gray-200 mt-3 pt-3 flex justify-between font-bold">
+                    <span>Total:</span>
+                    <span id="checkout-total">0 ₫</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                    <input type="text" id="first-name" required 
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                    <input type="text" id="last-name" required
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input type="email" id="email" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                <input type="tel" id="phone" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                <input type="text" id="address" required
+                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
+                <div class="space-y-2">
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="cod" checked class="mr-3">
+                        <span>Cash on Delivery (COD)</span>
+                    </label>
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="card" class="mr-3">
+                        <span>Credit / Debit Card</span>
+                    </label>
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="payment" value="banking" class="mr-3">
+                        <span>Bank Transfer</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="card-details" class="hidden space-y-4 border-t border-gray-200 pt-4">
+                <h3 class="font-semibold">Card Details</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456"
+                           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input type="text" id="card-expiry" placeholder="MM/YY"
+                               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                        <input type="text" id="card-cvv" placeholder="123"
+                               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-black text-white py-4 font-medium rounded hover:bg-gray-800 transition-colors text-lg">
+                Place Order
+            </button>
+        </form>
+    </div>
+</div>
+================================================================================
+
+
+================================================================================
+FILE: pages/features.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 1.68 KB
+Extension: .html
+Language: html
+Location: pages/features.html
+Relative Path: pages
+Created: 2026-07-29 07:36:23 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:30:54 (Asia/Saigon / GMT+07:00)
+MD5: 0c2becede97a6a2cb84aa655963a81fc
+SHA256: d004fe9961a99a29b16f64c60c192a86a66965cbeddc94b10dfbb7a271d54688
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold mb-12 text-center">Outstanding advantages</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center mb-20">
+            <div class="p-6">
+                <i class="ph-light ph-thermometer text-4xl text-brand-accent mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">Perfect Heat Retention</h4>
+                <p class="text-sm text-brand-gray">Double-layer vacuum helps keep drinks hot for up to 12 hours and cold for 24 hours.</p>
+            </div>
+            <div class="p-6">
+                <i class="ph-light ph-squares-four text-4xl text-brand-accent mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">Smart Compartmentalization</h4>
+                <p class="text-sm text-brand-gray">Multi-tier design with removable sections effectively prevents food odors from mixing.</p>
+            </div>
+            <div class="p-6">
+                <i class="ph-light ph-shield-check text-4xl text-brand-accent mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">Safe Materials</h4>
+                <p class="text-sm text-brand-gray">The container body is made of high-quality borosilicate glass, BPA-free, and safe for food contact.</p>
+            </div>
+            <div class="p-6">
+                <i class="ph-light ph-drop-slash text-4xl text-brand-accent mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">Leak-Proof</h4>
+                <p class="text-sm text-brand-gray">Solid silicon gasket effectively prevents spills and liquid leaks.</p>
+            </div>
+        </div>
+    </div>
+</section>
+================================================================================
+
+
+================================================================================
+FILE: pages/footer.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.64 KB
+Extension: .html
+Language: html
+Location: pages/footer.html
+Relative Path: pages
+Created: 2026-07-29 07:36:28 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:22:10 (Asia/Saigon / GMT+07:00)
+MD5: d02a42b3fcbbe4f2c3758fda2f72b791
+SHA256: 0096de57aeb0abc65d8ef1393421d6d1594fc9bd456507875b409d6c75801dd9
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<footer id="contact" class="bg-gray-50 border-t border-gray-200 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 mb-12 text-center md:text-left">
+            <div>
+                <h3 class="font-bold text-lg mb-4 tracking-widest uppercase">CONTACT</h3>
+                <ul class="space-y-3 text-sm text-brand-gray">
+                    <li class="flex items-center justify-center md:justify-start gap-2">
+                        <i class="ph ph-envelope-simple text-lg text-black"></i> TriAD@shop.vn
+                    </li>
+                    <li class="flex items-center justify-center md:justify-start gap-2">
+                        <i class="ph ph-phone text-lg text-black"></i> +84 90 123 4567
+                    </li>
+                    <li class="flex items-center justify-center md:justify-start gap-2">
+                        <i class="ph ph-map-pin text-lg text-black"></i> Ho Chi Minh City, Vietnam
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-4 tracking-widest uppercase">CONNECT</h3>
+                <div class="flex space-x-4 justify-center md:justify-start">
+                    <a href="#" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
+                        <i class="ph-fill ph-facebook-logo text-xl"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
+                        <i class="ph-fill ph-instagram-logo text-xl"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
+                        <i class="ph-fill ph-twitter-logo text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 TriAd. All Rights Reserved.</p>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-black transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-black transition-colors">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+================================================================================
+
+
+================================================================================
+FILE: pages/header.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 3.71 KB
+Extension: .html
+Language: html
+Location: pages/header.html
+Relative Path: pages
+Created: 2026-07-29 07:36:03 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:23:05 (Asia/Saigon / GMT+07:00)
+MD5: 550c641595a1cfbc8e9f95a26193297b
+SHA256: 7bd91d97ea26b655ffeb3b61e879aeadc1e8c6f71f518ef4b22b7cce7301a95d
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<!-- pages/header.html -->
+<header id="main-header" class="sticky top-0 w-full bg-white/95 backdrop-blur-md z-40 border-b border-brand-border transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20 transition-all duration-300">
+            <!-- Logo -->
+            <a href="#home" class="flex-shrink-0 flex items-center">
+                <span class="font-bold text-2xl tracking-widest uppercase transition-all duration-300">TriAD</span>
+            </a>
+            
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex space-x-10">
+                <a href="#home" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
+                <a href="#about" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
+                <a href="#products" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
+                <a href="#contact" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
+            </nav>
+            
+            <!-- Icons -->
+            <div class="hidden md:flex items-center space-x-6">
+                <div class="relative">
+                    <input id="search-input" type="text" placeholder="Search product..." 
+                           class="border rounded-full px-5 py-2 w-72 focus:outline-none focus:border-brand-accent transition-all duration-300">
+                    <div id="search-suggestion" class="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg w-full hidden max-h-60 overflow-y-auto"></div>
+                </div>
+                <button class="hover:text-brand-accent transition-colors relative" title="Thông báo">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <button id="cart-icon-btn" class="hover:text-brand-accent transition-colors relative" title="Giỏ hàng">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+            
+            <!-- Mobile -->
+            <div class="md:hidden flex items-center gap-4">
+                <button id="mobile-cart-btn" class="relative">
+                    <i class="ph ph-shopping-bag text-xl"></i>
+                    <span class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button id="mobile-menu-btn" class="focus:outline-none">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
+        <div class="px-4 py-4 space-y-3">
+            <a href="#home" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
+            <a href="#about" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
+            <a href="#products" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
+            <a href="#contact" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
+        </div>
+    </div>
+</header>
+================================================================================
+
+
+================================================================================
+FILE: pages/hero.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 3.46 KB
+Extension: .html
+Language: html
+Location: pages/hero.html
+Relative Path: pages
+Created: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 13:45:46 (Asia/Saigon / GMT+07:00)
+MD5: 6d204008f462c355adf22e4a0e76aadd
+SHA256: 2ebf675acb3bd1859f541abb955983fa11be4cb8407c5f5a483397f3818f5264
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+<section id="home" class="hero-gradient relative pt-16 pb-20 lg:pt-24 lg:pb-28 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+            <!-- Cột chữ - 2/5 -->
+            <div class="lg:col-span-2 text-center lg:text-left order-2 lg:order-1">
+                <h1 class="text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-brand-dark leading-tight">
+                    TriAD <br/> <span class="text-2xl lg:text-4xl font-bold tracking-wide">Freshness you can see, quality you can trust.</span>
+                </h1>
+                <p class="text-base text-brand-gray mb-6 text-justify max-w-lg mx-auto lg:mx-0">
+                    Featuring a smart design and advanced vacuum insulation, this product ensures you can enjoy hot, delicious homemade meals on the go.
+                </p>
+                <a href="#products" class="inline-block px-10 py-4 bg-black text-white font-medium hover:bg-gray-800 transition-colors rounded-sm tracking-wide">
+                    Buy now
+                </a>
+            </div>
+            
+            <!-- Cột ảnh - 3/5 -->
+            <div class="lg:col-span-3 order-1 lg:order-2 relative flex justify-center">
+                <!-- Background glow effects -->
+                <div class="absolute inset-0 bg-orange-100/50 rounded-full filter blur-3xl transform scale-90"></div>
+                <div class="absolute -inset-4 bg-gradient-to-r from-orange-200/30 via-pink-200/30 to-purple-200/30 rounded-full filter blur-2xl transform scale-110"></div>
+                
+                <!-- Container cho ảnh với hiệu ứng -->
+                <div class="relative group">
+                    <!-- Shadow layer -->
+                    <div class="absolute -inset-6 bg-gradient-to-r from-orange-400/20 via-amber-400/20 to-yellow-400/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                    
+                    <div class="absolute -inset-4 rounded-3xl bg-gradient-to-br from-orange-300/40 via-amber-300/40 to-yellow-300/40 blur-xl"></div>
+                    
+                    <!-- Khung ảnh chính -->
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl shadow-orange-200/50 border-4 border-white/80">
+
+                        <div class="absolute inset-0 rounded-2xl p-[3px] bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <img src="images/11.jpg"  
+                             alt="AURA ThermoBox" 
+                             loading="lazy"
+                             class="w-[680px] h-auto object-cover rounded-2xl transform group-hover:scale-150 transition-transform duration-700 ease-out">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 rounded-2xl pointer-events-none"></div>
+                    </div>
+                    
+                    <div class="absolute -top-2 -right-2 w-24 h-24 bg-gradient-to-br from-orange-300/30 to-transparent rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-2 -left-2 w-20 h-20 bg-gradient-to-tr from-amber-300/20 to-transparent rounded-full blur-2xl"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+================================================================================
+
+
+================================================================================
+FILE: pages/product-modal.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 5.42 KB
+Extension: .html
+Language: html
+Location: pages/product-modal.html
+Relative Path: pages
+Created: 2026-07-29 07:36:38 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:11:46 (Asia/Saigon / GMT+07:00)
+MD5: c01a2cef800bfb247969a14c885e878f
+SHA256: 5881d6ed9a07c6e8c7eddd4977a9dad8c635443a2aba7126d3a2c8b3035f4085
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<div id="product-modal-overlay" class="fixed inset-0 bg-black/60 z-[80] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div id="product-modal-content" class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col md:flex-row transform scale-95 transition-transform duration-300 relative">
+        <button id="close-modal-btn" class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+            <i class="ph ph-x text-lg"></i>
+        </button>
+        
+        <div class="w-full md:w-1/2 bg-[#f8f8f8] p-8 flex items-center justify-center min-h-[300px]">
+            <img id="modal-img" src="" alt="Product" class="w-full max-w-sm h-auto object-contain transition-all duration-300">
+        </div>
+        
+        <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
+            <h2 id="modal-title" class="text-3xl font-bold mb-2">TriAD</h2>
+            <p id="modal-price" class="text-xl text-gray-600 font-medium mb-8">98.000 ₫</p>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                <div class="flex items-center border border-gray-300 w-max rounded-sm">
+                    <button id="qty-minus" class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg">-</button>
+                    <span id="modal-quantity" class="px-6 py-2 border-x border-gray-300 font-medium">1</span>
+                    <button id="qty-plus" class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg">+</button>
+                </div>
+            </div>
+            
+            <button id="add-cart-btn" class="w-full bg-black text-white py-4 font-medium hover:bg-gray-800 transition-colors tracking-wide mb-3 rounded-sm text-lg">
+                Add to cart
+            </button>
+            <button id="modal-buy-now-btn" class="w-full bg-brand-orange text-white py-4 font-medium hover:bg-orange-600 transition-colors tracking-wide mb-8 rounded-sm text-lg">
+                Buy now
+            </button>
+            
+            <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                Enjoy authentic flavors on the go with the TriAD, engineered for the dynamic modern professional.
+            </p>
+            
+            <div class="border-t border-gray-200">
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Information
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Premium borosilicate glass.</li>
+                            <li>Leak-proof locking lid with silicone seal.</li>
+                            <li>BPA-free & food-safe materials.</li>
+                            <li>Microwave (without lid), freezer & dishwasher safe.</li>
+                            <li>Clear design for easy food visibility.</li>
+                            <li>Multiple sizes for everyday storage.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Return & Refund Policy
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>7-day replacement for manufacturer defects.</li>
+                            <li>Item must be unused with original packaging.</li>
+                            <li>No returns for accidental damage or misuse.</li>
+                            <li>Refund processed after inspection.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accordion-item border-b border-gray-200">
+                    <button class="w-full py-4 flex justify-between items-center text-left font-medium focus:outline-none" onclick="this.parentElement.classList.toggle('accordion-active')">
+                        Shipping Policy
+                        <i class="ph ph-plus transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content text-sm text-gray-600">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Nationwide delivery in 2–5 business days.</li>
+                            <li>Protective packaging for safe transportation.</li>
+                            <li>Free shipping on eligible orders.</li>
+                            <li>Inspect package before accepting delivery.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+================================================================================
+
+
+================================================================================
+FILE: pages/products.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.68 KB
+Extension: .html
+Language: html
+Location: pages/products.html
+Relative Path: pages
+Created: 2026-07-29 07:36:18 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-30 08:16:04 (Asia/Saigon / GMT+07:00)
+MD5: 4883b82758a9d2662febc9fc2e1f1d62
+SHA256: e792749e88cec562cb656b0d6d2c6d1a65ca1ec05841e61cb3a17ef0ce16a2d0
+Encoding: UTF-8
+
+FILE CONTENT:
+----------------------------------------
+<section id="products" class="py-20 bg-gray-50 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold">All products</h2>
+            <p id="product-count" class="text-sm text-brand-gray mt-2">Loading...</p>
+        </div>
+        <div class="flex flex-col lg:flex-row gap-10">
+            <!-- Sidebar Filter -->
+            <div class="w-full lg:w-64 shrink-0">
+                <div class="mb-8">
+                    <label class="block text-sm font-semibold mb-4">Sort by</label>
+                    <select id="sort-select" class="w-full p-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-black bg-white">
+                        <option value="default">Featured</option>
+                        <option value="price-asc">Price ↑</option>
+                        <option value="price-desc">Price ↓</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                    </select>
+                </div>
+                
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="block text-sm font-semibold">Price</label>
+                        <button class="text-gray-400 hover:text-black"><i class="ph ph-minus"></i></button>
+                    </div>
+                    <div class="relative pt-1 pb-4">
+                        <input id="price-slider" type="range" min="399000" max="499000" value="499000" class="w-full">
+                        <div class="flex justify-between text-sm mt-4 font-medium">
+                            <p id="price-value">499.000 ₫</p>
+                        </div>
+                    </div>
+                    <button id="reset-filter" class="mt-2 px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors text-sm">
+                        <i class="ph ph-arrow-counter-clockwise"></i> Reset
+                    </button>
+                </div>
+                
+                <div id="active-filters" class="flex flex-wrap gap-2 mt-4"></div>
+            </div>
+            
+            <!-- Product Grid -->
+            <div id="product-grid" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+        <div id="load-more-container" class="text-center mt-12 hidden">
+            <button id="load-more-btn" class="px-8 py-3 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors">
+                Load more
+            </button>
+        </div>
+    </div>
+</section>
+================================================================================
+
+
+================================================================================
+FILE: pages/success-modal.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 872 B
+Extension: .html
+Language: html
+Location: pages/success-modal.html
+Relative Path: pages
+Created: 2026-07-29 07:36:49 (Asia/Saigon / GMT+07:00)
+Modified: 2026-07-29 07:39:30 (Asia/Saigon / GMT+07:00)
+MD5: fb4aa513a0f60acb2598e811f8dacba7
+SHA256: a96ed945d26a1677ac687a61e951103e393cada79dd1563fba83e1e11f8297a7
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<div id="success-modal" class="fixed inset-0 bg-black/60 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-8 text-center transform scale-95 transition-transform duration-300">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Order Placed Successfully!</h2>
+        <p class="text-gray-500 mb-6">Thank you for your purchase. We'll send you a confirmation email shortly.</p>
+        <button id="success-close-btn" class="px-8 py-3 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+            Continue Shopping
+        </button>
+    </div>
+</div>
+================================================================================
+
+
+================================================================================
+FILE: index.html
+================================================================================
+
+FILE INFORMATION:
+----------------------------------------
+Size: 2.94 KB
+Extension: .html
+Language: html
+Location: index.html
+Relative Path: root
+Created: 2026-07-30 11:51:04 (Asia/Saigon / GMT+07:00)
+Modified: 2026-08-01 12:02:17 (Asia/Saigon / GMT+07:00)
+MD5: c805c83639e6f7507921d5079a518256
+SHA256: d31d6d659d88c2d43fba72a975ff7cab2350f365ce538463aa8493d9c0e49a34
+Encoding: ASCII
+
+FILE CONTENT:
+----------------------------------------
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage | TriAD</title>
+    
+    <!-- Meta -->
+    <meta name="description" content="TriAD - Insulated lunch box">
+    
+    <!-- External Resources -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Jost', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            light: '#f9f6f0',
+                            accent: '#4a90e2',
+                            dark: '#1a1a1a',
+                            gray: '#737373',
+                            border: '#e5e5e5',
+                            orange: '#ff6b35',
+                            success: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/components/toast.css">
+    <link rel="stylesheet" href="./css/components/checkout.css">
+    <link rel="stylesheet" href="./css/components/product-card.css">
+    <link rel="stylesheet" href="./css/animations/fly-to-cart.css">
+</head>
+<body class="antialiased text-brand-dark">
+    
+    <!-- ===== COMPONENTS LOADED BY JS ===== -->
+    
+    <!-- Header -->
+    <div id="header-container"></div>
+    
+    <!-- Hero -->
+    <div id="hero-container"></div>
+    
+    <!-- About -->
+    <div id="about-container"></div>
+    
+    <!-- Products -->
+    <div id="products-container"></div>
+    
+    <!-- Features -->
+    <div id="features-container"></div>
+    
+    <!-- Footer -->
+    <div id="footer-container"></div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
+    
+    <!-- Cart Drawer -->
+    <div id="cart-drawer-container"></div>
+    
+    <!-- Product Modal -->
+    <div id="product-modal-container"></div>
+    
+    <!-- Checkout Modal -->
+    <div id="checkout-modal-container"></div>
+    
+    <!-- Success Modal -->
+    <div id="success-modal-container"></div>
+    
+    <!-- Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    
+    <!-- ===== SCRIPTS ===== -->
+    <script type="module" src="./js/index.js"></script>
+    
+</body>
+</html>
+================================================================================

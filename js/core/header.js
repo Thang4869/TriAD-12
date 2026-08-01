@@ -15,7 +15,6 @@ export function initHeaderScroll() {
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
         
-        // CHỈ THU NHỎ HEADER - KHÔNG ẨN
         if (currentScroll > 60) {
             header.classList.add('header-shrink');
         } else {
@@ -40,7 +39,6 @@ export function initHeaderScroll() {
             const section = document.getElementById(id);
             if (section) {
                 const rect = section.getBoundingClientRect();
-                // Section đang ở giữa viewport
                 if (rect.top <= viewportHeight / 2 && rect.bottom >= viewportHeight / 2) {
                     currentSection = id;
                 }

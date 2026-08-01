@@ -32,10 +32,9 @@ export function addToCart(productId, quantity = 1, flyElement = null) {
             window.toast.success('Added to cart', `${product.name} x${quantity}`);
         }
         
-        // Fly animation - ĐẢM BẢO GỌI ĐÚNG
+        // Fly animation
         if (flyElement && window.flyToCart) {
             console.log('Starting fly animation...');
-            // Đợi 1 chút để DOM update
             setTimeout(() => {
                 window.flyToCart.fly(flyElement);
             }, 150);
