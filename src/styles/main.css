@@ -56,3 +56,63 @@
         gap: 1rem !important;
     }
 }
+
+/* Avatar fix */
+.avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+}
+
+/* Notification Styles */
+#notification-dropdown {
+    transform-origin: top right;
+}
+
+#notification-dropdown:not(.hidden) {
+    animation: dropdownSlide 0.2s ease forwards;
+}
+
+@keyframes dropdownSlide {
+    0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.notification-item {
+    transition: all 0.2s ease;
+}
+
+.notification-item:hover {
+    background: #f3f4f6 !important;
+}
+
+@keyframes bellRing {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+    75% { transform: rotate(8deg); }
+    100% { transform: rotate(0); }
+}
+
+#notification-btn:hover i,
+#mobile-notification-btn:hover i {
+    transform: scale(1.1);
+}
+
+#notification-btn i,
+#mobile-notification-btn i {
+    transition: transform 0.2s ease;
+}

@@ -1,21 +1,21 @@
-<!-- pages/header.html -->
+<!-- components/header.html -->
 <header id="main-header" class="sticky top-0 w-full bg-white/95 backdrop-blur-md z-40 border-b border-brand-border transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20 transition-all duration-300">
             <!-- Logo -->
-            <a href="#home" class="flex-shrink-0 flex items-center">
+            <a href="/" class="flex-shrink-0 flex items-center">
                 <span class="font-bold text-2xl tracking-widest uppercase transition-all duration-300">TriAD</span>
             </a>
             
             <!-- Desktop Menu -->
             <nav class="hidden md:flex space-x-6 lg:space-x-10">
-                <a href="#home" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
-                <a href="#about" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
-                <a href="#products" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
-                <a href="#blog" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">BLOG</a>
-                <a href="#reviews" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">REVIEWS</a>
-                <a href="#location" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">LOCATION</a>
-                <a href="#contact" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
+                <a href="/" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
+                <a href="/about.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
+                <a href="/products.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
+                <a href="/blog.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">BLOG</a>
+                <a href="/reviews.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">REVIEWS</a>
+                <a href="/location.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">LOCATION</a>
+                <a href="/contact.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
             </nav>
             
             <!-- Icons -->
@@ -25,9 +25,9 @@
                            class="border rounded-full px-5 py-2 w-48 md:w-56 lg:w-72 focus:outline-none focus:border-brand-accent transition-all duration-300">
                     <div id="search-suggestion" class="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg w-full hidden max-h-60 overflow-y-auto"></div>
                 </div>
-                <button class="hidden lg:inline-block hover:text-brand-accent transition-colors relative" title="Thông báo">
+                <button id="notification-btn" class="hover:text-brand-accent transition-colors relative" title="Thông báo">
                     <i class="ph ph-bell text-xl"></i>
-                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span id="notification-badge" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
                 </button>
                 <button id="cart-icon-btn" class="hover:text-brand-accent transition-colors relative" title="Giỏ hàng">
                     <i class="ph ph-shopping-bag text-xl"></i>
@@ -37,6 +37,10 @@
             
             <!-- Mobile -->
             <div class="md:hidden flex items-center gap-4">
+                <button id="mobile-notification-btn" class="relative">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span id="mobile-notification-badge" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                </button>
                 <button id="mobile-cart-btn" class="relative">
                     <i class="ph ph-shopping-bag text-xl"></i>
                     <span class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
@@ -51,13 +55,47 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
         <div class="px-4 py-4 space-y-3">
-            <a href="#home" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
-            <a href="#about" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
-            <a href="#products" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
-            <a href="#blog" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">BLOG</a>
-            <a href="#reviews" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">REVIEWS</a>
-            <a href="#location" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">LOCATION</a>
-            <a href="#contact" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
+            <a href="/" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
+            <a href="/about.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
+            <a href="/products.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
+            <a href="/blog.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">BLOG</a>
+            <a href="/reviews.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">REVIEWS</a>
+            <a href="/location.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">LOCATION</a>
+            <a href="/contact.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
         </div>
     </div>
 </header>
+
+<!-- Notification Dropdown -->
+<div id="notification-dropdown" class="hidden fixed right-4 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50" style="top: 80px;">
+    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-semibold text-sm">Notifications</h3>
+        <button id="mark-all-read" class="text-xs text-brand-accent hover:underline">Mark all as read</button>
+    </div>
+    <div id="notification-list" class="max-h-80 overflow-y-auto">
+        <div class="p-4 text-center text-gray-400 text-sm">
+            <i class="ph ph-check-circle text-2xl block mb-2"></i>
+            No new notifications
+        </div>
+    </div>
+</div>
+
+<!-- Overlay cho notification -->
+<div id="notification-overlay" class="fixed inset-0 z-40 hidden"></div>
+
+<!-- Chỉ cần script nhỏ để active menu -->
+<script>
+    // Xác định trang hiện tại để active menu
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('nav a, #mobile-menu a');
+        links.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === currentPath || (currentPath === '/' && href === '/')) {
+                link.classList.add('active');
+            } else if (href !== '/' && currentPath.includes(href.replace('.html', ''))) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
