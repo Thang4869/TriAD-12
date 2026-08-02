@@ -35,6 +35,15 @@
     width: 200px !important;
 }
 
+@media (min-width: 768px) and (max-width: 1024px) {
+    #main-header .h-20 {
+        height: 64px !important;
+    }
+    .header-shrink .h-20 {
+        height: 56px !important;
+    }
+}
+
 /* Navigation */
 nav a {
     position: relative;
