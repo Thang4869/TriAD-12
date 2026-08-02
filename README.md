@@ -205,34 +205,41 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 
 ```mermaid
 flowchart LR
-  subgraph Presentation
-    HTML[HTML Templates<br/>index.html + pages/*]
-    CSS[CSS Layer<br/>src/styles/*]
-    UI[UI Component<br/>src/ui/components/*]
-  end
 
-  subgraph Application
-    Bootstrap[bootstrap()]
-    App[App Orchestrator]
-    Controllers[Cart / Products / Modal / Checkout]
-  end
+subgraph "Presentation Layer"
+    HTML["HTML Templates\nindex.html + pages/*"]
+    CSS["CSS Layer\nsrc/styles/*"]
+    UI["UI Components\nsrc/ui/components/*"]
+end
 
-  subgraph Domain
-    Models[Product / CartItem / Order]
-    Rules[Validation + Business Rules]
-  end
+subgraph "Application Layer"
+    Bootstrap["bootstrap()"]
+    App["App Orchestrator"]
+    Controllers["Cart\nProducts\nModal\nCheckout"]
+end
 
-  subgraph Data
-    Repos[Repositories]
-    Storage[StorageService]
-    Local[(localStorage)]
-  end
+subgraph "Domain Layer"
+    Models["Product\nCartItem\nOrder"]
+    Rules["Validation\nBusiness Rules"]
+end
 
-  HTML --> Bootstrap --> App --> Controllers
-  Controllers --> Models
-  Controllers --> Rules
-  Controllers --> Repos --> Storage --> Local
-  Controllers --> UI
+subgraph "Data Layer"
+    Repos["Repositories"]
+    Storage["StorageService"]
+    Local["localStorage"]
+end
+
+HTML --> Bootstrap
+Bootstrap --> App
+App --> Controllers
+
+Controllers --> Models
+Controllers --> Rules
+Controllers --> Repos
+Repos --> Storage
+Storage --> Local
+
+Controllers --> UI
 ```
 
 ### Architecture Layers

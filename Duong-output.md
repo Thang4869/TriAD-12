@@ -3,7 +3,7 @@
 ## 📊 Project Information
 
 - **Project Name**: `Duong`
-- **Generated On**: 2026-08-02 10:14:15 (Asia/Saigon / GMT+07:00)
+- **Generated On**: 2026-08-02 10:29:59 (Asia/Saigon / GMT+07:00)
 - **Total Files Processed**: 81
 - **Export Tool**: Easy Whole Project to Single Text File for LLMs v1.1.0
 - **Tool Author**: Jota / José Guilherme Pandolfi
@@ -125,7 +125,7 @@
 │   │       └── 📄 product-card.component.js (2.65 KB)
 │   └── 📄 index.js (883 B)
 ├── 📄 index.html (2.73 KB)
-└── 📄 README.md (33.71 KB)
+└── 📄 README.md (33.75 KB)
 ```
 
 ## 📑 Table of Contents
@@ -6365,15 +6365,15 @@ document.addEventListener('DOMContentLoaded', bootstrap);
 ### <a id="📄-readme-md"></a>📄 `README.md`
 
 **File Info:**
-- **Size**: 33.71 KB
+- **Size**: 33.75 KB
 - **Extension**: `.md`
 - **Language**: `text`
 - **Location**: `README.md`
 - **Relative Path**: `root`
 - **Created**: 2026-08-02 07:07:49 (Asia/Saigon / GMT+07:00)
-- **Modified**: 2026-08-02 10:14:14 (Asia/Saigon / GMT+07:00)
-- **MD5**: `6a1267be757f952d5d5c20cdd75c1492`
-- **SHA256**: `59389b0af7920fdaa1ed93be9c59129252913240fb8fec42e013e2a60421612e`
+- **Modified**: 2026-08-02 10:29:58 (Asia/Saigon / GMT+07:00)
+- **MD5**: `1dfee87b10372f0f6f19f566b27e5491`
+- **SHA256**: `1c8ce57a72cffa39c5d2c4e8528887ca0e506fff66197ac7bc05397ea98a4303`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -6586,34 +6586,41 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 
 ~~~~mermaid
 flowchart LR
-  subgraph Presentation
-    HTML[HTML Templates<br/>index.html + pages/*]
-    CSS[CSS Layer<br/>src/styles/*]
-    UI[UI Component<br/>src/ui/components/*]
-  end
 
-  subgraph Application
-    Bootstrap[bootstrap()]
-    App[App Orchestrator]
-    Controllers[Cart / Products / Modal / Checkout]
-  end
+subgraph "Presentation Layer"
+    HTML["HTML Templates\nindex.html + pages/*"]
+    CSS["CSS Layer\nsrc/styles/*"]
+    UI["UI Components\nsrc/ui/components/*"]
+end
 
-  subgraph Domain
-    Models[Product / CartItem / Order]
-    Rules[Validation + Business Rules]
-  end
+subgraph "Application Layer"
+    Bootstrap["bootstrap()"]
+    App["App Orchestrator"]
+    Controllers["Cart\nProducts\nModal\nCheckout"]
+end
 
-  subgraph Data
-    Repos[Repositories]
-    Storage[StorageService]
-    Local[(localStorage)]
-  end
+subgraph "Domain Layer"
+    Models["Product\nCartItem\nOrder"]
+    Rules["Validation\nBusiness Rules"]
+end
 
-  HTML --> Bootstrap --> App --> Controllers
-  Controllers --> Models
-  Controllers --> Rules
-  Controllers --> Repos --> Storage --> Local
-  Controllers --> UI
+subgraph "Data Layer"
+    Repos["Repositories"]
+    Storage["StorageService"]
+    Local["localStorage"]
+end
+
+HTML --> Bootstrap
+Bootstrap --> App
+App --> Controllers
+
+Controllers --> Models
+Controllers --> Rules
+Controllers --> Repos
+Repos --> Storage
+Storage --> Local
+
+Controllers --> UI
 ~~~~
 
 ### Architecture Layers
