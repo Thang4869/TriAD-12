@@ -1,0 +1,1 @@
+export { ReviewsController } from './reviews.controller.js';
