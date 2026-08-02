@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | TriAD</title>
+    
+    <meta name="description" content="Privacy Policy of TriAD Kitchenware">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Jost', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            light: '#f9f6f0',
+                            accent: '#4a90e2',
+                            dark: '#1a1a1a',
+                            gray: '#737373',
+                            border: '#e5e5e5',
+                            orange: '#ff6b35',
+                            success: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body class="antialiased text-brand-dark">
+    
+    <div id="header-container"></div>
+    
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <nav class="text-sm text-brand-gray mb-8">
+                <a href="/" class="hover:text-black">Home</a>
+                <span class="mx-2">/</span>
+                <span class="text-black font-medium">Privacy Policy</span>
+            </nav>
+
+            <div class="prose prose-lg max-w-none">
+                <h1 class="text-4xl font-bold mb-6">Privacy Policy</h1>
+                <p class="text-brand-gray">Last updated: August 2026</p>
+                
+                <div class="mt-8 space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">1. Information We Collect</h2>
+                        <p class="text-brand-gray leading-relaxed">We collect information you provide directly, such as your name, email address, phone number, and shipping address when you place an order or contact us.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">2. How We Use Your Information</h2>
+                        <p class="text-brand-gray leading-relaxed">We use your information to process orders, communicate with you about your purchases, and improve our products and services.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">3. Information Sharing</h2>
+                        <p class="text-brand-gray leading-relaxed">We do not sell, trade, or rent your personal information to third parties. We may share information with trusted partners who assist us in operating our website and fulfilling orders.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">4. Data Security</h2>
+                        <p class="text-brand-gray leading-relaxed">We implement appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">5. Cookies</h2>
+                        <p class="text-brand-gray leading-relaxed">We use cookies to enhance your browsing experience and analyze site traffic. You can control cookie preferences through your browser settings.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">6. Your Rights</h2>
+                        <p class="text-brand-gray leading-relaxed">You have the right to access, update, or delete your personal information at any time. Contact us to exercise these rights.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">7. Contact Us</h2>
+                        <p class="text-brand-gray leading-relaxed">If you have questions about this Privacy Policy, please contact us at <a href="mailto:TriAD@shop.vn" class="text-brand-accent hover:underline">TriAD@shop.vn</a>.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 p-6 bg-gray-50 rounded-2xl">
+                    <p class="text-sm text-brand-gray">By using our website, you consent to our Privacy Policy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div id="footer-container"></div>
+    
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
+    <div id="cart-drawer-container"></div>
+    <div id="product-modal-container"></div>
+    <div id="checkout-modal-container"></div>
+    <div id="success-modal-container"></div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    
+    <script type="module" src="./src/index.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | TriAD</title>
+    
+    <meta name="description" content="Terms of Service of TriAD Kitchenware">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Jost', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            light: '#f9f6f0',
+                            accent: '#4a90e2',
+                            dark: '#1a1a1a',
+                            gray: '#737373',
+                            border: '#e5e5e5',
+                            orange: '#ff6b35',
+                            success: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body class="antialiased text-brand-dark">
+    
+    <div id="header-container"></div>
+    
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <nav class="text-sm text-brand-gray mb-8">
+                <a href="/" class="hover:text-black">Home</a>
+                <span class="mx-2">/</span>
+                <span class="text-black font-medium">Terms of Service</span>
+            </nav>
+
+            <div class="prose prose-lg max-w-none">
+                <h1 class="text-4xl font-bold mb-6">Terms of Service</h1>
+                <p class="text-brand-gray">Last updated: August 2026</p>
+                
+                <div class="mt-8 space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">1. Acceptance of Terms</h2>
+                        <p class="text-brand-gray leading-relaxed">By using our website and purchasing our products, you agree to these Terms of Service. If you do not agree, please do not use our services.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">2. Products and Pricing</h2>
+                        <p class="text-brand-gray leading-relaxed">We strive to display accurate product information and pricing. However, we reserve the right to correct errors and update prices without prior notice.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">3. Orders and Payments</h2>
+                        <p class="text-brand-gray leading-relaxed">All orders are subject to acceptance and availability. We accept various payment methods as displayed at checkout.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">4. Shipping and Delivery</h2>
+                        <p class="text-brand-gray leading-relaxed">We ship to the address provided at checkout. Delivery times are estimates and may vary. We are not responsible for delays caused by shipping carriers.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">5. Returns and Refunds</h2>
+                        <p class="text-brand-gray leading-relaxed">We offer a 7-day return policy for defective products. Items must be unused and in original packaging. Refunds are processed after inspection.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">6. Intellectual Property</h2>
+                        <p class="text-brand-gray leading-relaxed">All content on this website, including images, text, and logos, is the property of TriAD and protected by copyright laws.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">7. Limitation of Liability</h2>
+                        <p class="text-brand-gray leading-relaxed">TriAD is not liable for any indirect, incidental, or consequential damages arising from the use of our products or website.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">8. Changes to Terms</h2>
+                        <p class="text-brand-gray leading-relaxed">We reserve the right to update these terms at any time. Continued use of our services constitutes acceptance of the updated terms.</p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-3">9. Contact Us</h2>
+                        <p class="text-brand-gray leading-relaxed">For questions about these Terms, please contact us at <a href="mailto:TriAD@shop.vn" class="text-brand-accent hover:underline">TriAD@shop.vn</a>.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 p-6 bg-gray-50 rounded-2xl">
+                    <p class="text-sm text-brand-gray">By using our website, you agree to these Terms of Service.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div id="footer-container"></div>
+    
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
+    <div id="cart-drawer-container"></div>
+    <div id="product-modal-container"></div>
+    <div id="checkout-modal-container"></div>
+    <div id="success-modal-container"></div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    
+    <script type="module" src="./src/index.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews | TriAD</title>
+    
+    <meta name="description" content="What our customers say about TriAD">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Jost', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            light: '#f9f6f0',
+                            accent: '#4a90e2',
+                            dark: '#1a1a1a',
+                            gray: '#737373',
+                            border: '#e5e5e5',
+                            orange: '#ff6b35',
+                            success: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body class="antialiased text-brand-dark">
+    
+    <div id="header-container"></div>
+    
+    <div id="page-content">
+        <div id="reviews-container"></div>
+    </div>
+    
+    <div id="footer-container"></div>
+    
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
+    <div id="cart-drawer-container"></div>
+    <div id="product-modal-container"></div>
+    <div id="checkout-modal-container"></div>
+    <div id="success-modal-container"></div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    
+    <script type="module" src="./src/index.js"></script>
+    
+</body>
+</html>
