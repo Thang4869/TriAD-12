@@ -3,19 +3,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20 transition-all duration-300">
             <!-- Logo -->
-            <a href="/" class="flex-shrink-0 flex items-center">
+            <a href="./" class="flex-shrink-0 flex items-center">
                 <span class="font-bold text-2xl tracking-widest uppercase transition-all duration-300">TriAD</span>
             </a>
             
             <!-- Desktop Menu -->
             <nav class="hidden md:flex space-x-6 lg:space-x-10">
-                <a href="/" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
-                <a href="/about.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
-                <a href="/products.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
-                <a href="/blog.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">BLOG</a>
-                <a href="/reviews.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">REVIEWS</a>
-                <a href="/location.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">LOCATION</a>
-                <a href="/contact.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
+                <a href="./" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">HOME</a>
+                <a href="./about.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ABOUT US</a>
+                <a href="./products.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">ALL PRODUCTS</a>
+                <a href="./blog.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">BLOG</a>
+                <a href="./reviews.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">REVIEWS</a>
+                <a href="./location.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">LOCATION</a>
+                <a href="./contact.html" class="text-sm font-medium hover:text-brand-accent transition-colors relative group">CONTACT</a>
             </nav>
             
             <!-- Icons -->
@@ -55,13 +55,13 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
         <div class="px-4 py-4 space-y-3">
-            <a href="/" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
-            <a href="/about.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
-            <a href="/products.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
-            <a href="/blog.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">BLOG</a>
-            <a href="/reviews.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">REVIEWS</a>
-            <a href="/location.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">LOCATION</a>
-            <a href="/contact.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
+            <a href="./" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">HOME</a>
+            <a href="./about.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ABOUT US</a>
+            <a href="./products.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">ALL PRODUCTS</a>
+            <a href="./blog.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">BLOG</a>
+            <a href="./reviews.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">REVIEWS</a>
+            <a href="./location.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">LOCATION</a>
+            <a href="./contact.html" class="block text-sm font-medium hover:text-brand-accent transition-colors py-2">CONTACT</a>
         </div>
     </div>
 </header>
@@ -83,7 +83,6 @@
 <!-- Overlay cho notification -->
 <div id="notification-overlay" class="fixed inset-0 z-40 hidden"></div>
 
-<!-- Chỉ cần script nhỏ để active menu -->
 <script>
     // Xác định trang hiện tại để active menu
     document.addEventListener('DOMContentLoaded', function() {
@@ -91,9 +90,12 @@
         const links = document.querySelectorAll('nav a, #mobile-menu a');
         links.forEach(link => {
             const href = link.getAttribute('href');
-            if (href === currentPath || (currentPath === '/' && href === '/')) {
+            // So sánh path hiện tại với href
+            const currentPage = currentPath.split('/').pop() || 'index.html';
+            const linkPage = href.replace('./', '');
+            if (linkPage === currentPage || (currentPage === 'index.html' && linkPage === './')) {
                 link.classList.add('active');
-            } else if (href !== '/' && currentPath.includes(href.replace('.html', ''))) {
+            } else if (currentPage === '' && linkPage === './') {
                 link.classList.add('active');
             }
         });
