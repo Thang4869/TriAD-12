@@ -24,7 +24,7 @@ export class ProductsService {
         return {
             keyword: '',
             minPrice: 0,
-            maxPrice: 499000,
+            maxPrice: 350000,
             sort: 'default'
         };
     }

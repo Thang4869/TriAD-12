@@ -155,7 +155,7 @@ export class ProductsRenderer {
         return {
             keyword: this.searchInput?.value || '',
             sort: this.sortSelect?.value || 'default',
-            maxPrice: Number(this.priceSlider?.value) || 499000
+            maxPrice: Number(this.priceSlider?.value) || 350000
         };
     }
 }

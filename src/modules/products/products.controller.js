@@ -222,8 +222,8 @@ export class ProductsController {
             this.renderer.sortSelect.value = 'default';
         }
         if (this.renderer.priceSlider) {
-            this.renderer.priceSlider.value = 499000;
-            this.renderer.updatePriceDisplay(499000);
+            this.renderer.priceSlider.value = 350000;
+            this.renderer.updatePriceDisplay(350000);
         }
         
         // Clear suggestions
