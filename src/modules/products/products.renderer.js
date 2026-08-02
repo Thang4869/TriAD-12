@@ -7,6 +7,25 @@ import { formatPrice } from '../../shared/utils/helpers.utils.js';
 
 export class ProductsRenderer {
     constructor() {
+        this.grid = null;
+        this.countElement = null;
+        this.loadMoreContainer = null;
+        this.searchInput = null;
+        this.sortSelect = null;
+        this.priceSlider = null;
+        this.priceValue = null;
+        this.resetButton = null;
+        this._retryCount = 0;
+        this._maxRetries = 10;
+        
+        // Tìm DOM elements với retry
+        this.initElements();
+    }
+    
+    /**
+     * Initialize DOM elements với retry
+     */
+    initElements() {
         this.grid = document.getElementById('product-grid');
         this.countElement = document.getElementById('product-count');
         this.loadMoreContainer = document.getElementById('load-more-container');
@@ -15,15 +34,31 @@ export class ProductsRenderer {
         this.priceSlider = document.getElementById('price-slider');
         this.priceValue = document.getElementById('price-value');
         this.resetButton = document.getElementById('reset-filter');
+        
+        // Nếu chưa tìm thấy grid, thử lại sau 100ms
+        if (!this.grid && this._retryCount < this._maxRetries) {
+            this._retryCount++;
+            setTimeout(() => this.initElements(), 100);
+        }
+        
+        if (this.grid) {
+            console.log('Product grid found!');
+        } else {
+            console.log('Product grid not found after retries');
+        }
     }
     
     /**
      * Render products
      */
     render(products, totalCount = null) {
+        // Đảm bảo grid đã được tìm thấy
         if (!this.grid) {
-            console.error('Product grid not found!');
-            return;
+            this.initElements();
+            if (!this.grid) {
+                console.error('Product grid not found!');
+                return;
+            }
         }
         
         if (products.length === 0) {
@@ -51,7 +86,12 @@ export class ProductsRenderer {
      * Append more products (for load more)
      */
     append(products) {
-        if (!this.grid || products.length === 0) return;
+        if (!this.grid) {
+            this.initElements();
+            if (!this.grid) return;
+        }
+        
+        if (products.length === 0) return;
         
         products.forEach(product => {
             const card = this.createProductCard(product);
@@ -103,6 +143,8 @@ export class ProductsRenderer {
      * Render empty state
      */
     renderEmpty() {
+        if (!this.grid) return;
+        
         this.grid.innerHTML = `
             <div class="col-span-full text-center py-20">
                 <i class="ph ph-magnifying-glass text-6xl text-gray-300"></i>

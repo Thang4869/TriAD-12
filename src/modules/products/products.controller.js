@@ -15,7 +15,15 @@ export class ProductsController {
         this.isLoading = false;
         
         this.setupEventListeners();
-        this.service.load();
+
+        // Đợi DOM load xong rồi mới load products
+        if (document.readyState === 'complete') {
+            this.service.load();
+        } else {
+            window.addEventListener('load', () => {
+                this.service.load();
+            });
+        }
     }
     
     /**
