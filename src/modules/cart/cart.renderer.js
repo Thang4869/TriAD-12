@@ -50,8 +50,8 @@ export class CartRenderer {
         div.innerHTML = `
             <div class="w-20 h-24 bg-gray-50 rounded flex items-center justify-center overflow-hidden">
                 <img src="${item.image}" 
-                     class="w-full h-full object-contain ${item.filter || ''}" 
-                     alt="${item.name}">
+                    class="w-full h-full object-contain ${item.filter || ''}" 
+                    alt="${item.name}">
             </div>
             <div class="flex-1">
                 <div class="flex justify-between">
@@ -59,23 +59,26 @@ export class CartRenderer {
                         <h3 class="text-sm font-medium">${item.name}</h3>
                         <p class="text-gray-500">${formatPrice(item.price)}</p>
                     </div>
-                    <button class="text-gray-400 hover:text-red-500 transition-colors remove-btn">
+                    <button class="text-gray-400 hover:text-red-500 transition-colors remove-btn"
+                            data-action="remove" 
+                            data-id="${item.id}">
                         <i class="ph ph-trash text-lg"></i>
                     </button>
                 </div>
                 <div class="flex justify-between mt-4 items-center">
                     <div class="flex items-center border rounded">
-                        <button class="px-3 py-1 hover:bg-gray-100 transition-colors decrease-btn">-</button>
+                        <button class="px-3 py-1 hover:bg-gray-100 transition-colors decrease-btn"
+                                data-action="decrease" 
+                                data-id="${item.id}">-</button>
                         <span class="px-4 min-w-[32px] text-center">${item.quantity}</span>
-                        <button class="px-3 py-1 hover:bg-gray-100 transition-colors increase-btn">+</button>
+                        <button class="px-3 py-1 hover:bg-gray-100 transition-colors increase-btn"
+                                data-action="increase" 
+                                data-id="${item.id}">+</button>
                     </div>
                     <strong>${formatPrice(item.subtotal)}</strong>
                 </div>
             </div>
         `;
-        
-        // Store item data on element
-        div._item = item;
         
         return div;
     }

@@ -3,8 +3,9 @@
  * 
  * Design Pattern: Observer Pattern
  * Purpose: Decouple modules by using events
- * Benefits: Low coupling, high cohesion, easy to extend
  */
+import { EVENTS } from '../constants/events.constants.js';
+
 export class EventBus {
     constructor() {
         this.events = new Map();
@@ -12,20 +13,10 @@ export class EventBus {
         this.debug = false;
     }
     
-    /**
-     * Enable/disable debug logging
-     */
     setDebug(enabled) {
         this.debug = enabled;
     }
     
-    /**
-     * Subscribe to an event
-     * @param {string} event - Event name
-     * @param {Function} callback - Handler function
-     * @param {Object} context - Context for the callback
-     * @returns {Function} Unsubscribe function
-     */
     on(event, callback, context = null) {
         if (typeof callback !== 'function') {
             throw new Error('Callback must be a function');
@@ -42,13 +33,9 @@ export class EventBus {
             console.log(`[EventBus] Subscribed to: ${event}`);
         }
         
-        // Return unsubscribe function
         return () => this.off(event, callback, context);
     }
     
-    /**
-     * Subscribe to an event once
-     */
     once(event, callback, context = null) {
         const wrapper = (data) => {
             callback.call(context, data);
@@ -63,9 +50,6 @@ export class EventBus {
         return this.on(event, wrapper);
     }
     
-    /**
-     * Unsubscribe from an event
-     */
     off(event, callback, context = null) {
         if (!this.events.has(event)) {
             return;
@@ -90,17 +74,11 @@ export class EventBus {
         }
     }
     
-    /**
-     * Emit an event with data
-     * @param {string} event - Event name
-     * @param {*} data - Data to pass to handlers
-     */
     emit(event, data = null) {
         if (this.debug) {
             console.log(`[EventBus] Emitting: ${event}`, data);
         }
         
-        // Regular subscribers
         if (this.events.has(event)) {
             const entries = [...this.events.get(event)];
             entries.forEach(entry => {
@@ -112,15 +90,11 @@ export class EventBus {
             });
         }
         
-        // Once subscribers
         if (this.onceEvents.has(event)) {
             this.onceEvents.delete(event);
         }
     }
     
-    /**
-     * Get all subscribers for an event
-     */
     getSubscribers(event) {
         if (!this.events.has(event)) {
             return [];
@@ -128,9 +102,6 @@ export class EventBus {
         return this.events.get(event).map(entry => entry.callback);
     }
     
-    /**
-     * Clear all subscribers
-     */
     clear() {
         this.events.clear();
         this.onceEvents.clear();
@@ -144,37 +115,5 @@ export class EventBus {
 // Export singleton
 export const eventBus = new EventBus();
 
-// Event constants
-export const EVENTS = {
-    // App lifecycle
-    APP_READY: 'app:ready',
-    APP_ERROR: 'app:error',
-    
-    // Cart events
-    CART_UPDATED: 'cart:updated',
-    CART_ITEM_ADDED: 'cart:item:added',
-    CART_ITEM_REMOVED: 'cart:item:removed',
-    CART_CLEARED: 'cart:cleared',
-    
-    // Product events
-    PRODUCTS_LOADED: 'products:loaded',
-    PRODUCTS_FILTERED: 'products:filtered',
-    PRODUCT_SELECTED: 'product:selected',
-    
-    // Checkout events
-    CHECKOUT_STARTED: 'checkout:started',
-    CHECKOUT_COMPLETED: 'checkout:completed',
-    CHECKOUT_FAILED: 'checkout:failed',
-    
-    // UI events
-    MODAL_OPENED: 'modal:opened',
-    MODAL_CLOSED: 'modal:closed',
-    DRAWER_OPENED: 'drawer:opened',
-    DRAWER_CLOSED: 'drawer:closed',
-    TOAST_SHOWN: 'toast:shown',
-    TOAST_DISMISSED: 'toast:dismissed',
-    
-    // Navigation events
-    NAVIGATION_CHANGED: 'navigation:changed',
-    SECTION_VISIBLE: 'section:visible',
-};
+// Re-export EVENTS for backward compatibility
+export { EVENTS };

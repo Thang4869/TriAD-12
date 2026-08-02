@@ -3,32 +3,33 @@
  * 
  * Single Responsibility: Only handles product data fetching
  */
+import { BaseRepository } from '../../shared/repositories/base.repository.js';
 import { storage } from '../../shared/services/storage.service.js';
 import { Product } from '../../shared/models/product.model.js';
 
 const PRODUCTS_KEY = 'products';
 
-export class ProductsRepository {
+export class ProductsRepository extends BaseRepository {
     constructor() {
-        this.storage = storage;
+        super(storage, PRODUCTS_KEY);
+        this.model = Product;
     }
     
     /**
      * Get all products from config or storage
      */
     findAll() {
-        // Try to get from storage first (for future dynamic updates)
-        const stored = this.storage.get(PRODUCTS_KEY);
+        // Try storage first
+        const stored = this.storage.get(this.key);
         if (stored && stored.length > 0) {
-            return stored.map(p => Product.fromJSON(p));
+            return stored.map(p => this.model.fromJSON(p));
         }
         
-        // Fallback to window.products (from config)
+        // Fallback to config
         const configProducts = window.products || [];
         if (configProducts.length > 0) {
-            // Cache to storage for future
-            this.storage.set(PRODUCTS_KEY, configProducts);
-            return configProducts.map(p => Product.fromJSON(p));
+            this.storage.set(this.key, configProducts);
+            return configProducts.map(p => this.model.fromJSON(p));
         }
         
         return [];

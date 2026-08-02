@@ -11,7 +11,8 @@ import { toast } from '../modules/toast/toast.service.js';
 import { flyToCart } from '../modules/fly-to-cart/index.js';
 import { initHeaderScroll } from './header.service.js';
 import { initScrollReveal } from './scroll-reveal.service.js';
-import { eventBus, EVENTS } from '../shared/services/event-bus.service.js';
+import { eventBus } from '../shared/services/event-bus.service.js';
+import { EVENTS } from '../shared/constants/events.constants.js';
 import { debounce } from '../shared/utils/dom.utils.js';
 
 export class App {

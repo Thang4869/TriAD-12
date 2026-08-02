@@ -3,14 +3,16 @@
  * 
  * Single Responsibility: Only handles data persistence
  */
+import { BaseRepository } from '../../shared/repositories/base.repository.js';
 import { storage } from '../../shared/services/storage.service.js';
 import { CartItem } from '../../shared/models/cart-item.model.js';
 
 const CART_KEY = 'cart';
 
-export class CartRepository {
+export class CartRepository extends BaseRepository {
     constructor() {
-        this.storage = storage;
+        super(storage, CART_KEY);
+        this.model = CartItem;
     }
     
     /**
@@ -18,7 +20,7 @@ export class CartRepository {
      */
     findAll() {
         const data = this.storage.get(CART_KEY, []);
-        return data.map(item => CartItem.fromJSON(item));
+        return data.map(item => this.model.fromJSON(item));
     }
     
     /**
