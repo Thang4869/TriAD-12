@@ -8,7 +8,7 @@ export function initHeaderScroll() {
         return;
     }
     
-    console.log('📌 Initializing Header...');
+    console.log('Initializing Header...');
     
     let ticking = false;
     
@@ -68,5 +68,5 @@ export function initHeaderScroll() {
     // Initial check
     setTimeout(() => handleScroll(), 100);
     
-    console.log('✅ Header initialized!');
+    console.log('Header initialized!');
 }

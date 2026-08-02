@@ -13,8 +13,6 @@ export class Product {
         this._image = image;
         this._filter = filter;
         
-        // ❌ KHÔNG FREEZE - để CartItem có thể kế thừa
-        // Object.freeze(this);  // <-- COMMENT DÒNG NÀY
     }
     
     // Getters

@@ -47,4 +47,4 @@ export const products = [
 // Expose for compatibility
 window.products = products;
 
-console.log(`📦 Loaded ${products.length} products`);
+console.log(`Loaded ${products.length} products`);

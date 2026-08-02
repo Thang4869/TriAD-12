@@ -2,7 +2,7 @@
  * Scroll Reveal Service - Reveal elements on scroll
  */
 export function initScrollReveal() {
-    console.log('📌 Initializing Scroll Reveal...');
+    console.log('Initializing Scroll Reveal...');
     
     // Hero
     const hero = document.querySelector('#home');
@@ -81,5 +81,5 @@ export function initScrollReveal() {
         setTimeout(observeProductCards, 200);
     }
     
-    console.log('✅ Scroll Reveal initialized!');
+    console.log('Scroll Reveal initialized!');
 }

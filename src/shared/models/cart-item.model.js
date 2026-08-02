@@ -14,8 +14,6 @@ export class CartItem extends Product {
         // Additional properties
         this._quantity = Math.max(1, quantity);
         
-        // ❌ KHÔNG FREEZE ở đây - để Order có thể truy cập
-        // Object.freeze(this);  // <-- COMMENT DÒNG NÀY
     }
     
     get quantity() { return this._quantity; }

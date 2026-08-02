@@ -3,11 +3,11 @@
  */
 export async function loadComponent(elementId, filePath, callback = null) {
     try {
-        // ✅ Sửa: Xác định base path từ window.location
+        // Xác định base path từ window.location
         const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
         const url = basePath + filePath.replace(/^\.\//, '');
         
-        console.log(`📦 Loading: ${url}`);
+        console.log(`Loading: ${url}`);
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -19,15 +19,15 @@ export async function loadComponent(elementId, filePath, callback = null) {
         
         if (element) {
             element.innerHTML = html;
-            console.log(`✅ Loaded: ${filePath}`);
+            console.log(`Loaded: ${filePath}`);
             if (callback) callback();
             return html;
         } else {
-            console.warn(`⚠️ Element #${elementId} not found`);
+            console.warn(`Element #${elementId} not found`);
             return null;
         }
     } catch (error) {
-        console.error(`❌ Error loading ${filePath}:`, error);
+        console.error(`Error loading ${filePath}:`, error);
         return null;
     }
 }
@@ -58,10 +58,10 @@ export function injectComponent(selector, filePath, position = 'afterbegin') {
             const target = document.querySelector(selector);
             if (target) {
                 target.insertAdjacentHTML(position, html);
-                console.log(`✅ Injected: ${filePath}`);
+                console.log(`Injected: ${filePath}`);
             } else {
-                console.warn(`⚠️ Selector not found: ${selector}`);
+                console.warn(`Selector not found: ${selector}`);
             }
         })
-        .catch(err => console.error('❌ Error injecting component:', err));
+        .catch(err => console.error('Error injecting component:', err));
 }
