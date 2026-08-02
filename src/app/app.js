@@ -14,6 +14,8 @@ import { initScrollReveal } from './scroll-reveal.service.js';
 import { eventBus } from '../shared/services/event-bus.service.js';
 import { EVENTS } from '../shared/constants/events.constants.js';
 import { debounce } from '../shared/utils/dom.utils.js';
+import { BlogController } from '../modules/blog/index.js';
+import { ReviewsController } from '../modules/reviews/index.js';
 
 export class App {
     constructor() {
@@ -58,10 +60,10 @@ export class App {
                 toast.info('Welcome!', 'Start exploring our premium thermal lunch boxes.');
             }, 1000);
             
-            console.log('✅ Application ready!');
+            console.log('Application ready!');
             
         } catch (error) {
-            console.error('❌ Failed to initialize app:', error);
+            console.error('Failed to initialize app:', error);
             toast.error('Error', 'Failed to initialize application. Please refresh.');
         }
     }
@@ -74,6 +76,8 @@ export class App {
         this.controllers.products = new ProductsController();
         this.controllers.modal = new ModalController();
         this.controllers.checkout = new CheckoutController();
+        this.controllers.blog = new BlogController();
+        this.controllers.reviews = new ReviewsController();
     }
     
     /**
