@@ -1,0 +1,58 @@
+/**
+ * Main CSS - Import all partials
+ */
+
+/* Base */
+@import './base/variables.css';
+@import './base/reset.css';
+
+/* Components - từ src/styles/components/ */
+@import './components/header.css';
+@import './components/hero.css';
+@import './components/cart.css';
+@import './components/accordion.css';
+
+/* Components - đã di dời từ css/components/ */
+@import './components/toast.css';
+@import './components/checkout.css';
+@import './components/product-card.css';
+
+/* Utilities */
+@import './utilities/slider.css';
+@import './utilities/shimmer.css';
+
+/* Animations - đã di dời từ css/animations/ */
+@import './animations/fly-to-cart.css';
+
+/* Responsive */
+@media (max-width: 768px) {
+    :root {
+        --header-height: 64px;
+    }
+    
+    html {
+        scroll-padding-top: var(--header-height);
+    }
+    
+    section {
+        scroll-margin-top: var(--header-height);
+    }
+    
+    #main-header .h-20 {
+        height: var(--header-height) !important;
+    }
+    
+    .header-shrink .h-20 {
+        height: 56px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .header-shrink .w-72 {
+        width: 140px !important;
+    }
+    
+    .header-shrink .space-x-10 {
+        gap: 1rem !important;
+    }
+}

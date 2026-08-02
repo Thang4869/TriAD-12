@@ -1,0 +1,6 @@
+/**
+ * Hero Component
+ */
+.hero-gradient {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f0f4f8 100%);
+}

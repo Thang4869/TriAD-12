@@ -1,0 +1,17 @@
+/**
+ * Accordion Component
+ */
+.accordion-content {
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.accordion-active .accordion-content {
+    max-height: 200px;
+    padding-bottom: 1rem;
+}
+
+.accordion-active .ph-plus {
+    transform: rotate(45deg);
+}
