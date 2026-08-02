@@ -16,6 +16,8 @@ import { EVENTS } from '../shared/constants/events.constants.js';
 import { debounce } from '../shared/utils/dom.utils.js';
 import { BlogController } from '../modules/blog/index.js';
 import { ReviewsController } from '../modules/reviews/index.js';
+import { notificationService } from './notification.service.js';
+
 
 export class App {
     constructor() {
@@ -29,7 +31,7 @@ export class App {
     async init() {
         if (this.initialized) return;
         
-        console.log('🚀 Initializing TriAD Application...');
+        console.log('Initializing TriAD Application...');
         
         try {
             // Initialize controllers
@@ -49,6 +51,9 @@ export class App {
             
             // Start header and scroll reveal
             this.initUIComponents();
+
+            // Initialize notification service
+            this.initNotificationService();
             
             this.initialized = true;
             
@@ -260,5 +265,13 @@ export class App {
                 initScrollReveal();
             }
         }, 400);
+    }
+
+    /**
+     * Initialize Notification Service
+     */
+    initNotificationService() {
+        // notificationService đã tự khởi tạo khi import
+        console.log('Notification Service loaded');
     }
 }

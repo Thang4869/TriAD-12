@@ -1,3 +1,5 @@
+// src/modules/checkout/checkout.controller.js
+
 /**
  * Checkout Controller - Orchestrates checkout operations
  */
@@ -174,13 +176,33 @@ export class CheckoutController {
                 // Show success
                 this.showSuccess(order.id);
                 
+                // THÊM THÔNG BÁO THANH TOÁN THÀNH CÔNG
+                if (window.notifications) {
+                    const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
+                    window.notifications.add(
+                        'Order Placed!',
+                        `Order #${order.id} confirmed with ${totalItems} item(s). Thank you!`,
+                        'success'
+                    );
+                }
+                
+                // THÊM THÔNG BÁO QUA TOAST (đã có sẵn)
                 if (window.toast) {
                     window.toast.success('Order Placed!', `Order #${order.id} confirmed.`);
                 }
+                
             } catch (error) {
                 console.error('Checkout error:', error);
                 if (window.toast) {
                     window.toast.error('Error', 'Failed to process order. Please try again.');
+                }
+                // THÊM THÔNG BÁO LỖI
+                if (window.notifications) {
+                    window.notifications.add(
+                        'Order Failed',
+                        'There was an error processing your order. Please try again.',
+                        'warning'
+                    );
                 }
             }
         }, 1500);

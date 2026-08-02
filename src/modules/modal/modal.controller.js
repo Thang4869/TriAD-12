@@ -1,3 +1,5 @@
+// src/modules/modal/modal.controller.js
+
 /**
  * Modal Controller - Orchestrates modal operations
  */
@@ -151,6 +153,16 @@ export class ModalController {
             window.cartController.addToCart(product, quantity, img);
         }
         
+        // THÊM THÔNG BÁO TỪ MODAL
+        if (window.notifications) {
+            const qtyText = quantity > 1 ? ` (${quantity} items)` : '';
+            window.notifications.add(
+                'Added to Cart',
+                `${product.name}${qtyText} has been added to your cart.`,
+                'success'
+            );
+        }
+        
         this.close();
         
         // Open cart after animation
@@ -174,6 +186,16 @@ export class ModalController {
         if (window.cartController) {
             const img = this.image;
             window.cartController.addToCart(product, quantity, img);
+        }
+        
+        // 🔔 THÊM THÔNG BÁO CHO BUY NOW
+        if (window.notifications) {
+            const qtyText = quantity > 1 ? ` (${quantity} items)` : '';
+            window.notifications.add(
+                'Added to Cart',
+                `${product.name}${qtyText} has been added to your cart.`,
+                'success'
+            );
         }
         
         this.close();
