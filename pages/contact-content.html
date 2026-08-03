@@ -7,7 +7,6 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Address -->
             <div class="bg-gray-50 p-6 rounded-2xl text-center">
                 <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="ph ph-map-pin text-2xl text-brand-accent"></i>
@@ -15,7 +14,6 @@
                 <h4 class="font-semibold">Address</h4>
                 <p class="text-brand-gray text-sm">806 Le Quang Đao Street<br>Trung Chanh, Trung My Tay<br>Ho Chi Minh City, Vietnam</p>
             </div>
-            <!-- Phone -->
             <div class="bg-gray-50 p-6 rounded-2xl text-center">
                 <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="ph ph-phone text-2xl text-brand-accent"></i>
@@ -23,7 +21,6 @@
                 <h4 class="font-semibold">Phone</h4>
                 <p class="text-brand-gray text-sm">+84 924 039 939</p>
             </div>
-            <!-- Email -->
             <div class="bg-gray-50 p-6 rounded-2xl text-center">
                 <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="ph ph-envelope text-2xl text-brand-accent"></i>
@@ -33,126 +30,28 @@
             </div>
         </div>
         
-        <!-- Contact Form -->
+        <!-- Contact Form - KHÔNG CÓ ONSUBMIT, KHÔNG CÓ SCRIPT -->
         <div class="max-w-2xl mx-auto mt-12 bg-gray-50 p-8 rounded-2xl">
             <h3 class="text-xl font-bold text-center mb-6">Send Us a Message</h3>
-            <form id="contact-form" class="space-y-4" onsubmit="handleFormSubmit(event)">
+            
+            <form id="contact-form" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <input type="text" id="user_name" placeholder="Your Name" 
-                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black" required>
+                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
                     <input type="email" id="user_email" placeholder="Your Email" 
-                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black" required>
+                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
                 </div>
                 <input type="text" id="user_subject" placeholder="Subject" 
-                       class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black" required>
+                       class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
                 <textarea id="user_message" rows="5" placeholder="Your Message..." 
-                          class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none" required></textarea>
+                          class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"></textarea>
                 <button type="submit" id="send-btn"
                         class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium">
                     <i class="ph ph-paper-plane"></i> Send Message
                 </button>
             </form>
+            
             <div id="form-status" class="text-center mt-4 hidden"></div>
         </div>
     </div>
 </section>
-
-<script>
-/**
- * Handle form submit - Mở email client với dữ liệu từ form
- */
-function handleFormSubmit(event) {
-    event.preventDefault();
-    
-    // Lấy dữ liệu form
-    const name = document.getElementById('user_name').value.trim();
-    const email = document.getElementById('user_email').value.trim();
-    const subject = document.getElementById('user_subject').value.trim();
-    const message = document.getElementById('user_message').value.trim();
-    
-    // Validation
-    if (!name) {
-        showStatus('Please enter your name.', 'warning');
-        document.getElementById('user_name').focus();
-        return;
-    }
-    if (!email) {
-        showStatus('Please enter your email.', 'warning');
-        document.getElementById('user_email').focus();
-        return;
-    }
-    if (!isValidEmail(email)) {
-        showStatus('Please enter a valid email address.', 'warning');
-        document.getElementById('user_email').focus();
-        return;
-    }
-    if (!subject) {
-        showStatus('Please enter a subject.', 'warning');
-        document.getElementById('user_subject').focus();
-        return;
-    }
-    if (!message) {
-        showStatus('Please enter your message.', 'warning');
-        document.getElementById('user_message').focus();
-        return;
-    }
-    
-    // Tạo mailto link - GIỐNG NHƯ BẠN ĐÃ TEST THÀNH CÔNG
-    const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-    const mailtoLink = `mailto:TriAD@shop.vn?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    console.log('📧 Opening email client with:', mailtoLink);
-    
-    // Mở email client - GIỐNG NHƯ BẠN ĐÃ TEST THÀNH CÔNG
-    window.location.href = mailtoLink;
-    
-    // Hiển thị thông báo
-    showStatus('📧 Opening your email client...', 'success');
-    
-    // Reset form sau 1 giây
-    setTimeout(() => {
-        document.getElementById('contact-form').reset();
-    }, 1000);
-    
-    // Thêm thông báo qua notification system (nếu có)
-    if (window.notifications) {
-        setTimeout(() => {
-            window.notifications.add(
-                '📧 Email Client Opened',
-                'Please complete your message in your email client.',
-                'info'
-            );
-        }, 500);
-    }
-}
-
-/**
- * Validate email
- */
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-/**
- * Hiển thị status message
- */
-function showStatus(message, type = 'info') {
-    const statusDiv = document.getElementById('form-status');
-    if (!statusDiv) return;
-    
-    statusDiv.classList.remove('hidden');
-    statusDiv.className = `text-center mt-4 p-3 rounded-lg ${
-        type === 'success' ? 'text-green-600 bg-green-50' :
-        type === 'warning' ? 'text-yellow-600 bg-yellow-50' :
-        type === 'error' ? 'text-red-600 bg-red-50' :
-        'text-blue-600 bg-blue-50'
-    }`;
-    statusDiv.textContent = message;
-    
-    // Tự động ẩn sau 5 giây
-    clearTimeout(statusDiv._timeout);
-    statusDiv._timeout = setTimeout(() => {
-        statusDiv.classList.add('hidden');
-    }, 5000);
-}
-</script>
