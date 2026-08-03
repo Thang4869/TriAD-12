@@ -25,6 +25,8 @@ import './modules/cart/index.js';
 import './modules/products/index.js';
 import './modules/modal/index.js';
 import './modules/checkout/index.js';
+import './modules/contact/index.js';
+import './modules/notification/index.js';
 
 // App
 import { bootstrap } from './app/bootstrap.js';
