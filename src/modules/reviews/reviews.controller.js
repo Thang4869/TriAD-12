@@ -1,44 +1,24 @@
-/**
- * Reviews Controller - Handles reviews interactions
- * 
- * Now with localStorage persistence
- */
-const STORAGE_KEY = 'triad_reviews';
+// src/modules/reviews/reviews.controller.js
+
+import { ReviewsService } from './reviews.service.js';
+import { toast } from '../toast/toast.service.js';
 
 export class ReviewsController {
     constructor() {
-        console.log('⭐ Reviews Controller initialized');
+        this.service = new ReviewsService();
+        console.log('Reviews Controller initialized');
         this.setupEventListeners();
         this.setupStarRating();
-        this.loadReviews();
+        this.render();
     }
 
     /**
-     * Load và render reviews từ localStorage
+     * Render reviews
      */
-    loadReviews() {
-        const reviews = this.getReviews();
+    render() {
+        const reviews = this.service.getAll();
         this.renderReviews(reviews);
         this.updateStats(reviews);
-    }
-
-    /**
-     * Lấy reviews từ localStorage
-     */
-    getReviews() {
-        try {
-            const data = localStorage.getItem(STORAGE_KEY);
-            return data ? JSON.parse(data) : [];
-        } catch {
-            return [];
-        }
-    }
-
-    /**
-     * Lưu reviews vào localStorage
-     */
-    saveReviews(reviews) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
     }
 
     /**
@@ -59,26 +39,26 @@ export class ReviewsController {
         }
 
         // Lấy 3 review mới nhất
-        const sorted = [...reviews].reverse().slice(0, 3);
+        const latest = this.service.getLatest(3);
         
-        grid.innerHTML = sorted.map(review => `
+        grid.innerHTML = latest.map(review => `
             <div class="bg-gray-50 p-6 rounded-2xl hover:shadow-md transition-all">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-full ${this.getAvatarColor(review.name)} flex items-center justify-center text-white font-bold text-lg border-2 border-white shadow-sm flex-shrink-0">
-                        ${this.getInitials(review.name)}
+                    <div class="w-12 h-12 rounded-full ${this.service.getAvatarColor(review.name)} flex items-center justify-center text-white font-bold text-lg border-2 border-white shadow-sm flex-shrink-0">
+                        ${this.service.getInitials(review.name)}
                     </div>
                     <div>
-                        <h4 class="font-semibold">${this.escapeHtml(review.name)}</h4>
+                        <h4 class="font-semibold">${this.service.escapeHtml(review.name)}</h4>
                         <div class="flex items-center gap-1">
-                            ${this.renderStars(review.rating)}
+                            ${this.service.renderStars(review.rating)}
                         </div>
                     </div>
                 </div>
-                <p class="text-brand-gray text-sm leading-relaxed">"${this.escapeHtml(review.content)}"</p>
+                <p class="text-brand-gray text-sm leading-relaxed">"${this.service.escapeHtml(review.content)}"</p>
                 <div class="mt-3 text-xs text-brand-gray">
                     <span>Verified Purchase</span>
                     <span class="mx-2">•</span>
-                    <span>${this.formatDate(review.createdAt)}</span>
+                    <span>${this.service.formatDate(review.createdAt)}</span>
                 </div>
             </div>
         `).join('');
@@ -91,89 +71,15 @@ export class ReviewsController {
         const avgEl = document.getElementById('avg-rating');
         const totalEl = document.getElementById('total-reviews');
         
-        if (reviews.length === 0) {
-            if (avgEl) avgEl.textContent = '0/5';
-            if (totalEl) totalEl.textContent = '(0 reviews)';
-            return;
-        }
-
-        const total = reviews.length;
-        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-        const avg = (sum / total).toFixed(1);
+        const stats = this.service.getStats();
         
-        if (avgEl) avgEl.textContent = `${avg}/5`;
-        if (totalEl) totalEl.textContent = `(${total} reviews)`;
+        if (avgEl) avgEl.textContent = stats.averageDisplay;
+        if (totalEl) totalEl.textContent = `(${stats.total} reviews)`;
     }
 
     /**
-     * Render sao
+     * Setup sự kiện cho form
      */
-    renderStars(rating) {
-        let stars = '';
-        for (let i = 1; i <= 5; i++) {
-            stars += `<i class="ph-fill ph-star text-yellow-400 text-sm"></i>`;
-        }
-        return stars;
-    }
-
-    /**
-     * Lấy màu avatar
-     */
-    getAvatarColor(name) {
-        const colors = [
-            'bg-brand-accent',
-            'bg-brand-orange',
-            'bg-green-500',
-            'bg-purple-500',
-            'bg-pink-500',
-            'bg-blue-500'
-        ];
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return colors[Math.abs(hash) % colors.length];
-    }
-
-    /**
-     * Lấy chữ cái đầu
-     */
-    getInitials(name) {
-        return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    }
-
-    /**
-     * Escape HTML
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    /**
-     * Format date
-     */
-    formatDate(dateStr) {
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-        
-        if (diff === 0) return 'Today';
-        if (diff === 1) return 'Yesterday';
-        if (diff < 7) return `${diff} days ago`;
-        if (diff < 30) return `${Math.floor(diff / 7)} weeks ago`;
-        if (diff < 365) return `${Math.floor(diff / 30)} months ago`;
-        return `${Math.floor(diff / 365)} years ago`;
-    }
-
-    /**
-     * Tạo ID
-     */
-    generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-    }
-
     setupEventListeners() {
         const form = document.getElementById('review-form');
         if (form) {
@@ -184,6 +90,9 @@ export class ReviewsController {
         }
     }
 
+    /**
+     * Setup star rating
+     */
     setupStarRating() {
         const stars = document.querySelectorAll('.star-rating');
         const ratingDisplay = document.getElementById('selected-rating');
@@ -232,6 +141,9 @@ export class ReviewsController {
         };
     }
 
+    /**
+     * Xử lý submit form
+     */
     handleSubmit(e) {
         const form = e.target;
         const name = document.getElementById('review-name')?.value.trim();
@@ -253,20 +165,13 @@ export class ReviewsController {
             return;
         }
 
-        // Tạo review mới
-        const newReview = {
-            id: this.generateId(),
-            name: name,
+        // Thêm review mới
+        this.service.add({
+            name,
             email: email || '',
-            content: content,
-            rating: rating,
-            createdAt: new Date().toISOString()
-        };
-
-        // Lưu
-        const reviews = this.getReviews();
-        reviews.push(newReview);
-        this.saveReviews(reviews);
+            content,
+            rating
+        });
 
         // Reset form
         form.reset();
@@ -275,7 +180,7 @@ export class ReviewsController {
         }
 
         // Re-render
-        this.loadReviews();
+        this.render();
 
         // Thông báo
         this.showToast('Review submitted successfully! Thank you for your feedback.', 'success');
@@ -302,7 +207,7 @@ export class ReviewsController {
             return;
         }
 
-        // Fallback
+        // Fallback nếu toast không có sẵn
         const colors = {
             success: '#22c55e',
             warning: '#f59e0b',
@@ -310,8 +215,8 @@ export class ReviewsController {
             info: '#3b82f6'
         };
 
-        const toast = document.createElement('div');
-        toast.style.cssText = `
+        const toastEl = document.createElement('div');
+        toastEl.style.cssText = `
             position: fixed;
             bottom: 24px;
             right: 24px;
@@ -328,18 +233,18 @@ export class ReviewsController {
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             max-width: 420px;
         `;
-        toast.textContent = message;
-        document.body.appendChild(toast);
+        toastEl.textContent = message;
+        document.body.appendChild(toastEl);
 
         requestAnimationFrame(() => {
-            toast.style.transform = 'translateY(0)';
-            toast.style.opacity = '1';
+            toastEl.style.transform = 'translateY(0)';
+            toastEl.style.opacity = '1';
         });
 
         setTimeout(() => {
-            toast.style.transform = 'translateY(20px)';
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
+            toastEl.style.transform = 'translateY(20px)';
+            toastEl.style.opacity = '0';
+            setTimeout(() => toastEl.remove(), 300);
         }, 3500);
     }
 }

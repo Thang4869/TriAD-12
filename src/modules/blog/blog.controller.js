@@ -3,7 +3,7 @@
  */
 export class BlogController {
     constructor() {
-        console.log('📝 Blog Controller initialized');
+        console.log('Blog Controller initialized');
         this.setupEventListeners();
     }
 

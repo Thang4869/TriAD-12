@@ -16,13 +16,14 @@ import { EVENTS } from '../shared/constants/events.constants.js';
 import { debounce } from '../shared/utils/dom.utils.js';
 import { BlogController } from '../modules/blog/index.js';
 import { ReviewsController } from '../modules/reviews/index.js';
-import { notificationService } from './notification.service.js';
-
+import { notificationService } from '../modules/notification/index.js';
+import { ContactService } from '../modules/contact/index.js';
 
 export class App {
     constructor() {
         this.controllers = {};
         this.initialized = false;
+        this.contactService = null;
     }
     
     /**
@@ -54,6 +55,9 @@ export class App {
 
             // Initialize notification service
             this.initNotificationService();
+
+            // Initialize contact service
+            this.initContactService();
             
             this.initialized = true;
             
@@ -273,5 +277,11 @@ export class App {
     initNotificationService() {
         // notificationService đã tự khởi tạo khi import
         console.log('Notification Service loaded');
+    }
+
+    initContactService() {
+        // Khởi tạo ContactService (tự động setup form)
+        this.contactService = new ContactService();
+        console.log('Contact Service loaded');
     }
 }
