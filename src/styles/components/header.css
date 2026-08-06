@@ -2,8 +2,10 @@
  * Header Component
  */
 #main-header {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
@@ -35,12 +37,13 @@
     width: 200px !important;
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-    #main-header .h-20 {
-        height: 64px !important;
-    }
-    .header-shrink .h-20 {
-        height: 56px !important;
+body {
+    padding-top: 80px; /* Tương ứng với chiều cao header */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 64px; /* Chiều cao header trên mobile */
     }
 }
 

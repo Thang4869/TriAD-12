@@ -15,14 +15,12 @@ export function initHeaderScroll() {
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
         
-        // Shrink header
         if (currentScroll > 60) {
             header.classList.add('header-shrink');
         } else {
             header.classList.remove('header-shrink');
         }
         
-        // Update active menu
         updateActiveMenu(currentScroll);
         
         ticking = false;

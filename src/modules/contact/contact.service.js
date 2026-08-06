@@ -2,6 +2,8 @@
 
 export class ContactService {
     constructor() {
+        this.retryCount = 0;
+        this.maxRetries = 10;
         this.init();
     }
 
@@ -16,11 +18,23 @@ export class ContactService {
     setupForm() {
         const form = document.getElementById('contact-form');
         if (!form) {
-            console.log('Contact form not found, waiting...');
+            if (this.retryCount === 0) {
+                console.log('Contact form not found, waiting...');
+            }
+            
+            this.retryCount++;
+            
+            if (this.retryCount >= this.maxRetries) {
+                console.warn('Contact form not found after ' + this.maxRetries + ' retries. Aborting.');
+                return;
+            }
+            
             setTimeout(() => this.setupForm(), 500);
             return;
         }
 
+        this.retryCount = 0;
+        
         console.log('Contact form found, setting up...');
         
         // Xóa onsubmit cũ nếu có
@@ -70,24 +84,16 @@ export class ContactService {
             return;
         }
 
-        // ---- THAY ĐỔI CHÍNH: Tạo URL để mở Gmail trên Web ----
-        // Tạo nội dung email
         const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-        
-        // Tạo URL cho Gmail Web
-        // Bạn có thể thay đổi địa chỉ email nhận trong 'to' field
         const to = 'TriAD@shop.vn'; 
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         
         console.log('Opening Gmail Web with:', gmailUrl);
         
-        // Mở Gmail trên trình duyệt
-        window.open(gmailUrl, '_blank'); // Mở tab mới
-        // Hoặc nếu bạn muốn chuyển hướng trang hiện tại: window.location.href = gmailUrl;
+        window.open(gmailUrl, '_blank');
         
         this.showStatus('Opening Gmail... Please check your browser.', 'success');
         
-        // Reset form
         setTimeout(() => {
             const form = document.getElementById('contact-form');
             if (form) {
