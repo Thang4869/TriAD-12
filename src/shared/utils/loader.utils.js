@@ -3,20 +3,16 @@
  */
 export async function loadComponent(elementId, filePath, callback = null) {
     try {
-        // Xác định base path từ window.location
-        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const url = basePath + filePath.replace(/^\.\//, '');
-        
+        // Sử dụng baseURI để tạo URL tuyệt đối
+        const url = new URL(filePath, document.baseURI).href;
         console.log(`Loading: ${url}`);
         
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
         const html = await response.text();
         const element = document.getElementById(elementId);
-        
         if (element) {
             element.innerHTML = html;
             console.log(`Loaded: ${filePath}`);
