@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Location | TriAD</title>
-    
-    <meta name="description" content="Visit our store location">
+    <title>Blog | TriAD</title>
+            
+    <!-- SET BASE DYNAMICALLY -->
+    <script src="../src/shared/utils/base.js"></script>
+
+    <meta name="description" content="Latest stories and tips from TriAD">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,14 +37,14 @@
         }
     </script>
     
-    <link rel="stylesheet" href="./src/styles/main.css">
+    <link rel="stylesheet" href="../src/styles/main.css">
 </head>
 <body class="antialiased text-brand-dark">
     
     <div id="header-container"></div>
     
     <div id="page-content">
-        <div id="location-container"></div>
+        <div id="blog-container"></div>
     </div>
     
     <div id="footer-container"></div>
@@ -53,7 +56,7 @@
     <div id="success-modal-container"></div>
     <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
     
-    <script type="module" src="./src/index.js"></script>
+    <script type="module" src="../src/index.js"></script>
     
 </body>
 </html>
