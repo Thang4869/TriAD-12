@@ -3,7 +3,7 @@
 export class ContactService {
     constructor() {
         this.retryCount = 0;
-        this.maxRetries = 10;
+        this.maxRetries = 2;
         this.init();
     }
 

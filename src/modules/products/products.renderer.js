@@ -16,7 +16,7 @@ export class ProductsRenderer {
         this.priceValue = null;
         this.resetButton = null;
         this._retryCount = 0;
-        this._maxRetries = 10;
+        this._maxRetries = 2;
         
         // Tìm DOM elements với retry
         this.initElements();
@@ -56,7 +56,7 @@ export class ProductsRenderer {
         if (!this.grid) {
             this.initElements();
             if (!this.grid) {
-                console.error('Product grid not found!');
+                console.log('Product grid not found!');
                 return;
             }
         }
