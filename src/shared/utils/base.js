@@ -1,20 +1,23 @@
 (function setBase() {
     const base = document.createElement('base');
     const pathname = window.location.pathname;
+    const segments = pathname.split('/').filter(s => s.length > 0);
     
-    // Kiểm tra nếu đang ở trang con (pages/)
-    if (pathname.includes('/pages/')) {
-        base.href = '../';
+    let baseHref = './';
+    
+    if (segments.length === 0) {
+        // Root path, ví dụ: https://example.com/
+        baseHref = './';
+    } else if (segments[0] === 'pages') {
+        // Đang ở trang con (local), base là thư mục cha
+        baseHref = '../';
+    } else if (segments[0] === 'index.html' || segments[0] === '') {
+        baseHref = './';
     } else {
-        // Nếu đang ở root hoặc GitHub Pages subpath
-        const segments = pathname.split('/').filter(s => s.length > 0);
-        if (segments.length > 1) {
-            // GitHub Pages: /TriAD-12/ -> base href = /TriAD-12/
-            base.href = '/' + segments[0] + '/';
-        } else {
-            base.href = './';
-        }
+        // GitHub Pages: segments[0] là tên repository
+        baseHref = '/' + segments[0] + '/';
     }
     
+    base.href = baseHref;
     document.head.prepend(base);
 })();
