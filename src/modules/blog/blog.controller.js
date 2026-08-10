@@ -14,7 +14,7 @@ export class BlogController {
             if (card) {
                 e.preventDefault();
                 const id = card.dataset.blogId;
-                window.location.href = `./pages/blog-detail.html?id=${id}`;
+                window.location.href = `pages/blog-detail.html?id=${id}`;
             }
         });
     }
