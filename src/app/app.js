@@ -126,6 +126,28 @@ export class App {
         if (firstAccordion) {
             firstAccordion.classList.add('accordion-active');
         }
+        this.fixHeaderLinks();
+    }
+
+    fixHeaderLinks() {
+        const root = getRootPath();
+        const menuLinks = document.querySelectorAll('nav a, #mobile-menu a');
+        
+        menuLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            // Chỉ sửa các link bắt đầu bằng './pages/'
+            if (href && href.startsWith('./pages/')) {
+                // Giữ nguyên phần sau pages/
+                const path = href.replace('./pages/', '');
+                link.setAttribute('href', `${root}pages/${path}`);
+            }
+            // Sửa link HOME
+            if (href === './') {
+                link.setAttribute('href', root);
+            }
+        });
+        
+        console.log('[App] Header links fixed with root:', root);
     }
     
     /**
@@ -284,4 +306,19 @@ export class App {
         this.contactService = new ContactService();
         console.log('Contact Service loaded');
     }
+}
+
+function getRootPath() {
+    const pathname = window.location.pathname;
+    // Nếu đang ở trong thư mục pages/
+    if (pathname.includes('/pages/')) {
+        return '../';
+    }
+    // Nếu đang ở root hoặc subfolder (GitHub Pages)
+    const segments = pathname.split('/').filter(s => s.length > 0);
+    if (segments.length > 1 && !pathname.includes('pages')) {
+        // Trường hợp GitHub Pages: /TriAD-12/ -> root là /
+        return '/';
+    }
+    return './';
 }
