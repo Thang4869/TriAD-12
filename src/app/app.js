@@ -131,23 +131,38 @@ export class App {
 
     fixHeaderLinks() {
         const root = getRootPath();
-        const menuLinks = document.querySelectorAll('nav a, #mobile-menu a');
-        
-        menuLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            // Chỉ sửa các link bắt đầu bằng './pages/'
-            if (href && href.startsWith('./pages/')) {
-                // Giữ nguyên phần sau pages/
-                const path = href.replace('./pages/', '');
-                link.setAttribute('href', `${root}pages/${path}`);
-            }
-            // Sửa link HOME
+        // Chọn tất cả link trong header, mobile menu và footer
+        const allLinks = document.querySelectorAll('nav a, #mobile-menu a, footer a');
+        allLinks.forEach(link => {
+            let href = link.getAttribute('href');
+            if (!href) return;
+
+            // Xử lý link HOME
             if (href === './') {
                 link.setAttribute('href', root);
+                return;
             }
+
+            // Xử lý link bắt đầu bằng './pages/' hoặc 'pages/'
+            if (href.startsWith('./pages/')) {
+                const path = href.replace('./pages/', '');
+                link.setAttribute('href', `${root}pages/${path}`);
+                return;
+            }
+            if (href.startsWith('pages/')) {
+                link.setAttribute('href', `${root}${href}`);
+                return;
+            }
+
+            // Xử lý link bắt đầu bằng './' (không phải pages)
+            if (href.startsWith('./')) {
+                link.setAttribute('href', `${root}${href.substring(2)}`);
+                return;
+            }
+
+            // Các link khác (ví dụ: "#", "https://...") giữ nguyên
         });
-        
-        console.log('[App] Header links fixed with root:', root);
+        console.log('[App] All links fixed with root:', root);
     }
     
     /**
@@ -310,14 +325,11 @@ export class App {
 
 function getRootPath() {
     const pathname = window.location.pathname;
-    // Nếu đang ở trong thư mục pages/
     if (pathname.includes('/pages/')) {
         return '../';
     }
-    // Nếu đang ở root hoặc subfolder (GitHub Pages)
     const segments = pathname.split('/').filter(s => s.length > 0);
     if (segments.length > 1 && !pathname.includes('pages')) {
-        // Trường hợp GitHub Pages: /TriAD-12/ -> root là /
         return '/';
     }
     return './';
