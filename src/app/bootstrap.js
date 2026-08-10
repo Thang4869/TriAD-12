@@ -37,7 +37,6 @@ function getCurrentPage() {
  * Lấy danh sách components cần load cho từng trang
  */
 function getComponentsForPage(page) {
-    // Components chung cho tất cả trang
     const sharedComponents = [
         { elementId: 'header-container', filePath: './components/header.html' },
         { elementId: 'footer-container', filePath: './components/footer.html' },
@@ -47,52 +46,35 @@ function getComponentsForPage(page) {
         { elementId: 'success-modal-container', filePath: './pages/success-modal.html' }
     ];
 
-// Components đặc thù cho từng trang
     const pageComponents = {
-        // Trang chủ
         home: [
             { elementId: 'hero-container', filePath: './pages/hero-content.html' },
             { elementId: 'about-container', filePath: './pages/about-preview-content.html' },
             { elementId: 'features-container', filePath: './pages/features-content.html' }
         ],
-        
-        // Trang Giới thiệu
         about: [
             { elementId: 'about-content', filePath: './pages/about-content.html' }
         ],
-        
-        // Trang Sản phẩm
         products: [
             { elementId: 'products-container', filePath: './pages/products-content.html' }
         ],
-        
-        // Trang Blog
         blog: [
             { elementId: 'blog-container', filePath: './pages/blog-content.html' }
         ],
-        
-        // Trang Chi tiết Blog
         'blog-detail': [
             { elementId: 'blog-detail-container', filePath: './pages/blog-detail-content.html' }
         ],
-        
-        // Trang Đánh giá
         reviews: [
             { elementId: 'reviews-container', filePath: './pages/reviews-content.html' }
         ],
-        
-        // Trang Vị trí
         location: [
             { elementId: 'location-container', filePath: './pages/location-content.html' }
         ],
-        
-        // Trang Liên hệ
         contact: [
             { elementId: 'contact-content', filePath: './pages/contact-content.html' }
         ]
     };
 
-    // Kết hợp components chung + components đặc thù
     const pageSpecific = pageComponents[page] || pageComponents.home;
     return [...sharedComponents, ...pageSpecific];
 }

@@ -1,9 +1,5 @@
-/**
- * Loader Utilities - Load HTML components
- */
 export async function loadComponent(elementId, filePath, callback = null) {
     try {
-        // Sử dụng baseURI để tạo URL tuyệt đối
         const url = new URL(filePath, document.baseURI).href;
         console.log(`Loading: ${url}`);
         
