@@ -124,7 +124,11 @@ export async function bootstrap() {
                     if (app.fixHeaderLinks) {
                         app.fixHeaderLinks();
                     }
+                    if (app.fixContentLinks) {
+                        app.fixContentLinks();
+                    }
                 }, 500);
+                
             });
         });
         

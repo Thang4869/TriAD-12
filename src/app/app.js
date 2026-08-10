@@ -165,6 +165,27 @@ export class App {
         console.log('[App] All links fixed with root:', root);
     }
     
+    fixContentLinks() {
+        const root = getRootPath();
+        // Sửa các thẻ img trong nội dung
+        document.querySelectorAll('#page-content img').forEach(img => {
+            let src = img.getAttribute('src');
+            if (src && src.startsWith('images/')) {
+                img.src = `${root}${src}`;
+            }
+            if (src && src.startsWith('../images/')) {
+                img.src = `${root}${src.replace('../', '')}`;
+            }
+        });
+        // Sửa các link (a) trong nội dung (nếu cần)
+        document.querySelectorAll('#page-content a').forEach(link => {
+            let href = link.getAttribute('href');
+            if (href && href.startsWith('pages/')) {
+                link.href = `${root}${href}`;
+            }
+        });
+    }
+
     /**
      * Setup mobile menu
      */
