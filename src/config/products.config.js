@@ -1,6 +1,8 @@
 /**
  * Products Configuration
  */
+import { logger } from '../shared/services/logger.service.js';
+
 export const products = [
     {
         id: 1,
@@ -47,4 +49,4 @@ export const products = [
 // Expose for compatibility
 window.products = products;
 
-console.log(`Loaded ${products.length} products`);
+logger.debug(`Loaded ${products.length} products`);

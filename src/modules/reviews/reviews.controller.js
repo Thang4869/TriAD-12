@@ -2,11 +2,12 @@
 
 import { ReviewsService } from './reviews.service.js';
 import { toast } from '../toast/toast.service.js';
+import { logger } from '../../shared/services/logger.service.js';
 
 export class ReviewsController {
     constructor() {
         this.service = new ReviewsService();
-        console.log('Reviews Controller initialized');
+        logger.debug('Reviews Controller initialized');
         this.setupEventListeners();
         this.setupStarRating();
         this.render();

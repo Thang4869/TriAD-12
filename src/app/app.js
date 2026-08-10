@@ -18,6 +18,7 @@ import { BlogController } from '../modules/blog/index.js';
 import { ReviewsController } from '../modules/reviews/index.js';
 import { notificationService } from '../modules/notification/index.js';
 import { ContactService } from '../modules/contact/index.js';
+import { logger } from '../shared/services/logger.service.js';
 
 export class App {
     constructor() {
@@ -32,7 +33,7 @@ export class App {
     async init() {
         if (this.initialized) return;
         
-        console.log('Initializing TriAD Application...');
+        logger.info('Initializing TriAD Application...');
         
         try {
             // Initialize controllers
@@ -69,10 +70,10 @@ export class App {
                 toast.info('Welcome!', 'Start exploring our premium thermal lunch boxes.');
             }, 1000);
             
-            console.log('Application ready!');
+            logger.info('Application ready!');
             
         } catch (error) {
-            console.error('Failed to initialize app:', error);
+            logger.error('Failed to initialize app:', error);
             toast.error('Error', 'Failed to initialize application. Please refresh.');
         }
     }
@@ -162,7 +163,7 @@ export class App {
 
             // Các link khác (ví dụ: "#", "https://...") giữ nguyên
         });
-        console.log('[App] All links fixed with root:', root);
+        logger.debug('[App] All links fixed with root:', root);
     }
     
     fixContentLinks() {
@@ -322,13 +323,13 @@ export class App {
      */
     setupErrorHandling() {
         window.addEventListener('error', (e) => {
-            console.error('Uncaught error:', e.error || e.message);
+            logger.error('Uncaught error:', e.error || e.message);
             toast.error('Something went wrong', 'Please try again or refresh the page.');
             eventBus.emit(EVENTS.APP_ERROR, { error: e.error || e.message });
         });
         
         window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled rejection:', e.reason);
+            logger.error('Unhandled rejection:', e.reason);
             toast.error('Error', 'An unexpected error occurred.');
             eventBus.emit(EVENTS.APP_ERROR, { error: e.reason });
         });
@@ -358,13 +359,13 @@ export class App {
      */
     initNotificationService() {
         // notificationService đã tự khởi tạo khi import
-        console.log('Notification Service loaded');
+        logger.debug('Notification Service loaded');
     }
 
     initContactService() {
         // Khởi tạo ContactService (tự động setup form)
         this.contactService = new ContactService();
-        console.log('Contact Service loaded');
+        logger.debug('Contact Service loaded');
     }
 }
 

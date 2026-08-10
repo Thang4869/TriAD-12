@@ -4,6 +4,7 @@
  * Single Responsibility: Only handles fly animation
  */
 import { APP_CONFIG } from '../../config/settings.config.js';
+import { logger } from '../../shared/services/logger.service.js';
 
 const { FLY_DURATION } = APP_CONFIG;
 
@@ -11,7 +12,7 @@ export class FlyToCart {
     constructor() {
         this.isFlying = false;
         this.cartBadge = this.findCartBadge();
-        console.log('FlyToCart initialized');
+        logger.debug('FlyToCart initialized');
     }
     
     /**
@@ -31,13 +32,13 @@ export class FlyToCart {
      */
     fly(element, callback = null) {
         if (this.isFlying) {
-            console.log('Fly animation already in progress');
+            logger.debug('Fly animation already in progress');
             if (callback) callback();
             return;
         }
         
         if (!element) {
-            console.log('No element to fly');
+            logger.debug('No element to fly');
             if (callback) callback();
             return;
         }
@@ -45,7 +46,7 @@ export class FlyToCart {
         // Get image source
         const imageSrc = this.getImageSrc(element);
         if (!imageSrc) {
-            console.log('No image source found');
+            logger.debug('No image source found');
             if (callback) callback();
             return;
         }
@@ -53,7 +54,7 @@ export class FlyToCart {
         // Get target
         const targetRect = this.cartBadge?.getBoundingClientRect();
         if (!targetRect) {
-            console.log('Cart target not found');
+            logger.debug('Cart target not found');
             this.cartBadge = this.findCartBadge();
             const retryRect = this.cartBadge?.getBoundingClientRect();
             if (!retryRect) {

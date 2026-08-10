@@ -1,9 +1,11 @@
 /**
  * Blog Controller - Handles blog interactions
  */
+import { logger } from '../../shared/services/logger.service.js';
+
 export class BlogController {
     constructor() {
-        console.log('Blog Controller initialized');
+        logger.debug('Blog Controller initialized');
         this.setupEventListeners();
     }
 

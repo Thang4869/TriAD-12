@@ -1,14 +1,16 @@
 /**
  * Header Service - Header scroll and navigation
  */
+import { logger } from '../shared/services/logger.service.js';
+
 export function initHeaderScroll() {
     const header = document.getElementById('main-header');
     if (!header) {
-        console.warn('Header not found!');
+        logger.warn('Header not found!');
         return;
     }
     
-    console.log('Initializing Header...');
+    logger.debug('Initializing Header...');
     
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
@@ -36,5 +38,5 @@ export function initHeaderScroll() {
     // Initial check
     handleScroll();
     
-    console.log('Header initialized!');
+    logger.debug('Header initialized!');
 }

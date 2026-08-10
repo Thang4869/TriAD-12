@@ -1,5 +1,7 @@
 // src/app/contact.service.js
 
+import { logger } from '../../shared/services/logger.service.js';
+
 export class ContactService {
     constructor() {
         this.retryCount = 0;
@@ -19,13 +21,13 @@ export class ContactService {
         const form = document.getElementById('contact-form');
         if (!form) {
             if (this.retryCount === 0) {
-                console.log('Contact form not found, waiting...');
+                logger.debug('Contact form not found, waiting...');
             }
             
             this.retryCount++;
             
             if (this.retryCount >= this.maxRetries) {
-                console.warn('Contact form not found after ' + this.maxRetries + ' retries. Aborting.');
+                logger.warn('Contact form not found after ' + this.maxRetries + ' retries. Aborting.');
                 return;
             }
             
@@ -35,7 +37,7 @@ export class ContactService {
 
         this.retryCount = 0;
         
-        console.log('Contact form found, setting up...');
+        logger.debug('Contact form found, setting up...');
         
         // Xóa onsubmit cũ nếu có
         form.removeAttribute('onsubmit');
@@ -45,7 +47,7 @@ export class ContactService {
             this.handleSubmit(event);
         });
         
-        console.log('Contact form ready!');
+        logger.info('Contact form ready!');
     }
 
     handleSubmit(event) {
@@ -88,7 +90,7 @@ export class ContactService {
         const to = 'TriAD@shop.vn'; 
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         
-        console.log('Opening Gmail Web with:', gmailUrl);
+        logger.debug('Opening Gmail Web with:', gmailUrl);
         
         window.open(gmailUrl, '_blank');
         

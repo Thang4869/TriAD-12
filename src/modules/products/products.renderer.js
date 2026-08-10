@@ -3,6 +3,7 @@
  * 
  * Single Responsibility: Only renders product UI
  */
+import { logger } from '../../shared/services/logger.service.js';
 import { formatPrice } from '../../shared/utils/helpers.utils.js';
 
 export class ProductsRenderer {
@@ -42,9 +43,9 @@ export class ProductsRenderer {
         }
         
         if (this.grid) {
-            console.log('Product grid found!');
+            logger.debug('Product grid found!');
         } else {
-            console.log('Product grid not found after retries');
+            logger.debug('Product grid not found after retries');
         }
     }
     
@@ -56,7 +57,7 @@ export class ProductsRenderer {
         if (!this.grid) {
             this.initElements();
             if (!this.grid) {
-                console.log('Product grid not found!');
+                logger.debug('Product grid not found!');
                 return;
             }
         }

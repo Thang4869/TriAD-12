@@ -4,6 +4,7 @@
  * Responsible for loading HTML components and starting the app
  */
 import { loadComponents } from '../shared/utils/loader.utils.js';
+import { logger } from '../shared/services/logger.service.js';
 import { App } from './app.js';
 import { initHeaderNavigation } from './header-navigation.service.js';
 
@@ -92,16 +93,16 @@ function getRootPath() {
 }
 
 export async function bootstrap() {
-    console.log('Bootstrapping TriAD Application...');
+    logger.info('Bootstrapping TriAD Application...');
     
     try {
         // 1. Xác định trang hiện tại
         const currentPage = getCurrentPage();
-        console.log(`Current page: ${currentPage}`);
+        logger.debug(`Current page: ${currentPage}`);
         
         // 2. Lấy danh sách components cần load
         const components = getComponentsForPage(currentPage);
-        console.log(`Loading ${components.length} components...`);
+        logger.debug(`Loading ${components.length} components...`);
         
         // 3. Load tất cả components
         const results = await loadComponents(components);
@@ -109,9 +110,9 @@ export async function bootstrap() {
         // Kiểm tra kết quả load
         const failed = results.filter(r => !r.success);
         if (failed.length > 0) {
-            console.warn('Some components failed to load:', failed);
+            logger.warn('Some components failed to load:', failed);
         } else {
-            console.log('All components loaded successfully!');
+            logger.info('All components loaded successfully!');
         }
         
         // 4. Khởi tạo application (đợi DOM update)
@@ -135,9 +136,9 @@ export async function bootstrap() {
         // 5. Kích hoạt active menu
         initHeaderNavigation(currentPage);
         
-        console.log('Bootstrap complete!');
+        logger.info('Bootstrap complete!');
         
     } catch (error) {
-        console.error('Bootstrap failed:', error);
+        logger.error('Bootstrap failed:', error);
     }
 }

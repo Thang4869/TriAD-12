@@ -1,5 +1,7 @@
 // src/app/notification.service.js
 
+import { logger } from '../../shared/services/logger.service.js';
+
 /**
  * Notification Service - Quản lý thông báo
  */
@@ -46,12 +48,12 @@ class NotificationService {
 
         // Nếu chưa có button, thử lại sau 200ms
         if (!this.btn && !this.mobileBtn) {
-            console.log('Waiting for notification elements...');
+            logger.debug('Waiting for notification elements...');
             setTimeout(() => this.initElements(), 200);
             return;
         }
 
-        console.log('Initializing Notification Service...');
+        logger.debug('Initializing Notification Service...');
         
         // Load dữ liệu
         this.loadNotifications();
@@ -63,8 +65,8 @@ class NotificationService {
         this.exposeAPI();
         
         this.initialized = true;
-        console.log('Notification Service ready!');
-        console.log('Total:', this.notifications.length, 'Unread:', this.unreadCount);
+        logger.info('Notification Service ready!');
+        logger.debug('Total:', this.notifications.length, 'Unread:', this.unreadCount);
     }
 
     loadNotifications() {
@@ -95,7 +97,7 @@ class NotificationService {
             }
             this.updateBadge();
         } catch (e) {
-            console.warn('Load error:', e);
+            logger.warn('Load error:', e);
             this.notifications = [];
         }
     }
@@ -104,7 +106,7 @@ class NotificationService {
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.notifications));
         } catch (e) {
-            console.warn('Save error:', e);
+            logger.warn('Save error:', e);
         }
     }
 
