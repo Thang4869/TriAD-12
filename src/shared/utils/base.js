@@ -1,14 +1,10 @@
 (function setBase() {
     const base = document.createElement('base');
-    const { hostname, pathname } = window.location;
-
-    if (hostname.endsWith('github.io')) {
-        const segments = pathname.split('/').filter(Boolean);
-        base.href = segments.length > 0
-            ? `/${segments[0]}/`
-            : '/';
+    const pathname = window.location.pathname;
+    if (pathname.includes('/pages/')) {
+        base.href = '../';
     } else {
-        base.href = '/';
+        base.href = './';
     }
 
     document.head.prepend(base);
