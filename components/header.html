@@ -82,22 +82,3 @@
 
 <!-- Overlay cho notification -->
 <div id="notification-overlay" class="fixed inset-0 z-40 hidden"></div>
-
-<script>
-    // Xác định trang hiện tại để active menu
-    document.addEventListener('DOMContentLoaded', function() {
-        const currentPath = window.location.pathname;
-        const links = document.querySelectorAll('nav a, #mobile-menu a');
-        links.forEach(link => {
-            const href = link.getAttribute('href');
-            // So sánh path hiện tại với href
-            const currentPage = currentPath.split('/').pop() || 'index.html';
-            const linkPage = href.replace('./', '');
-            if (linkPage === currentPage || (currentPage === 'index.html' && linkPage === './')) {
-                link.classList.add('active');
-            } else if (currentPage === '' && linkPage === './') {
-                link.classList.add('active');
-            }
-        });
-    });
-</script>
