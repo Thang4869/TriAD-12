@@ -1,0 +1,39 @@
+name: Cleanup Stale Deployments
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invalidate and Delete Deployments via GitHub API
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = context.payload.pull_request.number;
+
+            // Lấy danh sách deployments gắn với PR hoặc ref tương ứng
+            const deployments = await github.rest.repos.listDeployments({
+              owner,
+              repo,
+              environment: `preview-${prNumber}`, // Điều chỉnh tên môi trường theo cấu hình thực tế của dự án
+            });
+
+            for (const deployment of deployments.data) {
+              // Tạo trạng thái inactive trước khi xóa hoặc đánh dấu kết thúc
+              await github.rest.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                state: 'inactive',
+              });
+
+              // Tiến hành xóa deployment (nếu API hỗ trợ hoặc chuyển trạng thái vô hiệu hóa)
+              // Lưu ý: GitHub API giới hạn việc xóa trực tiếp deployment hoàn toàn, 
+              // phương pháp chuẩn là chuyển trạng thái sang 'inactive' để ẩn khỏi giao diện quản lý.
+              console.log(`Deactivated deployment ID: ${deployment.id}`);
+            }
