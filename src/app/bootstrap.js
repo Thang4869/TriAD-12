@@ -5,34 +5,31 @@
  */
 import { loadComponents } from '../shared/utils/loader.utils.js';
 import { App } from './app.js';
+import { initHeaderNavigation } from './header-navigation.service.js';
 
 /**
  * Xác định trang hiện tại dựa vào URL
  */
 function getCurrentPage() {
-    const path = window.location.pathname;
-    
-    // Trang chủ
-    if (path === '/' || path === '/index.html' || path === '/TriAD-12/') {
+    const pathname = window.location.pathname;
+    const filename = pathname.split('/').pop();
+
+    if (!filename || filename === 'index.html') {
         return 'home';
     }
-    
-    // Lấy tên file không bao gồm .html
-    const page = path.split('/').pop().replace('.html', '');
-    
-    // Map tên file sang key
+
+    const page = filename.replace('.html', '');
+
     const pageMap = {
-        '': 'home',
-        'index': 'home',
-        'about': 'about',
-        'products': 'products',
-        'blog': 'blog',
+        about: 'about',
+        products: 'products',
+        blog: 'blog',
         'blog-detail': 'blog-detail',
-        'reviews': 'reviews',
-        'location': 'location',
-        'contact': 'contact'
+        reviews: 'reviews',
+        location: 'location',
+        contact: 'contact'
     };
-    
+
     return pageMap[page] || 'home';
 }
 
@@ -133,46 +130,11 @@ export async function bootstrap() {
         });
         
         // 5. Kích hoạt active menu
-        activateActiveMenu(currentPage);
+        initHeaderNavigation(currentPage);
         
         console.log('Bootstrap complete!');
         
     } catch (error) {
         console.error('Bootstrap failed:', error);
     }
-}
-
-/**
- * Kích hoạt active menu dựa trên trang hiện tại
- */
-function activateActiveMenu(currentPage) {
-    const menuLinks = document.querySelectorAll('nav a, #mobile-menu a');
-    
-    // Map page sang href tương ứng
-    const hrefMap = {
-        'home': '/',
-        'about': '/about.html',
-        'products': '/products.html',
-        'blog': '/blog.html',
-        'blog-detail': '/blog.html',
-        'reviews': '/reviews.html',
-        'location': '/location.html',
-        'contact': '/contact.html'
-    };
-    
-    const activeHref = hrefMap[currentPage] || '/';
-    
-    menuLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        // Xóa active cũ
-        link.classList.remove('active');
-        // Thêm active cho link khớp
-        if (href === activeHref) {
-            link.classList.add('active');
-        }
-        // Đặc biệt: blog-detail thì active blog
-        if (currentPage === 'blog-detail' && href === '/blog.html') {
-            link.classList.add('active');
-        }
-    });
 }
