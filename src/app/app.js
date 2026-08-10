@@ -167,22 +167,46 @@ export class App {
     
     fixContentLinks() {
         const root = getRootPath();
+        
         // Sửa các thẻ img trong nội dung
         document.querySelectorAll('#page-content img').forEach(img => {
             let src = img.getAttribute('src');
-            if (src && src.startsWith('images/')) {
-                img.src = `${root}${src}`;
-            }
-            if (src && src.startsWith('../images/')) {
-                img.src = `${root}${src.replace('../', '')}`;
+            if (!src) return;
+            // Nếu ảnh bắt đầu bằng 'images/' hoặc '../images/'
+            if (src.startsWith('images/')) {
+                img.src = root === './' ? `./${src}` : `../${src}`;
+            } else if (src.startsWith('../images/')) {
+                img.src = root === './' ? src.replace('../', './') : src;
             }
         });
-        // Sửa các link (a) trong nội dung (nếu cần)
+        
+        // Sửa các link (a) trong nội dung
         document.querySelectorAll('#page-content a').forEach(link => {
             let href = link.getAttribute('href');
-            if (href && href.startsWith('pages/')) {
-                link.href = `${root}${href}`;
+            if (!href) return;
+            // Bỏ qua các link bắt đầu bằng http, #, mailto, javascript, v.v.
+            if (href.match(/^(https?|#|mailto|javascript|tel)/i)) return;
+            
+            // Xử lý link bắt đầu bằng 'pages/'
+            if (href.startsWith('pages/')) {
+                if (root === './') {
+                    // Đang ở root: giữ nguyên (hoặc thêm './' cho chắc)
+                    link.href = href;
+                } else if (root === '../') {
+                    // Đang ở thư mục pages: bỏ 'pages/' để link cùng cấp
+                    link.href = href.replace('pages/', '');
+                }
             }
+            // Xử lý link bắt đầu bằng './pages/' (tương tự)
+            else if (href.startsWith('./pages/')) {
+                if (root === './') {
+                    link.href = href.replace('./', '');
+                } else if (root === '../') {
+                    link.href = href.replace('./pages/', '');
+                }
+            }
+            // Các link khác như './', '../' có thể xử lý tùy ý
+            // ...
         });
     }
 
