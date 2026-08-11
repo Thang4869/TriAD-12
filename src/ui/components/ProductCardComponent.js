@@ -1,9 +1,4 @@
-/**
- * Product Card Component
- * 
- * Reusable product card UI component
- */
-import { formatPrice } from '../../shared/utils/helpers.utils.js';
+import { formatPrice } from '../../shared/utils/helpers.js';
 
 export class ProductCardComponent {
     constructor(product, options = {}) {
@@ -14,12 +9,12 @@ export class ProductCardComponent {
             ...options
         };
     }
-    
+
     render() {
         const div = document.createElement('div');
         div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
         div.dataset.productId = this.product.id;
-        
+
         div.innerHTML = `
             <div class="cursor-pointer" data-action="open-modal" data-id="${this.product.id}">
                 <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
@@ -43,21 +38,20 @@ export class ProductCardComponent {
                 </div>
             </div>
         `;
-        
-        // Bind events
+
         div.querySelector('[data-action="add-to-cart"]')?.addEventListener('click', (e) => {
             e.stopPropagation();
             if (this.options.onAddToCart) {
                 this.options.onAddToCart(this.product, e);
             }
         });
-        
+
         div.querySelector('[data-action="open-modal"]')?.addEventListener('click', () => {
             if (this.options.onOpenModal) {
                 this.options.onOpenModal(this.product.id);
             }
         });
-        
+
         return div;
     }
 }

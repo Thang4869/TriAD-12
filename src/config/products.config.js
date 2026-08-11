@@ -1,7 +1,4 @@
-/**
- * Products Configuration
- */
-import { logger } from '../shared/services/logger.service.js';
+import { Logger } from '../core/services/Logger.js';
 
 export const products = [
     {
@@ -46,7 +43,6 @@ export const products = [
     }
 ];
 
-// Expose for compatibility
 window.products = products;
 
-logger.debug(`Loaded ${products.length} products`);
+Logger.debug(`Loaded ${products.length} products`);
