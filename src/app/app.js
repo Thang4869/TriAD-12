@@ -62,4 +62,4 @@ export class App {
     window.toast = toast;
     window.flyToCart = flyToCart;
   }
-}
+} a
