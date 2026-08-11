@@ -4,7 +4,6 @@ export class CartRenderer {
     constructor() {
         this.container = document.querySelector('.cart-scroll');
         this.totalElement = document.getElementById('cart-total');
-        this.badgeElement = document.getElementById('cart-badge');
         this.checkoutBtn = document.getElementById('checkout-btn');
     }
 
@@ -81,9 +80,10 @@ export class CartRenderer {
     }
 
     updateBadge(count) {
-        if (this.badgeElement) {
-            this.badgeElement.textContent = count;
-            this.badgeElement.style.display = count > 0 ? 'flex' : 'none';
+        const badge = document.getElementById('cart-badge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
         }
     }
 

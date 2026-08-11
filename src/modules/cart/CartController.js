@@ -38,6 +38,7 @@ export class CartController {
     }
 
     addToCart(product, quantity = 1, flyElement = null) {
+        console.log('Adding to cart:', product);
         const result = this.service.add(product, quantity);
 
         if (flyElement && window.flyToCart) {
