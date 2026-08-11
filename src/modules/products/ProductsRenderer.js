@@ -133,4 +133,36 @@ export class ProductsRenderer extends BaseRenderer {
             maxPrice: Number(this.priceSlider?.value) || 350000
         };
     }
+
+    renderSuggestions(keyword, products, onSuggestionClick) {
+        const container = document.getElementById('search-suggestion');
+        if (!container) return;
+
+        if (!keyword || keyword.length < 1 || products.length === 0) {
+            container.classList.add('hidden');
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = products.map(p => `
+            <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3" data-id="${p.id}">
+            <img src="${p.image}" alt="" class="w-10 h-10 object-contain rounded">
+            <div>
+                <div class="font-medium text-sm">${p.name}</div>
+                <div class="text-xs text-gray-500">${p.color} - ${p.formattedPrice}</div>
+            </div>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('[data-id]').forEach(el => {
+            el.addEventListener('click', () => {
+            const id = Number(el.dataset.id);
+            if (typeof onSuggestionClick === 'function') {
+                onSuggestionClick(id);
+            }
+            });
+        });
+
+        container.classList.remove('hidden');
+    }
 }

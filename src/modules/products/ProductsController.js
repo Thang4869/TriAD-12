@@ -44,8 +44,19 @@ export class ProductsController {
         }, 300);
 
         input.addEventListener('input', (e) => {
-            debouncedSearch(e.target.value);
-            this.renderSearchSuggestions(e.target.value);
+            const keyword = e.target.value.trim();
+            debouncedSearch(keyword);
+            const results = this.service.products
+                .filter(p => p.matchesKeyword(keyword))
+                .slice(0, 5);
+            this.renderer.renderSuggestions(keyword, results, (id) => {
+                const product = this.service.getProductById(id);
+                if (product) {
+                    this.service.updateFilters({ keyword: product.name });
+                    if (this.renderer.searchInput) this.renderer.searchInput.value = product.name;
+                    document.getElementById('search-suggestion')?.classList.add('hidden');
+                }
+            });
         });
     }
 
@@ -120,52 +131,6 @@ export class ProductsController {
                 }
             }
         });
-    }
-
-    renderSearchSuggestions(keyword) {
-        const container = document.getElementById('search-suggestion');
-        if (!container) return;
-
-        if (!keyword || keyword.length < 1) {
-            container.classList.add('hidden');
-            container.innerHTML = '';
-            return;
-        }
-
-        const results = this.service.products
-            .filter(p => p.matchesKeyword(keyword))
-            .slice(0, 5);
-
-        if (results.length === 0) {
-            container.classList.add('hidden');
-            container.innerHTML = '';
-            return;
-        }
-
-        container.innerHTML = results.map(p => `
-            <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3" data-id="${p.id}">
-                <img src="${p.image}" alt="" class="w-10 h-10 object-contain rounded">
-                <div>
-                    <div class="font-medium text-sm">${p.name}</div>
-                    <div class="text-xs text-gray-500">${p.color} - ${p.formattedPrice}</div>
-                </div>
-            </div>
-        `).join('');
-
-        container.querySelectorAll('[data-id]').forEach(el => {
-            el.addEventListener('click', () => {
-                const id = Number(el.dataset.id);
-                const product = this.service.getProductById(id);
-                if (product) {
-                    this.service.updateFilters({ keyword: product.name });
-                    const searchInput = this.renderer.searchInput;
-                    if (searchInput) searchInput.value = product.name;
-                    container.classList.add('hidden');
-                }
-            });
-        });
-
-        container.classList.remove('hidden');
     }
 
     loadMore() {

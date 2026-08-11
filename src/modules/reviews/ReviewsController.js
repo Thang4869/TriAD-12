@@ -1,12 +1,13 @@
 import { ReviewsService } from './ReviewsService.js';
+import { StarRatingRenderer } from './StarRatingRenderer.js';
 import { Logger } from '../../core/services/Logger.js';
 
 export class ReviewsController {
     constructor() {
         this.service = new ReviewsService();
+        this.starRatingRenderer = new StarRatingRenderer('#star-rating', '#selected-rating');
         Logger.debug('Reviews Controller initialized');
         this.setupEventListeners();
-        this.setupStarRating();
         this.render();
     }
 
@@ -75,59 +76,12 @@ export class ReviewsController {
         }
     }
 
-    setupStarRating() {
-        const stars = document.querySelectorAll('.star-rating');
-        const ratingDisplay = document.getElementById('selected-rating');
-        let selectedRating = 0;
-
-        stars.forEach((star, index) => {
-            star.addEventListener('click', () => {
-                selectedRating = index + 1;
-                stars.forEach((s, i) => {
-                    s.className = i <= index 
-                        ? 'ph-fill ph-star text-xl text-yellow-400 cursor-pointer'
-                        : 'ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors';
-                });
-                if (ratingDisplay) {
-                    ratingDisplay.textContent = `${selectedRating}/5`;
-                }
-            });
-
-            star.addEventListener('mouseenter', () => {
-                stars.forEach((s, i) => {
-                    if (i <= index) {
-                        s.className = 'ph-fill ph-star text-xl text-yellow-400 cursor-pointer';
-                    }
-                });
-            });
-
-            star.addEventListener('mouseleave', () => {
-                stars.forEach((s, i) => {
-                    if (i >= selectedRating) {
-                        s.className = 'ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors';
-                    }
-                });
-            });
-        });
-
-        this._selectedRating = () => selectedRating;
-        this._resetRating = () => {
-            selectedRating = 0;
-            stars.forEach(s => {
-                s.className = 'ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors';
-            });
-            if (ratingDisplay) {
-                ratingDisplay.textContent = '0/5';
-            }
-        };
-    }
-
     handleSubmit(e) {
         const form = e.target;
         const name = document.getElementById('review-name')?.value.trim();
         const email = document.getElementById('review-email')?.value.trim();
         const content = document.getElementById('review-content')?.value.trim();
-        const rating = this._selectedRating ? this._selectedRating() : 0;
+        const rating = this.starRatingRenderer.getRating();
 
         if (!name) {
             this.showToast('Please enter your name.', 'warning');
@@ -150,10 +104,7 @@ export class ReviewsController {
         });
 
         form.reset();
-        if (this._resetRating) {
-            this._resetRating();
-        }
-
+        this.starRatingRenderer.reset();
         this.render();
 
         this.showToast('Review submitted successfully! Thank you for your feedback.', 'success');

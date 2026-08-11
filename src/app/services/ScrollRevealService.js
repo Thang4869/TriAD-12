@@ -1,4 +1,4 @@
-import { Logger } from '../core/services/Logger.js';
+import { Logger } from '../../core/services/Logger.js';
 
 export function initScrollReveal() {
     Logger.debug('Initializing Scroll Reveal...');

@@ -1,5 +1,6 @@
 import { CheckoutService } from './CheckoutService.js';
 import { CheckoutValidator } from './CheckoutValidator.js';
+import { CheckoutRenderer } from './CheckoutRenderer.js';
 import { formatPrice } from '../../shared/utils/helpers.js';
 import { EVENTS } from '../../shared/constants/Events.js';
 import { eventBus } from '../../core/services/EventBus.js';
@@ -8,6 +9,7 @@ export class CheckoutController {
     constructor() {
         this.service = new CheckoutService();
         this.validator = new CheckoutValidator();
+        this.renderer = new CheckoutRenderer();
         this.items = [];
         this.setupEventListeners();
     }
@@ -45,12 +47,12 @@ export class CheckoutController {
             return;
         }
 
+        this.renderer.renderSummary(cartItems);
+
         this.items = cartItems;
 
         const modal = document.getElementById('checkout-modal');
         const content = modal.querySelector('.bg-white');
-
-        this.renderOrderSummary(cartItems);
 
         document.getElementById('checkout-form').reset();
         document.getElementById('card-details').classList.add('hidden');
@@ -77,27 +79,6 @@ export class CheckoutController {
         }, 300);
 
         document.body.style.overflow = '';
-    }
-
-    renderOrderSummary(items) {
-        const container = document.getElementById('checkout-items');
-        const totalEl = document.getElementById('checkout-total');
-
-        if (container) {
-            container.innerHTML = items.map(item => `
-                <div class="item-row flex justify-between text-sm py-1">
-                    <span>${item.name} x${item.quantity}</span>
-                    <span>${formatPrice(item.subtotal)}</span>
-                </div>
-            `).join('');
-        }
-
-        const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-        const shipping = total >= 500000 ? 0 : 30000;
-
-        if (totalEl) {
-            totalEl.textContent = formatPrice(total + shipping);
-        }
     }
 
     handleSubmit(e) {
