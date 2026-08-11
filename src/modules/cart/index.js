@@ -1,4 +1,4 @@
-export { CartController } from './cart.controller.js';
-export { CartService } from './cart.service.js';
-export { CartRepository } from './cart.repository.js';
-export { CartRenderer } from './cart.renderer.js';
+export { CartController } from './CartController.js';
+export { CartService } from './CartService.js';
+export { CartRepository } from './CartRepository.js';
+export { CartRenderer } from './CartRenderer.js';

@@ -1,33 +1,11 @@
-/**
- * Products Renderer - Handles product UI rendering
- * 
- * Single Responsibility: Only renders product UI
- */
-import { logger } from '../../shared/services/logger.service.js';
-import { formatPrice } from '../../shared/utils/helpers.utils.js';
+import { BaseRenderer } from '../../core/base/BaseRenderer.js';
+import { FormatUtils } from '../../core/utils/FormatUtils.js';
+import { Logger } from '../../core/services/Logger.js';
+import { formatPrice } from '../../shared/utils/helpers.js';
 
-export class ProductsRenderer {
+export class ProductsRenderer extends BaseRenderer {
     constructor() {
-        this.grid = null;
-        this.countElement = null;
-        this.loadMoreContainer = null;
-        this.searchInput = null;
-        this.sortSelect = null;
-        this.priceSlider = null;
-        this.priceValue = null;
-        this.resetButton = null;
-        this._retryCount = 0;
-        this._maxRetries = 2;
-        
-        // Tìm DOM elements với retry
-        this.initElements();
-    }
-    
-    /**
-     * Initialize DOM elements với retry
-     */
-    initElements() {
-        this.grid = document.getElementById('product-grid');
+        super('product-grid');
         this.countElement = document.getElementById('product-count');
         this.loadMoreContainer = document.getElementById('load-more-container');
         this.searchInput = document.getElementById('search-input');
@@ -35,84 +13,53 @@ export class ProductsRenderer {
         this.priceSlider = document.getElementById('price-slider');
         this.priceValue = document.getElementById('price-value');
         this.resetButton = document.getElementById('reset-filter');
-        
-        // Nếu chưa tìm thấy grid, thử lại sau 100ms
-        if (!this.grid && this._retryCount < this._maxRetries) {
-            this._retryCount++;
-            setTimeout(() => this.initElements(), 100);
-        }
-        
-        if (this.grid) {
-            logger.debug('Product grid found!');
-        } else {
-            logger.debug('Product grid not found after retries');
-        }
+        this.findContainer();
     }
-    
-    /**
-     * Render products
-     */
+
     render(products, totalCount = null) {
-        // Đảm bảo grid đã được tìm thấy
-        if (!this.grid) {
-            this.initElements();
-            if (!this.grid) {
-                logger.debug('Product grid not found!');
-                return;
-            }
+        if (!this.findContainer()) {
+            Logger.debug('Product grid not found');
+            return;
         }
-        
+
         if (products.length === 0) {
             this.renderEmpty();
             this.updateCount(0);
             this.updateLoadMore(false);
             return;
         }
-        
-        // Clear grid first
-        this.grid.innerHTML = '';
-        
-        // Render each product
+
+        this.container.innerHTML = '';
+
         products.forEach(product => {
             const card = this.createProductCard(product);
-            this.grid.appendChild(card);
+            this.container.appendChild(card);
         });
-        
-        // Update count and load more
+
         this.updateCount(totalCount || products.length);
         this.updateLoadMore(products.length < (totalCount || products.length));
     }
-    
-    /**
-     * Append more products (for load more)
-     */
+
     append(products) {
-        if (!this.grid) {
-            this.initElements();
-            if (!this.grid) return;
-        }
-        
+        if (!this.findContainer()) return;
+
         if (products.length === 0) return;
-        
+
         products.forEach(product => {
             const card = this.createProductCard(product);
-            this.grid.appendChild(card);
+            this.container.appendChild(card);
         });
-        
-        // Update load more status
+
         const total = parseInt(this.countElement?.dataset.total || '0');
-        const current = this.grid.querySelectorAll('.product-card').length;
+        const current = this.container.querySelectorAll('.product-card').length;
         this.updateLoadMore(current < total);
     }
-    
-    /**
-     * Create product card HTML
-     */
+
     createProductCard(product) {
         const div = document.createElement('div');
         div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
         div.dataset.productId = product.id;
-        
+
         div.innerHTML = `
             <div class="cursor-pointer" data-action="open-modal" data-id="${product.id}">
                 <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
@@ -136,17 +83,14 @@ export class ProductsRenderer {
                 </div>
             </div>
         `;
-        
+
         return div;
     }
-    
-    /**
-     * Render empty state
-     */
+
     renderEmpty() {
-        if (!this.grid) return;
-        
-        this.grid.innerHTML = `
+        if (!this.container) return;
+
+        this.container.innerHTML = `
             <div class="col-span-full text-center py-20">
                 <i class="ph ph-magnifying-glass text-6xl text-gray-300"></i>
                 <p class="mt-4 text-gray-500">No products found</p>
@@ -155,45 +99,33 @@ export class ProductsRenderer {
                 </button>
             </div>
         `;
-        
+
         document.getElementById('clear-search-btn')?.addEventListener('click', () => {
             if (window.productsController) {
                 window.productsController.resetFilters();
             }
         });
     }
-    
-    /**
-     * Update product count
-     */
+
     updateCount(count) {
         if (this.countElement) {
             this.countElement.textContent = `${count} products`;
             this.countElement.dataset.total = count;
         }
     }
-    
-    /**
-     * Update load more visibility
-     */
+
     updateLoadMore(hasMore) {
         if (this.loadMoreContainer) {
             this.loadMoreContainer.classList.toggle('hidden', !hasMore);
         }
     }
-    
-    /**
-     * Update price display
-     */
+
     updatePriceDisplay(value) {
         if (this.priceValue) {
             this.priceValue.textContent = formatPrice(value);
         }
     }
-    
-    /**
-     * Get filter values from UI
-     */
+
     getUIState() {
         return {
             keyword: this.searchInput?.value || '',

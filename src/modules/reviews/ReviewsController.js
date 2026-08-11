@@ -1,30 +1,21 @@
-// src/modules/reviews/reviews.controller.js
-
-import { ReviewsService } from './reviews.service.js';
-import { toast } from '../toast/toast.service.js';
-import { logger } from '../../shared/services/logger.service.js';
+import { ReviewsService } from './ReviewsService.js';
+import { Logger } from '../../core/services/Logger.js';
 
 export class ReviewsController {
     constructor() {
         this.service = new ReviewsService();
-        logger.debug('Reviews Controller initialized');
+        Logger.debug('Reviews Controller initialized');
         this.setupEventListeners();
         this.setupStarRating();
         this.render();
     }
 
-    /**
-     * Render reviews
-     */
     render() {
         const reviews = this.service.getAll();
         this.renderReviews(reviews);
         this.updateStats(reviews);
     }
 
-    /**
-     * Render reviews lên grid
-     */
     renderReviews(reviews) {
         const grid = document.getElementById('reviews-grid');
         if (!grid) return;
@@ -39,9 +30,8 @@ export class ReviewsController {
             return;
         }
 
-        // Lấy 3 review mới nhất
         const latest = this.service.getLatest(3);
-        
+
         grid.innerHTML = latest.map(review => `
             <div class="bg-gray-50 p-6 rounded-2xl hover:shadow-md transition-all">
                 <div class="flex items-center gap-4 mb-4">
@@ -65,22 +55,16 @@ export class ReviewsController {
         `).join('');
     }
 
-    /**
-     * Cập nhật thống kê
-     */
     updateStats(reviews) {
         const avgEl = document.getElementById('avg-rating');
         const totalEl = document.getElementById('total-reviews');
-        
+
         const stats = this.service.getStats();
-        
+
         if (avgEl) avgEl.textContent = stats.averageDisplay;
         if (totalEl) totalEl.textContent = `(${stats.total} reviews)`;
     }
 
-    /**
-     * Setup sự kiện cho form
-     */
     setupEventListeners() {
         const form = document.getElementById('review-form');
         if (form) {
@@ -91,9 +75,6 @@ export class ReviewsController {
         }
     }
 
-    /**
-     * Setup star rating
-     */
     setupStarRating() {
         const stars = document.querySelectorAll('.star-rating');
         const ratingDisplay = document.getElementById('selected-rating');
@@ -129,7 +110,6 @@ export class ReviewsController {
             });
         });
 
-        // Lưu rating vào form
         this._selectedRating = () => selectedRating;
         this._resetRating = () => {
             selectedRating = 0;
@@ -142,9 +122,6 @@ export class ReviewsController {
         };
     }
 
-    /**
-     * Xử lý submit form
-     */
     handleSubmit(e) {
         const form = e.target;
         const name = document.getElementById('review-name')?.value.trim();
@@ -152,7 +129,6 @@ export class ReviewsController {
         const content = document.getElementById('review-content')?.value.trim();
         const rating = this._selectedRating ? this._selectedRating() : 0;
 
-        // Validation
         if (!name) {
             this.showToast('Please enter your name.', 'warning');
             return;
@@ -166,7 +142,6 @@ export class ReviewsController {
             return;
         }
 
-        // Thêm review mới
         this.service.add({
             name,
             email: email || '',
@@ -174,22 +149,16 @@ export class ReviewsController {
             rating
         });
 
-        // Reset form
         form.reset();
         if (this._resetRating) {
             this._resetRating();
         }
 
-        // Re-render
         this.render();
 
-        // Thông báo
         this.showToast('Review submitted successfully! Thank you for your feedback.', 'success');
     }
 
-    /**
-     * Show toast notification
-     */
     showToast(message, type = 'info') {
         if (window.toast) {
             const typeMap = {
@@ -208,7 +177,6 @@ export class ReviewsController {
             return;
         }
 
-        // Fallback nếu toast không có sẵn
         const colors = {
             success: '#22c55e',
             warning: '#f59e0b',

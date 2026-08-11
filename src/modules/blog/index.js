@@ -1,1 +1,1 @@
-export { BlogController } from './blog.controller.js';
+export { BlogController } from './BlogController.js';

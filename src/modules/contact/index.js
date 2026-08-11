@@ -1,1 +1,1 @@
-export { ContactService } from './contact.service.js';
+export { ContactService } from './ContactService.js';

@@ -1,6 +1,4 @@
-// src/app/contact.service.js
-
-import { logger } from '../../shared/services/logger.service.js';
+import { Logger } from '../../core/services/Logger.js';
 
 export class ContactService {
     constructor() {
@@ -21,45 +19,41 @@ export class ContactService {
         const form = document.getElementById('contact-form');
         if (!form) {
             if (this.retryCount === 0) {
-                logger.debug('Contact form not found, waiting...');
+                Logger.debug('Contact form not found, waiting...');
             }
-            
+
             this.retryCount++;
-            
+
             if (this.retryCount >= this.maxRetries) {
-                logger.warn('Contact form not found after ' + this.maxRetries + ' retries. Aborting.');
+                Logger.warn('Contact form not found after ' + this.maxRetries + ' retries. Aborting.');
                 return;
             }
-            
+
             setTimeout(() => this.setupForm(), 500);
             return;
         }
 
         this.retryCount = 0;
-        
-        logger.debug('Contact form found, setting up...');
-        
-        // Xóa onsubmit cũ nếu có
+
+        Logger.debug('Contact form found, setting up...');
+
         form.removeAttribute('onsubmit');
-        
-        // Thêm event listener
+
         form.addEventListener('submit', (event) => {
             this.handleSubmit(event);
         });
-        
-        logger.info('Contact form ready!');
+
+        Logger.info('Contact form ready!');
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        
-        // Lấy dữ liệu form
+
         const name = document.getElementById('user_name')?.value.trim();
         const email = document.getElementById('user_email')?.value.trim();
         const subject = document.getElementById('user_subject')?.value.trim();
         const message = document.getElementById('user_message')?.value.trim();
-        
-        // Validation
+
         if (!name) {
             this.showStatus('Please enter your name.', 'warning');
             document.getElementById('user_name')?.focus();
@@ -87,15 +81,15 @@ export class ContactService {
         }
 
         const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-        const to = 'TriAD@shop.vn'; 
+        const to = 'TriAD@shop.vn';
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        
-        logger.debug('Opening Gmail Web with:', gmailUrl);
-        
+
+        Logger.debug('Opening Gmail Web with:', gmailUrl);
+
         window.open(gmailUrl, '_blank');
-        
+
         this.showStatus('Opening Gmail... Please check your browser.', 'success');
-        
+
         setTimeout(() => {
             const form = document.getElementById('contact-form');
             if (form) {
@@ -111,7 +105,7 @@ export class ContactService {
     showStatus(message, type = 'info') {
         const statusDiv = document.getElementById('form-status');
         if (!statusDiv) return;
-        
+
         statusDiv.classList.remove('hidden');
         statusDiv.className = `text-center mt-4 p-3 rounded-lg ${
             type === 'success' ? 'text-green-600 bg-green-50' :
@@ -120,7 +114,7 @@ export class ContactService {
             'text-blue-600 bg-blue-50'
         }`;
         statusDiv.textContent = message;
-        
+
         clearTimeout(statusDiv._timeout);
         statusDiv._timeout = setTimeout(() => {
             statusDiv.classList.add('hidden');

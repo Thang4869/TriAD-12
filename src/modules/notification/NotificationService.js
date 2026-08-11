@@ -1,10 +1,5 @@
-// src/app/notification.service.js
+import { Logger } from '../../core/services/Logger.js';
 
-import { logger } from '../../shared/services/logger.service.js';
-
-/**
- * Notification Service - Quản lý thông báo
- */
 class NotificationService {
     constructor() {
         this.notifications = [];
@@ -12,8 +7,7 @@ class NotificationService {
         this.isDropdownOpen = false;
         this.storageKey = 'triad_notifications';
         this.initialized = false;
-        
-        // DOM elements
+
         this.btn = null;
         this.mobileBtn = null;
         this.dropdown = null;
@@ -22,12 +16,11 @@ class NotificationService {
         this.badge = null;
         this.mobileBadge = null;
         this.markAllBtn = null;
-        
+
         this.init();
     }
 
     init() {
-        // Đợi DOM ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.initElements());
         } else {
@@ -36,7 +29,6 @@ class NotificationService {
     }
 
     initElements() {
-        // Tìm DOM elements
         this.btn = document.getElementById('notification-btn');
         this.mobileBtn = document.getElementById('mobile-notification-btn');
         this.dropdown = document.getElementById('notification-dropdown');
@@ -46,27 +38,23 @@ class NotificationService {
         this.mobileBadge = document.getElementById('mobile-notification-badge');
         this.markAllBtn = document.getElementById('mark-all-read');
 
-        // Nếu chưa có button, thử lại sau 200ms
         if (!this.btn && !this.mobileBtn) {
-            logger.debug('Waiting for notification elements...');
+            Logger.debug('Waiting for notification elements...');
             setTimeout(() => this.initElements(), 200);
             return;
         }
 
-        logger.debug('Initializing Notification Service...');
-        
-        // Load dữ liệu
+        Logger.debug('Initializing Notification Service...');
+
         this.loadNotifications();
-        
-        // Setup event listeners
+
         this.setupEventListeners();
-        
-        // Expose API
+
         this.exposeAPI();
-        
+
         this.initialized = true;
-        logger.info('Notification Service ready!');
-        logger.debug('Total:', this.notifications.length, 'Unread:', this.unreadCount);
+        Logger.info('Notification Service ready!');
+        Logger.debug('Total:', this.notifications.length, 'Unread:', this.unreadCount);
     }
 
     loadNotifications() {
@@ -97,7 +85,7 @@ class NotificationService {
             }
             this.updateBadge();
         } catch (e) {
-            logger.warn('Load error:', e);
+            Logger.warn('Load error:', e);
             this.notifications = [];
         }
     }
@@ -106,13 +94,13 @@ class NotificationService {
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.notifications));
         } catch (e) {
-            logger.warn('Save error:', e);
+            Logger.warn('Save error:', e);
         }
     }
 
     updateBadge() {
         this.unreadCount = this.notifications.filter(n => !n.read).length;
-        
+
         if (this.badge) {
             if (this.unreadCount > 0) {
                 this.badge.classList.remove('hidden');
@@ -121,7 +109,7 @@ class NotificationService {
                 this.badge.classList.add('hidden');
             }
         }
-        
+
         if (this.mobileBadge) {
             if (this.unreadCount > 0) {
                 this.mobileBadge.classList.remove('hidden');
@@ -239,11 +227,11 @@ class NotificationService {
         this.notifications.unshift(notif);
         this.saveNotifications();
         this.updateBadge();
-        
+
         if (this.isDropdownOpen) {
             this.renderNotifications();
         }
-        
+
         if (window.toast) {
             const typeMap = {
                 info: 'info',
@@ -254,15 +242,14 @@ class NotificationService {
             };
             window.toast[typeMap[type] || 'info'](title, message);
         }
-        
-        // Bell animation
+
         if (this.btn) {
             this.btn.style.animation = 'bellRing 0.5s ease';
             setTimeout(() => {
                 this.btn.style.animation = '';
             }, 600);
         }
-        
+
         return notif;
     }
 
@@ -297,7 +284,7 @@ class NotificationService {
         if (this.btn) {
             this.btn.addEventListener('click', (e) => this.toggleDropdown(e));
         }
-        
+
         if (this.mobileBtn) {
             this.mobileBtn.addEventListener('click', (e) => this.toggleDropdown(e));
         }
@@ -319,9 +306,7 @@ class NotificationService {
             });
         }
 
-                // Thêm thông báo khi cart được clear (thanh toán xong)
         if (window.eventBus) {
-            // Khi có đơn hàng mới
             window.eventBus.on('checkout:completed', (data) => {
                 if (data && data.order) {
                     this.add(
@@ -332,26 +317,14 @@ class NotificationService {
                 }
             });
 
-            // Khi giỏ hàng được cập nhật
-            window.eventBus.on('cart:updated', (data) => {
-                // Không cần thông báo mỗi lần cập nhật
-                // Chỉ khi có item được thêm
-            });
-            
-            // Khi sản phẩm được thêm vào giỏ (từ bất kỳ đâu)
             window.eventBus.on('cart:item:added', (data) => {
-                // Đã có thông báo từ các controller
-                // Tránh trùng lặp
             });
-            
+
             window.eventBus.on('checkout:completed', (data) => {
-                // Đã có thông báo từ checkout controller
             });
         }
-        
-        // Thêm thông báo khi có lỗi
+
         window.addEventListener('error', (e) => {
-            // Chỉ thông báo lỗi nghiêm trọng
             if (e.error && e.error.message) {
                 this.add(
                     'System Error',
@@ -361,7 +334,6 @@ class NotificationService {
             }
         });
 
-        // Auto-add notification when adding to cart
         document.addEventListener('click', (e) => {
             const addBtn = e.target.closest('[data-action="add-to-cart"]');
             if (addBtn) {
@@ -385,5 +357,4 @@ class NotificationService {
     }
 }
 
-// Export singleton
 export const notificationService = new NotificationService();

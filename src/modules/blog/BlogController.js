@@ -1,16 +1,12 @@
-/**
- * Blog Controller - Handles blog interactions
- */
-import { logger } from '../../shared/services/logger.service.js';
+import { Logger } from '../../core/services/Logger.js';
 
 export class BlogController {
     constructor() {
-        logger.debug('Blog Controller initialized');
+        Logger.debug('Blog Controller initialized');
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        // Click on blog cards to navigate to detail
         document.addEventListener('click', (e) => {
             const card = e.target.closest('.blog-card');
             if (card) {

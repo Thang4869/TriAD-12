@@ -1,2 +1,2 @@
-export { ModalController } from './modal.controller.js';
-export { ModalService } from './modal.service.js';
+export { ModalController } from './ModalController.js';
+export { ModalService } from './ModalService.js';
