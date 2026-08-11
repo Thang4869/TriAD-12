@@ -1,12 +1,8 @@
-/**
- * Scroll Reveal Service - Reveal elements on scroll
- */
-import { logger } from '../shared/services/logger.service.js';
+import { Logger } from '../core/services/Logger.js';
 
 export function initScrollReveal() {
-    logger.debug('Initializing Scroll Reveal...');
-    
-    // Hero
+    Logger.debug('Initializing Scroll Reveal...');
+
     const hero = document.querySelector('#home');
     if (hero) {
         hero.style.opacity = '0';
@@ -17,8 +13,7 @@ export function initScrollReveal() {
             hero.style.transform = 'translateY(0)';
         }, 400);
     }
-    
-    // Sections (excluding hero)
+
     const sections = document.querySelectorAll('section:not(#home)');
     sections.forEach((section, index) => {
         section.style.opacity = '0';
@@ -27,8 +22,7 @@ export function initScrollReveal() {
         section.style.transitionDelay = `${index * 0.1}s`;
         section.classList.add('scroll-reveal');
     });
-    
-    // Intersection Observer for sections
+
     const sectionObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -40,20 +34,18 @@ export function initScrollReveal() {
         threshold: 0.15,
         rootMargin: '0px 0px -50px 0px'
     });
-    
+
     sections.forEach(section => {
         sectionObserver.observe(section);
     });
-    
-    // Product cards
+
     const grid = document.getElementById('product-grid');
     if (grid) {
-        // Observer for dynamic cards
         const mutationObserver = new MutationObserver(() => {
             observeProductCards();
         });
         mutationObserver.observe(grid, { childList: true, subtree: false });
-        
+
         function observeProductCards() {
             const cards = grid.querySelectorAll('.product-card:not(.observed)');
             cards.forEach((card, index) => {
@@ -62,7 +54,7 @@ export function initScrollReveal() {
                 card.style.transform = 'translateY(30px) scale(0.97)';
                 card.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1)`;
                 card.style.transitionDelay = `${(index % 6) * 80}ms`;
-                
+
                 const cardObserver = new IntersectionObserver((entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
@@ -75,13 +67,13 @@ export function initScrollReveal() {
                     threshold: 0.1,
                     rootMargin: '0px 0px -30px 0px'
                 });
-                
+
                 cardObserver.observe(card);
             });
         }
-        
+
         setTimeout(observeProductCards, 200);
     }
-    
-    logger.debug('Scroll Reveal initialized!');
+
+    Logger.debug('Scroll Reveal initialized!');
 }
