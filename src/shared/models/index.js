@@ -1,3 +1,3 @@
-export { Product } from './product.model.js';
-export { CartItem } from './cart-item.model.js';
-export { Order } from './order.model.js';
+export { ProductModel as Product } from './ProductModel.js';
+export { CartItemModel as CartItem } from './CartItemModel.js';
+export { OrderModel as Order } from './OrderModel.js';

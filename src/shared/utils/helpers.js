@@ -1,6 +1,3 @@
-/**
- * Helper Utilities - Common helper functions
- */
 export function formatPrice(price) {
     return price.toLocaleString('vi-VN') + ' ₫';
 }
@@ -10,8 +7,7 @@ export function formatNumber(num) {
 }
 
 export function generateOrderId() {
-    return 'ORD-' + Date.now().toString(36).toUpperCase() + 
-           '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
 export function formatDate(date) {
@@ -24,7 +20,6 @@ export function formatDate(date) {
     });
 }
 
-// Expose for inline usage
 window.formatPrice = formatPrice;
 window.formatNumber = formatNumber;
 window.generateOrderId = generateOrderId;
