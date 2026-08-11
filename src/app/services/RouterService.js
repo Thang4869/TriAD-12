@@ -14,38 +14,38 @@ export class RouterService {
     return './';
   }
 
-  fixHeaderLinks() {
-    const root = this.rootPath;
-    const allLinks = document.querySelectorAll('nav a, #mobile-menu a, footer a');
+fixHeaderLinks() {
+  const root = this.rootPath;
+  const allLinks = document.querySelectorAll('#header-container a, footer a');
 
-    allLinks.forEach(link => {
-      let href = link.getAttribute('href');
-      if (!href) return;
+  allLinks.forEach(link => {
+    let href = link.getAttribute('href');
+    if (!href) return;
 
-      if (href === './') {
-        link.setAttribute('href', root);
-        return;
-      }
+    if (href === './') {
+      link.setAttribute('href', root);
+      return;
+    }
 
-      if (href.startsWith('./pages/')) {
-        const path = href.replace('./pages/', '');
-        link.setAttribute('href', `${root}pages/${path}`);
-        return;
-      }
+    if (href.startsWith('./pages/')) {
+      const path = href.replace('./pages/', '');
+      link.setAttribute('href', `${root}pages/${path}`);
+      return;
+    }
 
-      if (href.startsWith('pages/')) {
-        link.setAttribute('href', `${root}${href}`);
-        return;
-      }
+    if (href.startsWith('pages/')) {
+      link.setAttribute('href', `${root}${href}`);
+      return;
+    }
 
-      if (href.startsWith('./')) {
-        link.setAttribute('href', `${root}${href.substring(2)}`);
-        return;
-      }
-    });
+    if (href.startsWith('./')) {
+      link.setAttribute('href', `${root}${href.substring(2)}`);
+      return;
+    }
+  });
 
-    Logger.debug('Header links fixed.');
-  }
+  Logger.debug('Header links fixed.');
+}
 
   fixContentLinks() {
     const root = this.rootPath;
