@@ -1,6 +1,6 @@
 import { loadComponents } from '../shared/utils/loader.js';
 import { Logger } from '../core/services/Logger.js';
-import { App } from './App.js';
+import { App } from './app.js';
 import { initHeaderNavigation } from './HeaderNavigationService.js';
 import { RouterService } from './services/RouterService.js';
 import { UIService } from './services/UIService.js';
