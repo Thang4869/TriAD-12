@@ -1,5 +1,7 @@
 import { screen, fireEvent } from '@testing-library/dom';
+import { afterEach } from 'vitest';
 import { bootstrap } from '../../src/app/bootstrap';
+import { notificationController } from '../../src/modules/notification/index.js';
 
 describe('Checkout flow', () => {
   beforeEach(() => {
@@ -18,6 +20,13 @@ describe('Checkout flow', () => {
       <span id="cart-badge">0</span>
       <button id="checkout-btn">Checkout</button>
     `;
+  });
+
+  afterEach(() => {
+    if (notificationController && typeof notificationController.destroy === 'function') {
+      notificationController.destroy();
+    }
+    document.body.innerHTML = '';
   });
 
   it('should complete checkout successfully', async () => {

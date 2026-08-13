@@ -1,5 +1,7 @@
-import { screen, fireEvent, waitFor } from '@testing-library/dom';
+import { screen, fireEvent, waitFor, afterEach } from '@testing-library/dom';
+import { afterEach } from 'vitest';
 import { bootstrap } from '../../src/app/bootstrap.js';
+import { notificationController } from '../../src/modules/notification/index.js';
 
 describe('Cart Flow Integration', () => {
   beforeEach(async () => {
@@ -21,6 +23,13 @@ describe('Cart Flow Integration', () => {
       <button id="checkout-btn">Checkout</button>
     `;
     await bootstrap();
+  });
+
+  afterEach(() => {
+    if (notificationController && typeof notificationController.destroy === 'function') {
+      notificationController.destroy();
+    }
+    document.body.innerHTML = '';
   });
 
   it('should add product to cart and update badge', async () => {

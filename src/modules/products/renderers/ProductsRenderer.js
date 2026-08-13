@@ -31,7 +31,9 @@ export class ProductsRenderer extends BaseRenderer {
     this.container.innerHTML = '';
     products.forEach(product => {
       const card = this.createProductCard(product);
-      this.container.appendChild(card);
+      if (card) {
+        this.container.appendChild(card);
+      }
     });
 
     this.updateCount(totalCount || products.length);
@@ -44,7 +46,9 @@ export class ProductsRenderer extends BaseRenderer {
 
     products.forEach(product => {
       const card = this.createProductCard(product);
-      this.container.appendChild(card);
+      if (card) {
+        this.container.appendChild(card);
+      }
     });
 
     const total = parseInt(this.countElement?.dataset.total || '0');
@@ -53,6 +57,10 @@ export class ProductsRenderer extends BaseRenderer {
   }
 
   createProductCard(product) {
+    if (typeof document === 'undefined') {
+      return null;
+    }
+
     const div = document.createElement('div');
     div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
     div.dataset.productId = product.id;

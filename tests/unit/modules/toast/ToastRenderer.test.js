@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ToastRenderer } from '../../../../src/modules/toast/ToastRenderer.js';
 
 describe('ToastRenderer', () => {
@@ -7,6 +7,11 @@ describe('ToastRenderer', () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="toast-container"></div>';
     renderer = new ToastRenderer();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should create toast element', () => {
@@ -31,6 +36,9 @@ describe('ToastRenderer', () => {
     const toastData = { title: 'Test', message: 'Hello' };
     const element = renderer.render(toastData);
     renderer.remove(element);
+    
+    vi.runAllTimers();
+    
     const container = document.getElementById('toast-container');
     expect(container.children.length).toBe(0);
   });

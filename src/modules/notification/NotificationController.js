@@ -15,6 +15,7 @@ export class NotificationController {
     this._retryDelay = 300;
     this._listenersAttached = false;
     this._documentEventsAttached = false;
+    this._retryTimer = null;
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this._init());
@@ -33,9 +34,7 @@ export class NotificationController {
   }
 
   _setupEventListeners() {
-    if (this._listenersAttached) {
-      return;
-    }
+    if (this._listenersAttached) return;
 
     const findElements = () => {
       this.btn = document.getElementById('notification-btn');
@@ -46,7 +45,8 @@ export class NotificationController {
       if (!this.btn && !this.mobileBtn) {
         if (this._retryCount < this._maxRetries) {
           this._retryCount++;
-          setTimeout(findElements, this._retryDelay);
+          // Lưu timer
+          this._retryTimer = setTimeout(findElements, this._retryDelay);
         }
         return;
       }
@@ -70,7 +70,6 @@ export class NotificationController {
       }
 
       if (!this._documentEventsAttached) {
-        // ESC
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && this._isOpen) {
             this._closeDropdown();
@@ -117,6 +116,16 @@ export class NotificationController {
     };
 
     findElements();
+  }
+
+  destroy() {
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+      this._retryTimer = null;
+    }
+    this._listenersAttached = false;
+    this._documentEventsAttached = false;
+    this._initialized = false;
   }
 
   reinit() {
