@@ -190,6 +190,7 @@ export class NotificationController {
       if (this._isOpen) this.renderer.renderList(this.service.getAll());
       if (window.toast) window.toast.success('All clear!', 'All notifications marked as read.');
     }
+    return changed;
   }
 
   _exposeAPI() {

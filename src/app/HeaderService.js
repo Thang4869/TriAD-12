@@ -23,7 +23,7 @@ export function initHeaderScroll() {
     let ticking = false;
 
     window.addEventListener('scroll', () => {
-        if (!ticking) {
+        if (ticking) {
             return;
         }
 

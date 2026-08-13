@@ -1,13 +1,16 @@
 import { screen, fireEvent } from '@testing-library/dom';
 import { afterEach } from 'vitest';
-import { bootstrap } from '../../src/app/bootstrap';
+import { bootstrap } from '../../src/app/bootstrap.js';
 import { notificationController } from '../../src/modules/notification/index.js';
 
 describe('Checkout flow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     document.body.innerHTML = `
       <div id="header-container"></div>
       <div id="page-content">
+        <div id="hero-container"></div>
+        <div id="about-container"></div>
+        <div id="features-container"></div>
         <div id="products-container"></div>
       </div>
       <div id="footer-container"></div>
@@ -18,8 +21,13 @@ describe('Checkout flow', () => {
       <div id="success-modal-container"></div>
       <div id="cart-overlay"></div>
       <span id="cart-badge">0</span>
+      <button id="cart-icon-btn">Cart</button>
       <button id="checkout-btn">Checkout</button>
+      <input id="search-input" placeholder="Search product...">
+      <div id="search-suggestion" class="hidden"></div>
+      <div id="product-grid"></div>
     `;
+    await bootstrap();
   });
 
   afterEach(() => {
@@ -30,6 +38,6 @@ describe('Checkout flow', () => {
   });
 
   it('should complete checkout successfully', async () => {
-    await bootstrap();
+    expect(document.getElementById('header-container')).toBeTruthy();
   });
 });

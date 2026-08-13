@@ -88,7 +88,10 @@ export class ReviewsService {
     }
 
     getInitials(name) {
-        return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        const parts = name.split(' ').filter(w => w.length > 0);
+        if (parts.length === 0) return '';
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return parts.map(w => w[0]).join('').toUpperCase().slice(0, 2);
     }
 
     escapeHtml(text) {
