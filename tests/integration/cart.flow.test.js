@@ -1,11 +1,16 @@
 import { screen, fireEvent, waitFor } from '@testing-library/dom';
-import { afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { bootstrap } from '../../src/app/bootstrap.js';
 import { notificationController } from '../../src/modules/notification/index.js';
+
+vi.mock('../../src/shared/utils/loader.js', () => ({
+  loadComponents: vi.fn().mockResolvedValue([]),
+}));
 
 describe('Cart Flow Integration', () => {
   beforeEach(async () => {
     document.body.innerHTML = `
+      <!-- All required containers -->
       <div id="header-container"></div>
       <div id="page-content">
         <div id="hero-container"></div>
@@ -27,14 +32,19 @@ describe('Cart Flow Integration', () => {
       <div id="search-suggestion" class="hidden"></div>
       <div id="product-grid"></div>
     `;
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve('<div>Mock HTML</div>'),
+    });
     await bootstrap();
   });
 
   afterEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
     if (notificationController && typeof notificationController.destroy === 'function') {
       notificationController.destroy();
     }
-    document.body.innerHTML = '';
   });
 
   it('should add product to cart and update badge', async () => {
