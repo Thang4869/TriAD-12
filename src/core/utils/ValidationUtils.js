@@ -4,7 +4,8 @@ export const ValidationUtils = {
   },
 
   phone(phone) {
-    return /^[0-9]{10,12}$/.test(phone.replace(/\s/g, ''));
+    const cleaned = phone.replace(/\s/g, '');
+    return /^[0-9]{10}$/.test(cleaned) || /^[0-9]{12}$/.test(cleaned);
   },
 
   required(value) {
