@@ -39,7 +39,14 @@ export class FlyToCart {
             return;
         }
 
-        const targetRect = this.cartBadge?.getBoundingClientRect();
+        const badge = this.cartBadge;
+        if (!badge || !document.contains(badge)) {
+            this.isFlying = false;
+            if (callback) callback();
+            return;
+        }
+
+        const targetRect = badge.getBoundingClientRect();
         if (!targetRect) {
             Logger.debug('Cart target not found');
             this.cartBadge = this.findCartBadge();
@@ -93,8 +100,14 @@ export class FlyToCart {
         const el = document.createElement('img');
         el.src = imageSrc;
         el.className = 'fly-element';
-        el.style.width = Math.min(sourceRect.width, 120) + 'px';
-        el.style.height = Math.min(sourceRect.height, 120) + 'px';
+        el.style.position = 'fixed';
+
+        const minSize = 120;
+        const width = sourceRect.width < 30 ? minSize : sourceRect.width;
+        const height = sourceRect.height < 30 ? minSize : sourceRect.height;
+
+        el.style.width = width + 'px';
+        el.style.height = height + 'px';
         el.style.left = sourceRect.left + 'px';
         el.style.top = sourceRect.top + 'px';
         el.style.borderRadius = '12px';
