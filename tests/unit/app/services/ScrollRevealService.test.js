@@ -260,7 +260,6 @@ describe('ScrollRevealService - additional branches', () => {
 
   it('should handle missing sections gracefully', () => {
     document.body.innerHTML = `<div id="home"></div>`;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
     initScrollReveal();
     const home = document.getElementById('home');
     expect(home.style.opacity).toBe('0');
@@ -270,7 +269,6 @@ describe('ScrollRevealService - additional branches', () => {
 
   it('should observe product cards even when grid exists but no cards initially', () => {
     const grid = document.getElementById('product-grid');
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
     initScrollReveal();
 
     expect(global.MutationObserver).toHaveBeenCalled();
@@ -293,7 +291,6 @@ describe('ScrollRevealService - additional branches', () => {
 
   it('should not error if product-grid is missing', () => {
     document.body.innerHTML = `<section id="home"></section>`;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
     expect(() => initScrollReveal()).not.toThrow();
   });
 });
@@ -332,13 +329,13 @@ describe('ScrollRevealService - additional coverage', () => {
 
   it('should safely skip hero manipulation when hero element does not exist', () => {
     document.body.innerHTML = `<section class="section"></section>`;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
+    initScrollReveal();
     expect(() => initScrollReveal()).not.toThrow();
   });
 
   it('should safely skip product-grid manipulation when grid does not exist', () => {
     document.body.innerHTML = `<section id="home"></section><section class="section"></section>`;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
+    initScrollReveal();
     expect(() => initScrollReveal()).not.toThrow();
     expect(global.MutationObserver).not.toHaveBeenCalled();
   });
@@ -349,7 +346,6 @@ describe('ScrollRevealService - additional coverage', () => {
       <section class="section"></section>
       <div id="product-grid"></div>
     `;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
     initScrollReveal();
 
     const mutationInstance = global.MutationObserver.mock.results[0]?.value;
@@ -376,7 +372,6 @@ describe('ScrollRevealService - additional coverage', () => {
       <section class="section" id="s1"></section>
       <section class="section" id="s2"></section>
     `;
-    const { initScrollReveal } = require('../../../../src/app/services/ScrollRevealService.js');
     initScrollReveal();
 
     const observerInstance = global.IntersectionObserver.mock.results[0]?.value;
