@@ -14,6 +14,23 @@ export class ModalController {
         this.price = document.getElementById('modal-price');
         this.image = document.getElementById('modal-img');
         this.quantityEl = document.getElementById('modal-quantity');
+        this._isClosing = false;
+    }
+
+    close() {
+        if (this._isClosing || !this.overlay) return;
+        this._isClosing = true;
+
+        this.overlay.classList.add('opacity-0');
+        this.content?.classList.add('scale-95');
+
+        setTimeout(() => {
+            this.overlay.classList.add('hidden');
+            this._isClosing = false;
+        }, 300);
+
+        document.body.style.overflow = '';
+        this.service.close();
     }
 
     setupEventListeners() {
@@ -87,20 +104,6 @@ export class ModalController {
 
         document.body.style.overflow = 'hidden';
         this.service.isOpen = true;
-    }
-
-    close() {
-        if (!this.overlay) return;
-
-        this.overlay.classList.add('opacity-0');
-        this.content?.classList.add('scale-95');
-
-        setTimeout(() => {
-            this.overlay.classList.add('hidden');
-        }, 300);
-
-        document.body.style.overflow = '';
-        this.service.reset();
     }
 
     updateQuantity(delta) {
