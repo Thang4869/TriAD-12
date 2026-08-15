@@ -130,6 +130,7 @@ export class ProductsController {
 
   loadMore() {
     if (this.isLoading) return;
+    if (!this.service.hasMore) return;
     this.isLoading = true;
     const items = this.service.loadMore();
     this.renderer.append(items);

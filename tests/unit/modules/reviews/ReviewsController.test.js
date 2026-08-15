@@ -47,6 +47,11 @@ describe('ReviewsController', () => {
     controller = new ReviewsController();
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
   it('should render reviews', () => {
     const mockReviews = [
       { id: '1', name: 'John', content: 'Great', rating: 5, createdAt: new Date().toISOString() },
@@ -88,5 +93,65 @@ describe('ReviewsController', () => {
     const form = document.getElementById('review-form');
     form.dispatchEvent(new Event('submit'));
     expect(window.toast.warning).toHaveBeenCalledWith('Warning', 'Please enter your name.');
+  });
+});
+
+describe('ReviewsController - edge cases', () => {
+  let controller;
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="reviews-grid"></div>
+      <form id="review-form">
+        <input id="review-name">
+        <textarea id="review-content"></textarea>
+        <div id="star-rating"><i class="star-rating" data-value="1"></i></div>
+        <span id="selected-rating">0/5</span>
+        <button type="submit">Submit</button>
+      </form>
+    `;
+    window.toast = { success: vi.fn(), warning: vi.fn(), error: vi.fn(), info: vi.fn() };
+    controller = new ReviewsController();
+  });
+
+  afterEach(() => {
+    delete window.toast;
+    document.body.innerHTML = '';
+  });
+
+  it('should handle missing reviews-grid gracefully', () => {
+    document.getElementById('reviews-grid')?.remove();
+    expect(() => controller.renderReviews([])).not.toThrow();
+  });
+
+  it('should show warning when name missing in form submit', () => {
+    document.getElementById('review-content').value = 'Good';
+    const form = document.getElementById('review-form');
+    form.dispatchEvent(new Event('submit'));
+    expect(window.toast.warning).toHaveBeenCalledWith('Warning', 'Please enter your name.');
+  });
+
+  it('should show warning when content missing', () => {
+    document.getElementById('review-name').value = 'John';
+    const form = document.getElementById('review-form');
+    form.dispatchEvent(new Event('submit'));
+    expect(window.toast.warning).toHaveBeenCalledWith('Warning', 'Please write your review.');
+  });
+
+  it('should show warning when rating is 0', () => {
+    document.getElementById('review-name').value = 'John';
+    document.getElementById('review-content').value = 'Good';
+    const form = document.getElementById('review-form');
+    form.dispatchEvent(new Event('submit'));
+    expect(window.toast.warning).toHaveBeenCalledWith('Warning', 'Please select a rating.');
+  });
+
+  it('should use fallback toast when window.toast is not available', () => {
+    delete window.toast;
+    const createElementSpy = vi.spyOn(document, 'createElement');
+    const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+    controller.showToast('Fallback message', 'info');
+    expect(createElementSpy).toHaveBeenCalled();
+    expect(appendChildSpy).toHaveBeenCalled();
   });
 });

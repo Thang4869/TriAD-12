@@ -9,22 +9,25 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .js",
     "lint:fix": "eslint src --ext .js --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
-    "vitest": "^1.0.0",
+    "@playwright/test": "^1.62.1",
+    "@testing-library/dom": "^9.0.0",
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "^1.6.1",
     "@vitest/ui": "^1.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
     "eslint": "^8.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
+    "jsdom": "^23.0.0",
     "prettier": "^3.0.0",
-    "@testing-library/dom": "^9.0.0",
-    "jsdom": "^23.0.0"
-  },
-  "dependencies": {}
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
 }

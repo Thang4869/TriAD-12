@@ -65,3 +65,77 @@ describe('ReviewsService', () => {
     expect(service.escapeHtml('<script>alert(1)</script>')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
   });
 });
+
+describe('ReviewsService - additional coverage', () => {
+  let service;
+  let mockLocalStorage;
+
+  beforeEach(() => {
+    mockLocalStorage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+    };
+    global.localStorage = mockLocalStorage;
+    service = new ReviewsService();
+  });
+
+  it('load should gracefully fallback when localStorage throws error', () => {
+    mockLocalStorage.getItem.mockImplementation(() => {
+      throw new Error('Quota exceeded');
+    });
+    const result = service.load();
+    expect(result).toEqual([]);
+    expect(service.reviews).toEqual([]);
+  });
+
+  it('getStats should return safe values when reviews array is empty', () => {
+    service.reviews = [];
+    const stats = service.getStats();
+    expect(stats).toEqual({
+      total: 0,
+      average: 0,
+      averageDisplay: '0/5'
+    });
+  });
+
+  it('getStats should calculate average correctly for non-empty array', () => {
+    service.reviews = [
+      { rating: 5 },
+      { rating: 4 },
+      { rating: 3 }
+    ];
+    const stats = service.getStats();
+    expect(stats.total).toBe(3);
+    expect(stats.average).toBe(4);
+    expect(stats.averageDisplay).toBe('4.0/5');
+  });
+
+  it('generateId should produce unique strings', () => {
+    const id1 = service.generateId();
+    const id2 = service.generateId();
+    expect(id1).not.toBe(id2);
+    expect(id1.length).toBeGreaterThan(5);
+    expect(id2.length).toBeGreaterThan(5);
+  });
+
+  it('formatDate should handle various time differences', () => {
+    const now = new Date();
+    expect(service.formatDate(now.toISOString())).toBe('Today');
+
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    expect(service.formatDate(yesterday.toISOString())).toBe('Yesterday');
+
+    const weekAgo = new Date(now);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    expect(service.formatDate(weekAgo.toISOString())).toBe('1 weeks ago');
+
+    const monthAgo = new Date(now);
+    monthAgo.setDate(monthAgo.getDate() - 30);
+    expect(service.formatDate(monthAgo.toISOString())).toBe('1 months ago');
+
+    const yearAgo = new Date(now);
+    yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+    expect(service.formatDate(yearAgo.toISOString())).toBe('1 years ago');
+  });
+});

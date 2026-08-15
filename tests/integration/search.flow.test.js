@@ -1,5 +1,5 @@
 import { screen, fireEvent, waitFor } from '@testing-library/dom';
-import { afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { bootstrap } from '../../src/app/bootstrap.js';
 import { ProductModel } from '../../src/shared/models/ProductModel.js';
 import { notificationController } from '../../src/modules/notification/index.js';
@@ -28,8 +28,13 @@ describe('Search Flow Integration', () => {
       <div id="search-suggestion" class="hidden"></div>
       <div id="product-grid"></div>
     `;
+
+    vi.useFakeTimers();
+
     await bootstrap();
     
+    vi.runAllTimers();
+
     const mockProducts = [
       new ProductModel({ 
         id: 1, 
@@ -52,12 +57,15 @@ describe('Search Flow Integration', () => {
       window.productsController.service.filteredProducts = mockProducts;
     }
   });
-  
+
   afterEach(() => {
+    vi.useRealTimers();
+    vi.clearAllTimers(); 
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
     if (notificationController && typeof notificationController.destroy === 'function') {
       notificationController.destroy();
     }
-    document.body.innerHTML = '';
   });
 
   it('should show search suggestions when typing', async () => {
@@ -65,7 +73,6 @@ describe('Search Flow Integration', () => {
     const suggestionContainer = document.getElementById('search-suggestion');
     
     if (window.productsController?.renderer) {
-      const originalRenderSuggestions = window.productsController.renderer.renderSuggestions;
       window.productsController.renderer.renderSuggestions = (keyword, products, callback) => {
         if (keyword && products.length > 0) {
           suggestionContainer.classList.remove('hidden');

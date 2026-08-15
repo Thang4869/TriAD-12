@@ -47,19 +47,21 @@ fixHeaderLinks() {
   Logger.debug('Header links fixed.');
 }
 
-  fixContentLinks() {
-    const root = this.rootPath;
+fixContentLinks() {
+  const root = this.rootPath;
 
-    document.querySelectorAll('#page-content img').forEach(img => {
-      let src = img.getAttribute('src');
-      if (!src) return;
+  document.querySelectorAll('#page-content img').forEach(img => {
+    let src = img.getAttribute('src');
+    if (!src) return;
 
-      if (src.startsWith('images/')) {
-        img.src = root === './' ? `./${src}` : `../${src}`;
-      } else if (src.startsWith('../images/')) {
-        img.src = root === './' ? src.replace('../', './') : src;
-      }
-    });
+    if (src.startsWith('images/')) {
+      img.src = root === './' ? `./${src}` : `../${src}`;
+    } else if (src.startsWith('../images/')) {
+      img.src = root === './' ? src.replace('../', './') : src;
+    } else if (src.startsWith('./images/')) {
+      img.src = root === './' ? src : src.replace('./', '../');
+    }
+  });
 
     document.querySelectorAll('#page-content a').forEach(link => {
       let href = link.getAttribute('href');
