@@ -6,6 +6,11 @@ describe('loader', () => {
     document.body.innerHTML = '<div id="test-container"></div>';
     global.fetch = vi.fn();
   });
+  
+  afterEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
 
   describe('loadComponent', () => {
     it('should load component and insert into element', async () => {
