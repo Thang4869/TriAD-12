@@ -4,7 +4,7 @@ export const ValidationUtils = {
   },
 
   phone(phone) {
-    const cleaned = phone.replace(/\s/g, '');
+    const cleaned = phone.replace(/\s/g, "");
     return /^[0-9]{10}$/.test(cleaned) || /^[0-9]{12}$/.test(cleaned);
   },
 
@@ -21,7 +21,7 @@ export const ValidationUtils = {
   },
 
   cardNumber(number) {
-    const clean = number.replace(/\s/g, '');
+    const clean = number.replace(/\s/g, "");
     return /^[0-9]{16}$/.test(clean);
   },
 
@@ -31,5 +31,5 @@ export const ValidationUtils = {
 
   cvv(cvv) {
     return /^[0-9]{3,4}$/.test(cvv);
-  }
+  },
 };
