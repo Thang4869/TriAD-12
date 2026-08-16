@@ -2,35 +2,35 @@
  * CSS Variables - Design Tokens
  */
 :root {
-    /* Colors */
-    --color-brand-dark: #1a1a1a;
-    --color-brand-gray: #737373;
-    --color-brand-border: #e5e5e5;
-    --color-brand-accent: #4a90e2;
-    --color-brand-orange: #ff6b35;
-    --color-brand-success: #22c55e;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    
-    /* Typography */
-    --font-family: 'Jost', sans-serif;
-    
-    /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-medium: 0.3s ease;
-    --transition-slow: 0.5s ease;
-    
-    /* Z-index layers */
-    --z-header: 40;
-    --z-overlay: 60;
-    --z-drawer: 70;
-    --z-modal: 80;
-    --z-checkout: 90;
-    --z-success: 100;
-    --z-toast: 9999;
+  /* Colors */
+  --color-brand-dark: #1a1a1a;
+  --color-brand-gray: #737373;
+  --color-brand-border: #e5e5e5;
+  --color-brand-accent: #4a90e2;
+  --color-brand-orange: #ff6b35;
+  --color-brand-success: #22c55e;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Typography */
+  --font-family: "Jost", sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Z-index layers */
+  --z-header: 40;
+  --z-overlay: 60;
+  --z-drawer: 70;
+  --z-modal: 80;
+  --z-checkout: 90;
+  --z-success: 100;
+  --z-toast: 9999;
 }
