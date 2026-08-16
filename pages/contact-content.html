@@ -1,57 +1,90 @@
 <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <span class="text-sm font-medium text-brand-accent tracking-widest uppercase">Get In Touch</span>
-            <h2 class="text-3xl md:text-4xl font-bold mt-2">Contact Us</h2>
-            <p class="text-brand-gray mt-3 max-w-2xl mx-auto">Have questions? We'd love to hear from you.</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-gray-50 p-6 rounded-2xl text-center">
-                <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph ph-map-pin text-2xl text-brand-accent"></i>
-                </div>
-                <h4 class="font-semibold">Address</h4>
-                <p class="text-brand-gray text-sm">806 Le Quang Đao Street<br>Trung Chanh, Trung My Tay<br>Ho Chi Minh City, Vietnam</p>
-            </div>
-            <div class="bg-gray-50 p-6 rounded-2xl text-center">
-                <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph ph-phone text-2xl text-brand-accent"></i>
-                </div>
-                <h4 class="font-semibold">Phone</h4>
-                <p class="text-brand-gray text-sm">+84 924 039 939</p>
-            </div>
-            <div class="bg-gray-50 p-6 rounded-2xl text-center">
-                <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph ph-envelope text-2xl text-brand-accent"></i>
-                </div>
-                <h4 class="font-semibold">Email</h4>
-                <p class="text-brand-gray text-sm">TriAD@shop.vn</p>
-            </div>
-        </div>
-        
-        <!-- Contact Form - KHÔNG CÓ ONSUBMIT, KHÔNG CÓ SCRIPT -->
-        <div class="max-w-2xl mx-auto mt-12 bg-gray-50 p-8 rounded-2xl">
-            <h3 class="text-xl font-bold text-center mb-6">Send Us a Message</h3>
-            
-            <form id="contact-form" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="user_name" placeholder="Your Name" 
-                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
-                    <input type="email" id="user_email" placeholder="Your Email" 
-                           class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
-                </div>
-                <input type="text" id="user_subject" placeholder="Subject" 
-                       class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
-                <textarea id="user_message" rows="5" placeholder="Your Message..." 
-                          class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"></textarea>
-                <button type="submit" id="send-btn"
-                        class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                    <i class="ph ph-paper-plane"></i> Send Message
-                </button>
-            </form>
-            
-            <div id="form-status" class="text-center mt-4 hidden"></div>
-        </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <span
+        class="text-sm font-medium text-brand-accent tracking-widest uppercase"
+        >Get In Touch</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold mt-2">Contact Us</h2>
+      <p class="text-brand-gray mt-3 max-w-2xl mx-auto">
+        Have questions? We'd love to hear from you.
+      </p>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-gray-50 p-6 rounded-2xl text-center">
+        <div
+          class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="ph ph-map-pin text-2xl text-brand-accent"></i>
+        </div>
+        <h4 class="font-semibold">Address</h4>
+        <p class="text-brand-gray text-sm">
+          806 Le Quang Đao Street<br />Trung Chanh, Trung My Tay<br />Ho Chi
+          Minh City, Vietnam
+        </p>
+      </div>
+      <div class="bg-gray-50 p-6 rounded-2xl text-center">
+        <div
+          class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="ph ph-phone text-2xl text-brand-accent"></i>
+        </div>
+        <h4 class="font-semibold">Phone</h4>
+        <p class="text-brand-gray text-sm">+84 924 039 939</p>
+      </div>
+      <div class="bg-gray-50 p-6 rounded-2xl text-center">
+        <div
+          class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="ph ph-envelope text-2xl text-brand-accent"></i>
+        </div>
+        <h4 class="font-semibold">Email</h4>
+        <p class="text-brand-gray text-sm">TriAD@shop.vn</p>
+      </div>
+    </div>
+
+    <!-- Contact Form - KHÔNG CÓ ONSUBMIT, KHÔNG CÓ SCRIPT -->
+    <div class="max-w-2xl mx-auto mt-12 bg-gray-50 p-8 rounded-2xl">
+      <h3 class="text-xl font-bold text-center mb-6">Send Us a Message</h3>
+
+      <form id="contact-form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <input
+            type="text"
+            id="user_name"
+            placeholder="Your Name"
+            class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+          />
+          <input
+            type="email"
+            id="user_email"
+            placeholder="Your Email"
+            class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+          />
+        </div>
+        <input
+          type="text"
+          id="user_subject"
+          placeholder="Subject"
+          class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+        />
+        <textarea
+          id="user_message"
+          rows="5"
+          placeholder="Your Message..."
+          class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"
+        ></textarea>
+        <button
+          type="submit"
+          id="send-btn"
+          class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+        >
+          <i class="ph ph-paper-plane"></i> Send Message
+        </button>
+      </form>
+
+      <div id="form-status" class="text-center mt-4 hidden"></div>
+    </div>
+  </div>
 </section>
