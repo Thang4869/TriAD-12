@@ -1,4 +1,4 @@
-import { EVENTS } from '../../../shared/constants/Events.js';
+import { EVENTS } from "../../../shared/constants/Events.js";
 
 export class ProductsService {
   /**
@@ -17,10 +17,10 @@ export class ProductsService {
 
   getDefaultFilters() {
     return {
-      keyword: '',
+      keyword: "",
       minPrice: 0,
       maxPrice: 350000,
-      sort: 'default'
+      sort: "default",
     };
   }
 
@@ -35,7 +35,7 @@ export class ProductsService {
   applyFilters() {
     const { keyword, minPrice, maxPrice, sort } = this.filters;
 
-    this.filteredProducts = this.products.filter(product => {
+    this.filteredProducts = this.products.filter((product) => {
       const matchKeyword = !keyword || product.matchesKeyword(keyword);
       const matchPrice = product.matchesPriceRange(minPrice, maxPrice);
       return matchKeyword && matchPrice;
@@ -46,7 +46,7 @@ export class ProductsService {
 
     this.eventBus.emit(EVENTS.PRODUCTS_FILTERED, {
       total: this.filteredProducts.length,
-      filters: this.filters
+      filters: this.filters,
     });
 
     return this.filteredProducts;
@@ -54,19 +54,20 @@ export class ProductsService {
 
   applySort(sort) {
     switch (sort) {
-      case 'price-asc':
+      case "price-asc":
         this.filteredProducts.sort((a, b) => a.price - b.price);
         break;
-      case 'price-desc':
+      case "price-desc":
         this.filteredProducts.sort((a, b) => b.price - a.price);
         break;
-      case 'name-asc':
+      case "name-asc":
         this.filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case 'name-desc':
+      case "name-desc":
         this.filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
         break;
-      default: break;
+      default:
+        break;
     }
   }
 
