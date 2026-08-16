@@ -1,5 +1,5 @@
-import { DomUtils } from '../../../core/utils/DomUtils.js';
-import { EVENTS } from '../../../shared/constants/Events.js';
+import { DomUtils } from "../../../core/utils/DomUtils.js";
+import { EVENTS } from "../../../shared/constants/Events.js";
 
 export class ProductsController {
   /**
@@ -39,18 +39,19 @@ export class ProductsController {
       this.service.updateFilters({ keyword: value.trim() });
     }, 300);
 
-    input.addEventListener('input', (e) => {
+    input.addEventListener("input", (e) => {
       const keyword = e.target.value.trim();
       debouncedSearch(keyword);
       const results = this.service.products
-        .filter(p => p.matchesKeyword(keyword))
+        .filter((p) => p.matchesKeyword(keyword))
         .slice(0, 5);
       this.renderer.renderSuggestions(keyword, results, (id) => {
         const product = this.service.getProductById(id);
         if (product) {
           this.service.updateFilters({ keyword: product.name });
-          if (this.renderer.searchInput) this.renderer.searchInput.value = product.name;
-          document.getElementById('search-suggestion')?.classList.add('hidden');
+          if (this.renderer.searchInput)
+            this.renderer.searchInput.value = product.name;
+          document.getElementById("search-suggestion")?.classList.add("hidden");
         }
       });
     });
@@ -59,7 +60,7 @@ export class ProductsController {
   setupSort() {
     const select = this.renderer.sortSelect;
     if (!select) return;
-    select.addEventListener('change', (e) => {
+    select.addEventListener("change", (e) => {
       this.service.updateFilters({ sort: e.target.value });
     });
   }
@@ -67,7 +68,7 @@ export class ProductsController {
   setupPriceFilter() {
     const slider = this.renderer.priceSlider;
     if (!slider) return;
-    slider.addEventListener('input', (e) => {
+    slider.addEventListener("input", (e) => {
       const value = Number(e.target.value);
       this.renderer.updatePriceDisplay(value);
       this.service.updateFilters({ maxPrice: value });
@@ -77,7 +78,7 @@ export class ProductsController {
   setupReset() {
     const button = this.renderer.resetButton;
     if (!button) return;
-    button.addEventListener('click', () => {
+    button.addEventListener("click", () => {
       this.resetFilters();
     });
   }
@@ -86,41 +87,51 @@ export class ProductsController {
     const container = this.renderer.loadMoreContainer;
     if (!container) return;
 
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && !container.classList.contains('hidden')) {
-            this.loadMore();
-          }
-        });
-      }, { threshold: 0.1 });
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (
+              entry.isIntersecting &&
+              !container.classList.contains("hidden")
+            ) {
+              this.loadMore();
+            }
+          });
+        },
+        { threshold: 0.1 },
+      );
       observer.observe(container);
     }
 
-    const button = container.querySelector('#load-more-btn');
+    const button = container.querySelector("#load-more-btn");
     if (button) {
-      button.addEventListener('click', () => this.loadMore());
+      button.addEventListener("click", () => this.loadMore());
     }
   }
 
   setupProductActions() {
-    document.addEventListener('click', (e) => {
-      const target = e.target.closest('[data-action]');
+    document.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-action]");
       if (!target) return;
-      
-      console.log('Product action clicked:', target.dataset.action, target.dataset.id);
+
+      console.log(
+        "Product action clicked:",
+        target.dataset.action,
+        target.dataset.id,
+      );
 
       const action = target.dataset.action;
       const id = Number(target.dataset.id);
 
-      if (action === 'add-to-cart') {
+      if (action === "add-to-cart") {
         e.stopPropagation();
         const product = this.service.getProductById(id);
         if (product && window.cartController) {
-          const img = target.closest('.product-card')?.querySelector('img');
+          const img = target.closest(".product-card")?.querySelector("img");
           window.cartController.addToCart(product, 1, img);
         }
-      } else if (action === 'open-modal') {
+      } else if (action === "open-modal") {
         if (window.modalController) {
           window.modalController.open(id);
         }
@@ -134,21 +145,23 @@ export class ProductsController {
     this.isLoading = true;
     const items = this.service.loadMore();
     this.renderer.append(items);
-    setTimeout(() => { this.isLoading = false; }, 300);
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 300);
   }
 
   resetFilters() {
     this.service.resetFilters();
-    if (this.renderer.searchInput) this.renderer.searchInput.value = '';
-    if (this.renderer.sortSelect) this.renderer.sortSelect.value = 'default';
+    if (this.renderer.searchInput) this.renderer.searchInput.value = "";
+    if (this.renderer.sortSelect) this.renderer.sortSelect.value = "default";
     if (this.renderer.priceSlider) {
       this.renderer.priceSlider.value = 350000;
       this.renderer.updatePriceDisplay(350000);
     }
-    const container = document.getElementById('search-suggestion');
+    const container = document.getElementById("search-suggestion");
     if (container) {
-      container.classList.add('hidden');
-      container.innerHTML = '';
+      container.classList.add("hidden");
+      container.innerHTML = "";
     }
   }
 
