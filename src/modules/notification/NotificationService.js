@@ -1,6 +1,6 @@
-import { Logger } from '../../core/services/Logger.js';
+import { Logger } from "../../core/services/Logger.js";
 
-const STORAGE_KEY = 'triad_notifications';
+const STORAGE_KEY = "triad_notifications";
 
 export class NotificationService {
   constructor() {
@@ -18,26 +18,26 @@ export class NotificationService {
         this.notifications = [
           {
             id: Date.now() + 1,
-            title: 'Welcome to TriAD!',
-            message: 'Discover our premium kitchenware collection.',
-            type: 'info',
+            title: "Welcome to TriAD!",
+            message: "Discover our premium kitchenware collection.",
+            type: "info",
             read: false,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           },
           {
             id: Date.now() + 2,
-            title: 'Hot Sale!',
-            message: 'Up to 30% off on all glass containers.',
-            type: 'promotion',
+            title: "Hot Sale!",
+            message: "Up to 30% off on all glass containers.",
+            type: "promotion",
             read: false,
-            createdAt: new Date().toISOString()
-          }
+            createdAt: new Date().toISOString(),
+          },
         ];
         this.save();
       }
       this.updateUnreadCount();
     } catch (e) {
-      Logger.warn('Load notifications error:', e);
+      Logger.warn("Load notifications error:", e);
       this.notifications = [];
       this.unreadCount = 0;
     }
@@ -48,12 +48,12 @@ export class NotificationService {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.notifications));
     } catch (e) {
-      Logger.warn('Save notifications error:', e);
+      Logger.warn("Save notifications error:", e);
     }
   }
 
   updateUnreadCount() {
-    this.unreadCount = this.notifications.filter(n => !n.read).length;
+    this.unreadCount = this.notifications.filter((n) => !n.read).length;
     return this.unreadCount;
   }
 
@@ -62,21 +62,21 @@ export class NotificationService {
   }
 
   getUnread() {
-    return this.notifications.filter(n => !n.read);
+    return this.notifications.filter((n) => !n.read);
   }
 
   getLatest(limit = 5) {
     return [...this.notifications].slice(0, limit);
   }
 
-  add(title, message, type = 'info') {
+  add(title, message, type = "info") {
     const notif = {
       id: Date.now() + Math.random() * 1000,
       title,
       message,
       type,
       read: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
     this.notifications.unshift(notif);
     this.save();
@@ -85,7 +85,7 @@ export class NotificationService {
   }
 
   markAsRead(id) {
-    const notif = this.notifications.find(n => n.id === id);
+    const notif = this.notifications.find((n) => n.id === id);
     if (notif && !notif.read) {
       notif.read = true;
       this.save();
@@ -97,7 +97,7 @@ export class NotificationService {
 
   markAllAsRead() {
     let changed = false;
-    this.notifications.forEach(n => {
+    this.notifications.forEach((n) => {
       if (!n.read) {
         n.read = true;
         changed = true;
