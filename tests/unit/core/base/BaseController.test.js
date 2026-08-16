@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { BaseController } from '../../../../src/core/base/BaseController.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { BaseController } from "../../../../src/core/base/BaseController.js";
 
-describe('BaseController', () => {
+describe("BaseController", () => {
   let controller;
   let mockService;
   let mockRenderer;
@@ -23,24 +23,24 @@ describe('BaseController', () => {
     delete window.eventBus;
   });
 
-  it('should initialize correctly', () => {
+  it("should initialize correctly", () => {
     expect(controller._isInitialized).toBe(false);
     controller.initialize();
     expect(controller._isInitialized).toBe(true);
   });
 
-  it('should not re-initialize if already initialized', () => {
+  it("should not re-initialize if already initialized", () => {
     controller.initialize();
-    const setupSpy = vi.spyOn(controller, 'setupEventListeners');
+    const setupSpy = vi.spyOn(controller, "setupEventListeners");
     controller.initialize();
     expect(setupSpy).not.toHaveBeenCalled();
   });
 
-  it('should setup event listeners (no-op by default)', () => {
+  it("should setup event listeners (no-op by default)", () => {
     expect(() => controller.setupEventListeners()).not.toThrow();
   });
 
-  it('should destroy and clean up subscriptions', () => {
+  it("should destroy and clean up subscriptions", () => {
     const unsubscribe = vi.fn();
     controller._eventSubscriptions = [unsubscribe];
     controller.destroy();
@@ -49,10 +49,10 @@ describe('BaseController', () => {
     expect(controller._isInitialized).toBe(false);
   });
 
-  it('should subscribe to events', () => {
+  it("should subscribe to events", () => {
     const callback = vi.fn();
-    const unsubscribe = controller.subscribe('test', callback);
-    expect(mockEventBus.on).toHaveBeenCalledWith('test', callback);
+    const unsubscribe = controller.subscribe("test", callback);
+    expect(mockEventBus.on).toHaveBeenCalledWith("test", callback);
     expect(controller._eventSubscriptions).toContain(unsubscribe);
   });
 });
