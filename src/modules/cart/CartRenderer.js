@@ -1,43 +1,43 @@
-import { formatPrice } from '../../shared/utils/helpers.js';
+import { formatPrice } from "../../shared/utils/helpers.js";
 
 export class CartRenderer {
-    constructor() {
-        this.container = document.querySelector('.cart-scroll');
-        this.totalElement = document.getElementById('cart-total');
-        this.checkoutBtn = document.getElementById('checkout-btn');
+  constructor() {
+    this.container = document.querySelector(".cart-scroll");
+    this.totalElement = document.getElementById("cart-total");
+    this.checkoutBtn = document.getElementById("checkout-btn");
+  }
+
+  render(items) {
+    if (!this.container) return;
+
+    this.container.innerHTML = "";
+
+    if (!items || items.length === 0) {
+      this.renderEmpty();
+      this.updateTotal(0);
+      this.updateBadge(0);
+      return;
     }
 
-    render(items) {
-        if (!this.container) return;
+    items.forEach((item) => {
+      const element = this.createItemElement(item);
+      this.container.appendChild(element);
+    });
 
-        this.container.innerHTML = '';
+    const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+    this.updateTotal(total);
+    this.updateBadge(items.reduce((sum, item) => sum + item.quantity, 0));
+  }
 
-        if (!items || items.length === 0) {
-            this.renderEmpty();
-            this.updateTotal(0);
-            this.updateBadge(0);
-            return;
-        }
+  createItemElement(item) {
+    const div = document.createElement("div");
+    div.className = "flex gap-4 border-b border-gray-100 pb-6";
+    div.dataset.id = item.id;
 
-        items.forEach(item => {
-            const element = this.createItemElement(item);
-            this.container.appendChild(element);
-        });
-
-        const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-        this.updateTotal(total);
-        this.updateBadge(items.reduce((sum, item) => sum + item.quantity, 0));
-    }
-
-    createItemElement(item) {
-        const div = document.createElement('div');
-        div.className = 'flex gap-4 border-b border-gray-100 pb-6';
-        div.dataset.id = item.id;
-
-        div.innerHTML = `
+    div.innerHTML = `
             <div class="w-20 h-24 bg-gray-50 rounded flex items-center justify-center overflow-hidden">
                 <img src="${item.image}" 
-                    class="w-full h-full object-contain ${item.filter || ''}" 
+                    class="w-full h-full object-contain ${item.filter || ""}" 
                     alt="${item.name}">
             </div>
             <div class="flex-1">
@@ -67,36 +67,36 @@ export class CartRenderer {
             </div>
         `;
 
-        return div;
-    }
+    return div;
+  }
 
-    renderEmpty() {
-        this.container.innerHTML = `
+  renderEmpty() {
+    this.container.innerHTML = `
             <div class="text-center py-20">
                 <i class="ph ph-shopping-cart text-6xl text-gray-300"></i>
                 <p class="mt-4 text-gray-500">The shopping cart is empty.</p>
             </div>
         `;
-    }
+  }
 
-    updateBadge(count) {
-        const badge = document.getElementById('cart-badge');
-        if (badge) {
-            badge.textContent = count;
-            badge.style.display = count > 0 ? 'flex' : 'none';
-        }
+  updateBadge(count) {
+    const badge = document.getElementById("cart-badge");
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? "flex" : "none";
     }
+  }
 
-    updateTotal(total) {
-        if (this.totalElement) {
-            this.totalElement.textContent = formatPrice(total);
-        }
+  updateTotal(total) {
+    if (this.totalElement) {
+      this.totalElement.textContent = formatPrice(total);
     }
+  }
 
-    setCheckoutEnabled(enabled) {
-        if (this.checkoutBtn) {
-            this.checkoutBtn.disabled = !enabled;
-            this.checkoutBtn.style.opacity = enabled ? '1' : '0.5';
-        }
+  setCheckoutEnabled(enabled) {
+    if (this.checkoutBtn) {
+      this.checkoutBtn.disabled = !enabled;
+      this.checkoutBtn.style.opacity = enabled ? "1" : "0.5";
     }
+  }
 }
