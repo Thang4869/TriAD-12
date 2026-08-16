@@ -45,6 +45,7 @@ describe("ProductsRenderer", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   describe("constructor", () => {
@@ -69,14 +70,33 @@ describe("ProductsRenderer", () => {
       );
     });
 
-    it("should retry finding container if not found", () => {
+    it("should retry finding container and eventually give up after max retries", () => {
       document.body.innerHTML = "";
       vi.useFakeTimers();
       const renderer2 = new ProductsRenderer();
       expect(renderer2.container).toBeNull();
+
       vi.advanceTimersByTime(100);
       expect(renderer2.container).toBeNull();
+
       vi.advanceTimersByTime(100);
+      expect(renderer2.container).toBeNull();
+      vi.advanceTimersByTime(200);
+      expect(renderer2.container).toBeNull();
+      vi.useRealTimers();
+    });
+
+    it("should stop retrying after max retries", () => {
+      document.body.innerHTML = "";
+      vi.useFakeTimers();
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const renderer2 = new ProductsRenderer();
+
+      for (let i = 0; i < 3; i++) {
+        vi.advanceTimersByTime(100);
+      }
+      expect(renderer2.container).toBeNull();
+      consoleWarnSpy.mockRestore();
       vi.useRealTimers();
     });
   });
@@ -113,6 +133,32 @@ describe("ProductsRenderer", () => {
       );
       debugSpy.mockRestore();
     });
+
+    it("should show load more when totalCount greater than products length", () => {
+      renderer.render(mockProducts, 10);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(false);
+    });
+
+    it("should hide load more when totalCount equals products length", () => {
+      renderer.render(mockProducts, 2);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+    });
+
+    it("should handle totalCount as null/undefined (fallback to products length)", () => {
+      renderer.render(mockProducts);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+      expect(renderer.countElement.textContent).toBe("2 products");
+    });
+
+    it("should handle totalCount as 0 (falsy value)", () => {
+      renderer.render(mockProducts, 0);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+      expect(renderer.countElement.textContent).toBe("2 products");
+    });
   });
 
   describe("append", () => {
@@ -135,6 +181,51 @@ describe("ProductsRenderer", () => {
         initialCount,
       );
     });
+
+    it("should update load more based on dataset total", () => {
+      renderer.countElement.dataset.total = "5";
+      renderer.render([mockProducts[0]], 5);
+      renderer.append([mockProducts[1]]);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(false);
+    });
+
+    it("should handle missing container in append gracefully", () => {
+      document.body.innerHTML = "";
+      const renderer2 = new ProductsRenderer();
+      renderer2.container = null;
+      expect(() => renderer2.append(mockProducts)).not.toThrow();
+    });
+
+    it("should handle missing dataset.total when updating load more", () => {
+      renderer.render([mockProducts[0]], 5);
+      renderer.countElement.dataset.total = undefined;
+      renderer.append([mockProducts[1]]);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+    });
+
+    it("should handle missing countElement when updating load more", () => {
+      document.body.innerHTML = `
+        <div id="product-grid"></div>
+        <div id="load-more-container" class="hidden"></div>
+      `;
+      const renderer2 = new ProductsRenderer();
+      expect(renderer2.countElement).toBeNull();
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = '<div class="product-card"></div><div class="product-card"></div>';
+      renderer2.append([mockProducts[0]]);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+    });
+
+    it("should handle dataset.total undefined when countElement exists", () => {
+      renderer.render([mockProducts[0]], 5);
+      renderer.countElement.dataset.total = undefined;
+      renderer.append([mockProducts[1]]);
+      const container = document.getElementById("load-more-container");
+      expect(container.classList.contains("hidden")).toBe(true);
+    });
   });
 
   describe("createProductCard", () => {
@@ -156,6 +247,20 @@ describe("ProductsRenderer", () => {
       const card = renderer.createProductCard(product);
       const img = card.querySelector("img");
       expect(img.className).toContain("grayscale");
+    });
+
+    it("should handle product without filter (undefined)", () => {
+      const product = new ProductModel({
+        id: 3,
+        name: "No Filter",
+        color: "Red",
+        price: 100000,
+        image: "test.jpg",
+      });
+      const card = renderer.createProductCard(product);
+      const img = card.querySelector("img");
+      expect(img.className).not.toContain("undefined");
+      expect(img.className).toContain("product-image");
     });
 
     it("should return null if document is undefined (SSR safeguard)", () => {
@@ -185,40 +290,40 @@ describe("ProductsRenderer", () => {
       expect(mockReset).toHaveBeenCalled();
       delete window.productsController;
     });
+
+    it("should handle clear filters click safely when productsController missing", () => {
+      const original = window.productsController;
+      delete window.productsController;
+      renderer.renderEmpty();
+      const clearBtn = document.getElementById("clear-search-btn");
+      expect(() => clearBtn.click()).not.toThrow();
+      window.productsController = original;
+    });
   });
 
-  describe("updateCount", () => {
+  describe("UI updates", () => {
     it("should update count element and dataset", () => {
       renderer.updateCount(10);
       expect(renderer.countElement.textContent).toBe("10 products");
       expect(renderer.countElement.dataset.total).toBe("10");
     });
-  });
 
-  describe("updateLoadMore", () => {
-    it("should show load more when hasMore true", () => {
+    it("should show/hide load more", () => {
       renderer.updateLoadMore(true);
       expect(renderer.loadMoreContainer.classList.contains("hidden")).toBe(
         false,
       );
-    });
-
-    it("should hide load more when hasMore false", () => {
       renderer.updateLoadMore(false);
       expect(renderer.loadMoreContainer.classList.contains("hidden")).toBe(
         true,
       );
     });
-  });
 
-  describe("updatePriceDisplay", () => {
     it("should update price display", () => {
       renderer.updatePriceDisplay(250000);
       expect(renderer.priceValue.textContent).toBe("250.000 ₫");
     });
-  });
 
-  describe("getUIState", () => {
     it("should return current UI state", () => {
       const select = document.getElementById("sort-select");
       select.innerHTML =
@@ -231,6 +336,18 @@ describe("ProductsRenderer", () => {
         keyword: "glass",
         sort: "price-asc",
         maxPrice: 200000,
+      });
+    });
+
+    it("should return default UI state when inputs are empty", () => {
+      document.getElementById("search-input").value = "";
+      document.getElementById("sort-select").value = "default";
+      document.getElementById("price-slider").value = "350000";
+      const state = renderer.getUIState();
+      expect(state).toEqual({
+        keyword: "",
+        sort: "default",
+        maxPrice: 350000,
       });
     });
   });
@@ -248,20 +365,58 @@ describe("ProductsRenderer", () => {
       expect(onSuggestionClick).toHaveBeenCalledWith(1);
     });
 
-    it("should hide suggestions when keyword empty or no products", () => {
+    it("should hide suggestions when keyword empty", () => {
       const container = document.getElementById("search-suggestion");
       renderer.renderSuggestions("", mockProducts, vi.fn());
       expect(container.classList.contains("hidden")).toBe(true);
       expect(container.innerHTML).toBe("");
+    });
 
+    it("should hide suggestions when products empty", () => {
+      const container = document.getElementById("search-suggestion");
       renderer.renderSuggestions("glass", [], vi.fn());
       expect(container.classList.contains("hidden")).toBe(true);
     });
 
-    it("should hide suggestions when keyword length < 1", () => {
+    it("should hide suggestions when keyword length < 1 (edge case)", () => {
       const container = document.getElementById("search-suggestion");
       renderer.renderSuggestions("", mockProducts, vi.fn());
       expect(container.classList.contains("hidden")).toBe(true);
+    });
+
+    it("should do nothing if suggestion container not found", () => {
+      document.getElementById("search-suggestion")?.remove();
+      const debugSpy = vi.spyOn(Logger, "debug").mockImplementation(() => {});
+      renderer.renderSuggestions("glass", mockProducts, vi.fn());
+      debugSpy.mockRestore();
+    });
+
+    it("should call onSuggestionClick when a suggestion is clicked", () => {
+      const onSuggestionClick = vi.fn();
+      const container = document.getElementById("search-suggestion");
+      renderer.renderSuggestions("glass", mockProducts, onSuggestionClick);
+      const firstItem = container.querySelector('[data-id="1"]');
+      firstItem.click();
+      expect(onSuggestionClick).toHaveBeenCalledWith(1);
+    });
+
+    it("should handle missing onSuggestionClick gracefully", () => {
+      const container = document.getElementById("search-suggestion");
+      renderer.renderSuggestions("glass", mockProducts, null);
+      const firstItem = container.querySelector('[data-id="1"]');
+      expect(() => firstItem.click()).not.toThrow();
+    });
+
+    it("should hide suggestions when keyword is null or undefined", () => {
+      const container = document.getElementById("search-suggestion");
+      container.classList.remove("hidden");
+      renderer.renderSuggestions(null, mockProducts, vi.fn());
+      expect(container.classList.contains("hidden")).toBe(true);
+      expect(container.innerHTML).toBe("");
+
+      renderer.renderSuggestions(undefined, mockProducts, vi.fn());
+      expect(container.classList.contains("hidden")).toBe(true);
+      expect(container.innerHTML).toBe("");
     });
   });
 });
