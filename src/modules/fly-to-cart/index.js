@@ -1,1 +1,1 @@
-export { FlyToCart, flyToCart } from './FlyToCartService.js';
+export { FlyToCart, flyToCart } from "./FlyToCartService.js";
