@@ -5,8 +5,8 @@ export class EventBus {
   }
 
   on(event, callback, context = null) {
-    if (typeof callback !== 'function') {
-      throw new Error('Callback must be a function');
+    if (typeof callback !== "function") {
+      throw new Error("Callback must be a function");
     }
 
     if (!this._events.has(event)) {
@@ -37,7 +37,7 @@ export class EventBus {
     if (!this._events.has(event)) return;
 
     const entries = this._events.get(event);
-    const filtered = entries.filter(entry => {
+    const filtered = entries.filter((entry) => {
       if (context !== null) {
         return !(entry.callback === callback && entry.context === context);
       }
@@ -54,7 +54,7 @@ export class EventBus {
   emit(event, data = null) {
     if (this._events.has(event)) {
       const entries = [...this._events.get(event)];
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         try {
           entry.callback.call(entry.context, data);
         } catch (error) {
