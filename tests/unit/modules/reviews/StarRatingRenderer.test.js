@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { StarRatingRenderer } from '../../../../src/modules/reviews/StarRatingRenderer.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import { StarRatingRenderer } from "../../../../src/modules/reviews/StarRatingRenderer.js";
 
-describe('StarRatingRenderer', () => {
+describe("StarRatingRenderer", () => {
   let renderer;
 
   beforeEach(() => {
@@ -15,26 +15,26 @@ describe('StarRatingRenderer', () => {
       </div>
       <span id="selected-rating">0/5</span>
     `;
-    renderer = new StarRatingRenderer('#star-rating', '#selected-rating');
+    renderer = new StarRatingRenderer("#star-rating", "#selected-rating");
   });
 
-  it('should initialize with no rating', () => {
+  it("should initialize with no rating", () => {
     expect(renderer.getRating()).toBe(0);
-    expect(document.getElementById('selected-rating').textContent).toBe('0/5');
+    expect(document.getElementById("selected-rating").textContent).toBe("0/5");
   });
 
-  it('should select rating on click', () => {
-    const stars = document.querySelectorAll('.star-rating');
+  it("should select rating on click", () => {
+    const stars = document.querySelectorAll(".star-rating");
     stars[3].click(); // rating 4
     expect(renderer.getRating()).toBe(4);
-    expect(document.getElementById('selected-rating').textContent).toBe('4/5');
+    expect(document.getElementById("selected-rating").textContent).toBe("4/5");
   });
 
-  it('should reset rating', () => {
-    const stars = document.querySelectorAll('.star-rating');
+  it("should reset rating", () => {
+    const stars = document.querySelectorAll(".star-rating");
     stars[2].click();
     renderer.reset();
     expect(renderer.getRating()).toBe(0);
-    expect(document.getElementById('selected-rating').textContent).toBe('0/5');
+    expect(document.getElementById("selected-rating").textContent).toBe("0/5");
   });
 });
