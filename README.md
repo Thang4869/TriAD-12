@@ -127,9 +127,9 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 
 ## Live Demo
 
-| Item | Link |
-|---|---|
-| Live Demo | [https://thang4869.github.io/TriAD-12/](https://thang4869.github.io/TriAD-12/) |
+| Item       | Link                                                                           |
+| ---------- | ------------------------------------------------------------------------------ |
+| Live Demo  | [https://thang4869.github.io/TriAD-12/](https://thang4869.github.io/TriAD-12/) |
 | Repository | [https://github.com/Thang4869/TriAD-12](https://github.com/Thang4869/TriAD-12) |
 
 > [!TIP]
@@ -137,31 +137,31 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 
 ## Repository
 
-| Field | Value |
-|---|---|
-| Owner | `Thang4869` |
-| Repository | `TriAD-12` |
-| Live Site | [thang4869.github.io/TriAD-12](https://thang4869.github.io/TriAD-12/) |
-| License | See the badge above |
+| Field      | Value                                                                 |
+| ---------- | --------------------------------------------------------------------- |
+| Owner      | `Thang4869`                                                           |
+| Repository | `TriAD-12`                                                            |
+| Live Site  | [thang4869.github.io/TriAD-12](https://thang4869.github.io/TriAD-12/) |
+| License    | See the badge above                                                   |
 
 ## Features
 
 ### Core Features
 
-| Feature | Evidence in source | Notes |
-|---|---|---|
-| Product catalog | [src/config/products.config.js](src/config/products.config.js) | 5 TriAD product entries are loaded into the storefront |
-| Product rendering | [src/modules/products/index.js](src/modules/products/index.js) | Catalog is rendered by the products module |
-| Search with debounce | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Search input is debounced before updating filters |
-| Search suggestions | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Suggestions are rendered while typing |
-| Sort and price filters | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Sort select and price filter are wired into the service layer |
-| Cart drawer | [src/modules/cart/index.js](src/modules/cart/index.js) | Drawer open/close behavior is controlled from the cart module |
-| Add-to-cart flow | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Product actions can add items to cart |
-| Fly-to-cart animation | [src/modules/fly-to-cart/index.js](src/modules/fly-to-cart/index.js) | Separate animation module is imported at app start |
-| Product detail modal | [src/modules/modal/index.js](src/modules/modal/index.js) | Modal opens from the product catalog |
-| Checkout flow | [src/modules/checkout/index.js](src/modules/checkout/index.js) | Checkout modal, validation, processing, and success modal are implemented |
-| Toast notifications | [src/modules/toast/index.js](src/modules/toast/index.js) | Toast service renders success, info, warning, and error messages |
-| Persistence | [src/shared/services/storage.service.js](src/shared/services/storage.service.js) | Cart, products, filters, and orders use localStorage abstraction |
+| Feature                | Evidence in source                                                                         | Notes                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Product catalog        | [src/config/products.config.js](src/config/products.config.js)                             | 5 TriAD product entries are loaded into the storefront                    |
+| Product rendering      | [src/modules/products/index.js](src/modules/products/index.js)                             | Catalog is rendered by the products module                                |
+| Search with debounce   | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Search input is debounced before updating filters                         |
+| Search suggestions     | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Suggestions are rendered while typing                                     |
+| Sort and price filters | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Sort select and price filter are wired into the service layer             |
+| Cart drawer            | [src/modules/cart/index.js](src/modules/cart/index.js)                                     | Drawer open/close behavior is controlled from the cart module             |
+| Add-to-cart flow       | [src/modules/products/products.controller.js](src/modules/products/products.controller.js) | Product actions can add items to cart                                     |
+| Fly-to-cart animation  | [src/modules/fly-to-cart/index.js](src/modules/fly-to-cart/index.js)                       | Separate animation module is imported at app start                        |
+| Product detail modal   | [src/modules/modal/index.js](src/modules/modal/index.js)                                   | Modal opens from the product catalog                                      |
+| Checkout flow          | [src/modules/checkout/index.js](src/modules/checkout/index.js)                             | Checkout modal, validation, processing, and success modal are implemented |
+| Toast notifications    | [src/modules/toast/index.js](src/modules/toast/index.js)                                   | Toast service renders success, info, warning, and error messages          |
+| Persistence            | [src/shared/services/storage.service.js](src/shared/services/storage.service.js)           | Cart, products, filters, and orders use localStorage abstraction          |
 
 ### Highlight Features
 
@@ -178,8 +178,8 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 > TODO
 > Replace the placeholders below with real captures from the live demo.
 
-| Desktop | Tablet | Mobile |
-|---|---|---|
+| Desktop                                                                                                                                  | Tablet                                                                                                                                 | Mobile                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | <img src="images/coccoc_screenshot_thang4869.github.io_desktop.jpg" alt="Desktop Screenshot" width="100%" style="border-radius: 8px;" /> | <img src="images/coccoc_screenshot_thang4869.github.io_tablet.jpg" alt="Tablet Screenshot" width="100%" style="border-radius: 8px;" /> | <img src="images/coccoc_screenshot_thang4869.github.io_phone.jpg" alt="Mobile Screenshot" width="100%" style="border-radius: 8px;" /> |
 
 ## GIF Demo
@@ -191,15 +191,14 @@ Trong mã nguồn hiện tại, ứng dụng khởi động từ [src/index.js](
 
 ## Tech Stack
 
-| Category | Technology | Notes |
-|---|---|---|
-| Frontend | HTML5, CSS3, JavaScript (ES Modules) | Core UI, styling, and application logic |
-| Backend | None at runtime | The repository is a client-side application; source includes a simulated API service scaffold |
-| Database | localStorage | Used through the storage abstraction for cart and order persistence |
-| Tools | Git, GitHub, native browser APIs, Mermaid, Event Bus | Supporting workflow and application infrastructure |
-| Design | Tailwind CSS CDN, Google Fonts (Jost), Phosphor Icons | Visual system and typography used by the UI |
-| Deployment | GitHub Pages | Static hosting for the live demo |
-
+| Category   | Technology                                            | Notes                                                                                         |
+| ---------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Frontend   | HTML5, CSS3, JavaScript (ES Modules)                  | Core UI, styling, and application logic                                                       |
+| Backend    | None at runtime                                       | The repository is a client-side application; source includes a simulated API service scaffold |
+| Database   | localStorage                                          | Used through the storage abstraction for cart and order persistence                           |
+| Tools      | Git, GitHub, native browser APIs, Mermaid, Event Bus  | Supporting workflow and application infrastructure                                            |
+| Design     | Tailwind CSS CDN, Google Fonts (Jost), Phosphor Icons | Visual system and typography used by the UI                                                   |
+| Deployment | GitHub Pages                                          | Static hosting for the live demo                                                              |
 
 ## System Architecture
 
@@ -244,13 +243,13 @@ Controllers --> UI
 
 ### Architecture Layers
 
-| Layer | Responsibilities | Verified Components |
-|---|---|---|
-| Presentation | Render layout, sections, product cards, modal containers, styles | `index.html`, `pages/*.html`, `src/styles/*`, `src/ui/components/product-card.component.js` |
-| Application | Bootstrap the app, initialize controllers, wire global behaviors | `src/index.js`, `src/app/bootstrap.js`, `src/app/app.js` |
-| Domain | Encapsulate business entities and computed values | `src/shared/models/product.model.js`, `src/shared/models/cart-item.model.js`, `src/shared/models/order.model.js` |
-| Business Logic | Apply filters, validation, checkout processing, modal state | `src/modules/products/*`, `src/modules/cart/*`, `src/modules/checkout/*`, `src/modules/modal/*` |
-| Data Access | Persist and hydrate application state | `src/shared/repositories/base.repository.js`, `src/modules/*/*.repository.js`, `src/shared/services/storage.service.js` |
+| Layer          | Responsibilities                                                 | Verified Components                                                                                                     |
+| -------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Presentation   | Render layout, sections, product cards, modal containers, styles | `index.html`, `pages/*.html`, `src/styles/*`, `src/ui/components/product-card.component.js`                             |
+| Application    | Bootstrap the app, initialize controllers, wire global behaviors | `src/index.js`, `src/app/bootstrap.js`, `src/app/app.js`                                                                |
+| Domain         | Encapsulate business entities and computed values                | `src/shared/models/product.model.js`, `src/shared/models/cart-item.model.js`, `src/shared/models/order.model.js`        |
+| Business Logic | Apply filters, validation, checkout processing, modal state      | `src/modules/products/*`, `src/modules/cart/*`, `src/modules/checkout/*`, `src/modules/modal/*`                         |
+| Data Access    | Persist and hydrate application state                            | `src/shared/repositories/base.repository.js`, `src/modules/*/*.repository.js`, `src/shared/services/storage.service.js` |
 
 ## Folder Structure
 
@@ -313,14 +312,14 @@ TriAD-12/
 
 ## Module Overview
 
-| Module | Responsibility | Key Files |
-|---|---|---|
-| Cart | Add/remove items, quantity changes, drawer state, badge updates | `src/modules/cart/cart.controller.js`, `cart.service.js`, `cart.repository.js`, `cart.renderer.js` |
-| Products | Load catalog, search, filter, sort, paginate, render cards and suggestions | `src/modules/products/products.controller.js`, `products.service.js`, `products.repository.js`, `products.renderer.js` |
-| Checkout | Validate form data, calculate totals, create orders, show success flow | `src/modules/checkout/checkout.controller.js`, `checkout.service.js`, `checkout.validator.js` |
-| Modal | Open/close product detail modal and coordinate quantity state | `src/modules/modal/modal.controller.js`, `modal.service.js` |
-| Toast | Render transient notifications with auto-dismiss and limits | `src/modules/toast/toast.service.js`, `toast.renderer.js` |
-| Fly-to-Cart | Animate product image toward the cart badge | `src/modules/fly-to-cart/index.js` |
+| Module      | Responsibility                                                             | Key Files                                                                                                              |
+| ----------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Cart        | Add/remove items, quantity changes, drawer state, badge updates            | `src/modules/cart/cart.controller.js`, `cart.service.js`, `cart.repository.js`, `cart.renderer.js`                     |
+| Products    | Load catalog, search, filter, sort, paginate, render cards and suggestions | `src/modules/products/products.controller.js`, `products.service.js`, `products.repository.js`, `products.renderer.js` |
+| Checkout    | Validate form data, calculate totals, create orders, show success flow     | `src/modules/checkout/checkout.controller.js`, `checkout.service.js`, `checkout.validator.js`                          |
+| Modal       | Open/close product detail modal and coordinate quantity state              | `src/modules/modal/modal.controller.js`, `modal.service.js`                                                            |
+| Toast       | Render transient notifications with auto-dismiss and limits                | `src/modules/toast/toast.service.js`, `toast.renderer.js`                                                              |
+| Fly-to-Cart | Animate product image toward the cart badge                                | `src/modules/fly-to-cart/index.js`                                                                                     |
 
 ## Data Flow
 
@@ -381,36 +380,36 @@ flowchart LR
 
 ## SOLID
 
-| Principle | Implementation Evidence |
-|---|---|
-| Single Responsibility | Controllers coordinate, services apply business rules, repositories persist data, renderers output UI |
-| Open/Closed | Repositories and services can be extended without rewriting shared abstractions such as `BaseRepository` |
-| Liskov Substitution | `CartRepository` and `ProductsRepository` can be used through `BaseRepository`-style behavior |
-| Interface Segregation | Each module exposes a focused surface instead of a monolithic API |
-| Dependency Inversion | Controllers depend on services and repositories, while storage details are hidden behind abstractions |
+| Principle             | Implementation Evidence                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| Single Responsibility | Controllers coordinate, services apply business rules, repositories persist data, renderers output UI    |
+| Open/Closed           | Repositories and services can be extended without rewriting shared abstractions such as `BaseRepository` |
+| Liskov Substitution   | `CartRepository` and `ProductsRepository` can be used through `BaseRepository`-style behavior            |
+| Interface Segregation | Each module exposes a focused surface instead of a monolithic API                                        |
+| Dependency Inversion  | Controllers depend on services and repositories, while storage details are hidden behind abstractions    |
 
 ## Design Patterns
 
-| Pattern | Status in repo | Evidence |
-|---|---|---|
-| Factory | Used | `fromJSON()` methods in `Product`, `CartItem`, `Order` |
-| Strategy | Used | `ProductsService.applySort()` switches sort behavior by mode |
-| Observer | Used | `EventBus` with `on`, `once`, `off`, `emit` |
-| Singleton | Used | Exported shared instances such as `eventBus`, `storage`, and `toast` |
-| Module | Used | Native ES modules across `src/` |
-| MVC | Used | Controllers, services, repositories, and renderers are separated by responsibility |
-| Repository | Used | `BaseRepository`, `CartRepository`, `ProductsRepository` |
-| Adapter | Not used | No dedicated adapter layer was found in the current source tree |
+| Pattern    | Status in repo | Evidence                                                                           |
+| ---------- | -------------- | ---------------------------------------------------------------------------------- |
+| Factory    | Used           | `fromJSON()` methods in `Product`, `CartItem`, `Order`                             |
+| Strategy   | Used           | `ProductsService.applySort()` switches sort behavior by mode                       |
+| Observer   | Used           | `EventBus` with `on`, `once`, `off`, `emit`                                        |
+| Singleton  | Used           | Exported shared instances such as `eventBus`, `storage`, and `toast`               |
+| Module     | Used           | Native ES modules across `src/`                                                    |
+| MVC        | Used           | Controllers, services, repositories, and renderers are separated by responsibility |
+| Repository | Used           | `BaseRepository`, `CartRepository`, `ProductsRepository`                           |
+| Adapter    | Not used       | No dedicated adapter layer was found in the current source tree                    |
 
 ## Component Structure
 
-| Component Type | Examples | Role |
-|---|---|---|
-| HTML partials | `pages/header.html`, `pages/hero.html`, `pages/products.html` | Page sections loaded dynamically at bootstrap |
-| UI components | `src/ui/components/product-card.component.js` | Reusable card markup for catalog items |
-| Renderers | `cart.renderer.js`, `products.renderer.js`, `toast.renderer.js` | Convert application state into DOM output |
-| Controllers | `cart.controller.js`, `products.controller.js`, `modal.controller.js`, `checkout.controller.js` | Bind DOM events and orchestrate flows |
-| Services | `cart.service.js`, `products.service.js`, `modal.service.js`, `checkout.service.js` | Enforce business logic and state transitions |
+| Component Type | Examples                                                                                        | Role                                          |
+| -------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| HTML partials  | `pages/header.html`, `pages/hero.html`, `pages/products.html`                                   | Page sections loaded dynamically at bootstrap |
+| UI components  | `src/ui/components/product-card.component.js`                                                   | Reusable card markup for catalog items        |
+| Renderers      | `cart.renderer.js`, `products.renderer.js`, `toast.renderer.js`                                 | Convert application state into DOM output     |
+| Controllers    | `cart.controller.js`, `products.controller.js`, `modal.controller.js`, `checkout.controller.js` | Bind DOM events and orchestrate flows         |
+| Services       | `cart.service.js`, `products.service.js`, `modal.service.js`, `checkout.service.js`             | Enforce business logic and state transitions  |
 
 ## Naming Convention
 
@@ -451,14 +450,14 @@ npx serve .
 
 ## Environment
 
-| Item | Value |
-|---|---|
-| Runtime | Browser-native ES modules |
-| Styling | Tailwind CSS CDN |
-| Fonts | Google Fonts (`Jost`) |
-| Icons | Phosphor Icons CDN |
+| Item             | Value                               |
+| ---------------- | ----------------------------------- |
+| Runtime          | Browser-native ES modules           |
+| Styling          | Tailwind CSS CDN                    |
+| Fonts            | Google Fonts (`Jost`)               |
+| Icons            | Phosphor Icons CDN                  |
 | Data persistence | `localStorage` via `StorageService` |
-| Demo hosting | GitHub Pages |
+| Demo hosting     | GitHub Pages                        |
 
 ### Environment Notes
 
@@ -470,13 +469,13 @@ npx serve .
 
 There are no repository-defined npm scripts because the project does not ship a `package.json` file.
 
-| Script | Status | Notes |
-|---|---|---|
-| `install` | Not available | No package manifest is present |
-| `dev` | Not available | Use a local static server instead |
-| `build` | Not available | The app is served as static files |
-| `lint` | Not available | No lint configuration was found |
-| `test` | Not available | No test runner is configured |
+| Script    | Status        | Notes                             |
+| --------- | ------------- | --------------------------------- |
+| `install` | Not available | No package manifest is present    |
+| `dev`     | Not available | Use a local static server instead |
+| `build`   | Not available | The app is served as static files |
+| `lint`    | Not available | No lint configuration was found   |
+| `test`    | Not available | No test runner is configured      |
 
 ## Development Workflow
 
@@ -532,13 +531,13 @@ The repository is already published at [https://thang4869.github.io/TriAD-12/](h
 
 ## Git Workflow
 
-| Step | Practice |
-|---|---|
-| 1 | Make focused changes in a single feature area when possible |
-| 2 | Verify the browser flow locally through the static server |
-| 3 | Review the diff before pushing |
-| 4 | Commit with a message that describes the behavior change |
-| 5 | Push to the remote repository and re-check the GitHub Pages demo |
+| Step | Practice                                                         |
+| ---- | ---------------------------------------------------------------- |
+| 1    | Make focused changes in a single feature area when possible      |
+| 2    | Verify the browser flow locally through the static server        |
+| 3    | Review the diff before pushing                                   |
+| 4    | Commit with a message that describes the behavior change         |
+| 5    | Push to the remote repository and re-check the GitHub Pages demo |
 
 ## Branch Strategy
 
@@ -635,13 +634,13 @@ The current codebase already uses several lightweight performance choices that a
 
 ## Optimization
 
-| Area | Current Approach | Potential Next Step |
-|---|---|---|
-| Search | Debounced input updates | Add cached suggestion rendering |
-| Catalog | Pagination and load-more behavior | Virtualize very large lists |
-| Images | Lazy loading on product cards | Preload critical hero assets |
-| State | localStorage-backed persistence | Introduce server sync when backend exists |
-| UI updates | Renderer classes per feature | Batch DOM writes where needed |
+| Area       | Current Approach                  | Potential Next Step                       |
+| ---------- | --------------------------------- | ----------------------------------------- |
+| Search     | Debounced input updates           | Add cached suggestion rendering           |
+| Catalog    | Pagination and load-more behavior | Virtualize very large lists               |
+| Images     | Lazy loading on product cards     | Preload critical hero assets              |
+| State      | localStorage-backed persistence   | Introduce server sync when backend exists |
+| UI updates | Renderer classes per feature      | Batch DOM writes where needed             |
 
 ## Browser Support
 
@@ -716,23 +715,23 @@ No automated test suite is configured in the repository at the moment.
 
 ## FAQ
 
-| # | Question | Answer |
-|---|---|---|
-| 1 | Is this project a frontend-only application? | Yes. The current repository is a static client-side storefront. |
-| 2 | Does it require a backend to run? | No. The current user flow works without a backend. |
-| 3 | Why must I use a local server? | Because HTML partials are loaded with `fetch()`. |
-| 4 | Can I open `index.html` directly? | Not reliably. Use HTTP instead of `file://`. |
-| 5 | Where do products come from? | From `src/config/products.config.js`, then from browser storage if already cached. |
-| 6 | Is the cart persisted? | Yes, through `StorageService` and `localStorage`. |
-| 7 | Are search and filters persisted? | Yes, filter state is stored in browser storage. |
-| 8 | Is there a checkout validator? | Yes, `CheckoutValidator` checks required fields and formats. |
-| 9 | Does the project support modal interactions? | Yes, product detail, checkout, and success modals are present. |
-| 10 | Is there a toast system? | Yes, `ToastService` and `ToastRenderer` handle notifications. |
-| 11 | Does the project include tests? | No automated tests are configured yet. |
-| 12 | Does the project include linting? | No lint configuration was found in the repository. |
-| 13 | Does the project include a package manager setup? | No `package.json` is present in the current repository. |
-| 14 | Is there a backend API today? | No live backend is used by the current codebase. |
-| 15 | Can I use this as a portfolio project? | Yes. The repository shows modular architecture, state management, and documented flows. |
+| #   | Question                                          | Answer                                                                                  |
+| --- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 1   | Is this project a frontend-only application?      | Yes. The current repository is a static client-side storefront.                         |
+| 2   | Does it require a backend to run?                 | No. The current user flow works without a backend.                                      |
+| 3   | Why must I use a local server?                    | Because HTML partials are loaded with `fetch()`.                                        |
+| 4   | Can I open `index.html` directly?                 | Not reliably. Use HTTP instead of `file://`.                                            |
+| 5   | Where do products come from?                      | From `src/config/products.config.js`, then from browser storage if already cached.      |
+| 6   | Is the cart persisted?                            | Yes, through `StorageService` and `localStorage`.                                       |
+| 7   | Are search and filters persisted?                 | Yes, filter state is stored in browser storage.                                         |
+| 8   | Is there a checkout validator?                    | Yes, `CheckoutValidator` checks required fields and formats.                            |
+| 9   | Does the project support modal interactions?      | Yes, product detail, checkout, and success modals are present.                          |
+| 10  | Is there a toast system?                          | Yes, `ToastService` and `ToastRenderer` handle notifications.                           |
+| 11  | Does the project include tests?                   | No automated tests are configured yet.                                                  |
+| 12  | Does the project include linting?                 | No lint configuration was found in the repository.                                      |
+| 13  | Does the project include a package manager setup? | No `package.json` is present in the current repository.                                 |
+| 14  | Is there a backend API today?                     | No live backend is used by the current codebase.                                        |
+| 15  | Can I use this as a portfolio project?            | Yes. The repository shows modular architecture, state management, and documented flows. |
 
 ## Changelog
 
