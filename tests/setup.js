@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 global.IntersectionObserver = class IntersectionObserver {
   constructor(callback) {
