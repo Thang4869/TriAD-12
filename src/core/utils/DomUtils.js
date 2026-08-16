@@ -7,14 +7,16 @@ export const DomUtils = {
     return [...context.querySelectorAll(selector)];
   },
 
-  createElement(tag, classes = '', attributes = {}, children = '') {
+  createElement(tag, classes = "", attributes = {}, children = "") {
     const el = document.createElement(tag);
     if (classes) el.className = classes;
-    Object.entries(attributes).forEach(([key, value]) => el.setAttribute(key, value));
-    if (typeof children === 'string') {
+    Object.entries(attributes).forEach(([key, value]) =>
+      el.setAttribute(key, value),
+    );
+    if (typeof children === "string") {
       el.innerHTML = children;
     } else if (Array.isArray(children)) {
-      children.forEach(child => el.appendChild(child));
+      children.forEach((child) => el.appendChild(child));
     }
     return el;
   },
@@ -33,7 +35,7 @@ export const DomUtils = {
       if (!inThrottle) {
         fn(...args);
         inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
+        setTimeout(() => (inThrottle = false), limit);
       }
     };
   },
@@ -45,5 +47,5 @@ export const DomUtils = {
   isVisible(el) {
     const rect = el.getBoundingClientRect();
     return rect.top < window.innerHeight && rect.bottom > 0;
-  }
+  },
 };

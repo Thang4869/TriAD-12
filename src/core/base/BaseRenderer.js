@@ -7,7 +7,8 @@ export class BaseRenderer {
   }
 
   findContainer() {
-    this.container = document.getElementById(this.containerId) || this.container;
+    this.container =
+      document.getElementById(this.containerId) || this.container;
 
     if (!this.container && this._retryCount < this._maxRetries) {
       this._retryCount++;
@@ -21,7 +22,7 @@ export class BaseRenderer {
   update(data) {}
   clear() {
     if (this.container) {
-      this.container.innerHTML = '';
+      this.container.innerHTML = "";
     }
   }
 }

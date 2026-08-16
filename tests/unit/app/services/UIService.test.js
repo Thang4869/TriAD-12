@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UIService } from '../../../../src/app/services/UIService.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { UIService } from "../../../../src/app/services/UIService.js";
 
-describe('UIService', () => {
+describe("UIService", () => {
   let uiService;
   let mockCartController;
 
@@ -23,33 +23,33 @@ describe('UIService', () => {
     uiService = new UIService(mockCartController);
   });
 
-  it('should initialize mobile menu', () => {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
+  it("should initialize mobile menu", () => {
+    const btn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
     btn.click();
-    expect(menu.classList.contains('hidden')).toBe(false);
+    expect(menu.classList.contains("hidden")).toBe(false);
     btn.click();
-    expect(menu.classList.contains('hidden')).toBe(true);
+    expect(menu.classList.contains("hidden")).toBe(true);
   });
 
-  it('should open cart drawer on icon click', () => {
-    document.getElementById('cart-icon-btn').click();
+  it("should open cart drawer on icon click", () => {
+    document.getElementById("cart-icon-btn").click();
     expect(mockCartController.openDrawer).toHaveBeenCalled();
-    document.getElementById('mobile-cart-btn').click();
+    document.getElementById("mobile-cart-btn").click();
     expect(mockCartController.openDrawer).toHaveBeenCalledTimes(2);
   });
 
-  it('should close cart drawer on close button or overlay', () => {
-    document.getElementById('close-cart-btn').click();
+  it("should close cart drawer on close button or overlay", () => {
+    document.getElementById("close-cart-btn").click();
     expect(mockCartController.closeDrawer).toHaveBeenCalled();
-    document.getElementById('cart-overlay').click();
+    document.getElementById("cart-overlay").click();
     expect(mockCartController.closeDrawer).toHaveBeenCalledTimes(2);
   });
 
-  it('should hide search suggestion on outside click', () => {
-    const suggestion = document.getElementById('search-suggestion');
-    suggestion.classList.remove('hidden');
+  it("should hide search suggestion on outside click", () => {
+    const suggestion = document.getElementById("search-suggestion");
+    suggestion.classList.remove("hidden");
     document.body.click();
-    expect(suggestion.classList.contains('hidden')).toBe(true);
+    expect(suggestion.classList.contains("hidden")).toBe(true);
   });
 });

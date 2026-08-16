@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { NotificationRenderer } from '../../../../src/modules/notification/NotificationRenderer.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import { NotificationRenderer } from "../../../../src/modules/notification/NotificationRenderer.js";
 
-describe('NotificationRenderer', () => {
+describe("NotificationRenderer", () => {
   let renderer;
 
   beforeEach(() => {
@@ -15,55 +15,62 @@ describe('NotificationRenderer', () => {
     renderer = new NotificationRenderer();
   });
 
-  it('should render list', () => {
+  it("should render list", () => {
     const notifications = [
-      { id: 1, title: 'Test', message: 'Hello', type: 'info', read: false, createdAt: new Date().toISOString() },
+      {
+        id: 1,
+        title: "Test",
+        message: "Hello",
+        type: "info",
+        read: false,
+        createdAt: new Date().toISOString(),
+      },
     ];
     renderer.renderList(notifications);
-    const container = document.getElementById('notification-list');
-    expect(container.innerHTML).toContain('Test');
-    expect(container.innerHTML).toContain('Hello');
+    const container = document.getElementById("notification-list");
+    expect(container.innerHTML).toContain("Test");
+    expect(container.innerHTML).toContain("Hello");
   });
 
-  it('should render empty state', () => {
+  it("should render empty state", () => {
     renderer.renderList([]);
-    const container = document.getElementById('notification-list');
-    expect(container.innerHTML).toContain('All caught up!');
+    const container = document.getElementById("notification-list");
+    expect(container.innerHTML).toContain("All caught up!");
   });
 
-  it('should update badge', () => {
+  it("should update badge", () => {
     renderer.updateBadge(5);
-    const badge = document.getElementById('notification-badge');
-    expect(badge.textContent).toBe('5');
-    expect(badge.classList.contains('hidden')).toBe(false);
+    const badge = document.getElementById("notification-badge");
+    expect(badge.textContent).toBe("5");
+    expect(badge.classList.contains("hidden")).toBe(false);
 
     renderer.updateBadge(0);
-    expect(badge.classList.contains('hidden')).toBe(true);
+    expect(badge.classList.contains("hidden")).toBe(true);
   });
 
-  it('should show/hide dropdown', () => {
+  it("should show/hide dropdown", () => {
     renderer.showDropdown();
-    const dropdown = document.getElementById('notification-dropdown');
-    expect(dropdown.classList.contains('hidden')).toBe(false);
-    const overlay = document.getElementById('notification-overlay');
-    expect(overlay.classList.contains('hidden')).toBe(false);
+    const dropdown = document.getElementById("notification-dropdown");
+    expect(dropdown.classList.contains("hidden")).toBe(false);
+    const overlay = document.getElementById("notification-overlay");
+    expect(overlay.classList.contains("hidden")).toBe(false);
 
     renderer.hideDropdown();
-    expect(dropdown.classList.contains('hidden')).toBe(true);
-    expect(overlay.classList.contains('hidden')).toBe(true);
+    expect(dropdown.classList.contains("hidden")).toBe(true);
+    expect(overlay.classList.contains("hidden")).toBe(true);
   });
 
-  it('should format time', () => {
+  it("should format time", () => {
     const now = new Date();
     const result = renderer.formatTime(now.toISOString());
-    expect(result).toBe('Just now');
+    expect(result).toBe("Just now");
 
     const past = new Date(now - 5 * 60 * 1000);
-    expect(renderer.formatTime(past.toISOString())).toBe('5m ago');
+    expect(renderer.formatTime(past.toISOString())).toBe("5m ago");
   });
 });
 
-describe('NotificationRenderer - additional coverage', () => {
+describe("NotificationRenderer - additional coverage", () => {
   let renderer;
 
   beforeEach(() => {
@@ -77,8 +84,8 @@ describe('NotificationRenderer - additional coverage', () => {
     renderer = new NotificationRenderer();
   });
 
-  it('_ensureElements should fallback when elements are missing', () => {
-    document.body.innerHTML = '';
+  it("_ensureElements should fallback when elements are missing", () => {
+    document.body.innerHTML = "";
     const renderer2 = new NotificationRenderer();
     expect(renderer2.container).toBeNull();
     expect(renderer2.badge).toBeNull();
@@ -89,56 +96,63 @@ describe('NotificationRenderer - additional coverage', () => {
     expect(() => renderer2.showDropdown()).not.toThrow();
   });
 
-  it('getIconHtml should return correct HTML for each type', () => {
-    expect(renderer.getIconHtml('info')).toContain('ph-info');
-    expect(renderer.getIconHtml('success')).toContain('ph-check-circle');
-    expect(renderer.getIconHtml('warning')).toContain('ph-warning');
-    expect(renderer.getIconHtml('promotion')).toContain('ph-fire');
-    expect(renderer.getIconHtml('order')).toContain('ph-package');
-    expect(renderer.getIconHtml('unknown')).toContain('ph-info');
+  it("getIconHtml should return correct HTML for each type", () => {
+    expect(renderer.getIconHtml("info")).toContain("ph-info");
+    expect(renderer.getIconHtml("success")).toContain("ph-check-circle");
+    expect(renderer.getIconHtml("warning")).toContain("ph-warning");
+    expect(renderer.getIconHtml("promotion")).toContain("ph-fire");
+    expect(renderer.getIconHtml("order")).toContain("ph-package");
+    expect(renderer.getIconHtml("unknown")).toContain("ph-info");
   });
 
-  it('formatTime should return correct strings for different time differences', () => {
+  it("formatTime should return correct strings for different time differences", () => {
     const now = new Date();
     const justNow = new Date(now);
-    expect(renderer.formatTime(justNow.toISOString())).toBe('Just now');
+    expect(renderer.formatTime(justNow.toISOString())).toBe("Just now");
 
     const fiveMinAgo = new Date(now - 5 * 60 * 1000);
-    expect(renderer.formatTime(fiveMinAgo.toISOString())).toBe('5m ago');
+    expect(renderer.formatTime(fiveMinAgo.toISOString())).toBe("5m ago");
 
     const twoHoursAgo = new Date(now - 2 * 60 * 60 * 1000);
-    expect(renderer.formatTime(twoHoursAgo.toISOString())).toBe('2h ago');
+    expect(renderer.formatTime(twoHoursAgo.toISOString())).toBe("2h ago");
 
     const threeDaysAgo = new Date(now - 3 * 24 * 60 * 60 * 1000);
-    expect(renderer.formatTime(threeDaysAgo.toISOString())).toBe('3d ago');
+    expect(renderer.formatTime(threeDaysAgo.toISOString())).toBe("3d ago");
 
     const twoMonthsAgo = new Date(now - 60 * 24 * 60 * 60 * 1000);
     const result = renderer.formatTime(twoMonthsAgo.toISOString());
     expect(result).not.toMatch(/ago/);
   });
 
-  it('updateBadge should display 99+ when count exceeds 99', () => {
+  it("updateBadge should display 99+ when count exceeds 99", () => {
     renderer.updateBadge(100);
-    const badge = document.getElementById('notification-badge');
-    expect(badge.textContent).toBe('99+');
-    expect(badge.classList.contains('hidden')).toBe(false);
+    const badge = document.getElementById("notification-badge");
+    expect(badge.textContent).toBe("99+");
+    expect(badge.classList.contains("hidden")).toBe(false);
 
     renderer.updateBadge(50);
-    expect(badge.textContent).toBe('50');
+    expect(badge.textContent).toBe("50");
 
     renderer.updateBadge(0);
-    expect(badge.classList.contains('hidden')).toBe(true);
+    expect(badge.classList.contains("hidden")).toBe(true);
   });
 
-  it('showDropdown should position dropdown correctly based on button', () => {
+  it("showDropdown should position dropdown correctly based on button", () => {
     document.body.innerHTML += `<button id="notification-btn" style="position:fixed;top:10px;right:20px;"></button>`;
-    const btn = document.getElementById('notification-btn');
-    const rect = { bottom: 60, right: 100, left: 50, top: 10, width: 30, height: 30 };
-    vi.spyOn(btn, 'getBoundingClientRect').mockReturnValue(rect);
+    const btn = document.getElementById("notification-btn");
+    const rect = {
+      bottom: 60,
+      right: 100,
+      left: 50,
+      top: 10,
+      width: 30,
+      height: 30,
+    };
+    vi.spyOn(btn, "getBoundingClientRect").mockReturnValue(rect);
     renderer.showDropdown();
-    const dropdown = document.getElementById('notification-dropdown');
-    expect(dropdown.style.top).toBe('68px');
-    const expectedRight = window.innerWidth - rect.right + 'px';
+    const dropdown = document.getElementById("notification-dropdown");
+    expect(dropdown.style.top).toBe("68px");
+    const expectedRight = window.innerWidth - rect.right + "px";
     expect(dropdown.style.right).toBe(expectedRight);
   });
 });

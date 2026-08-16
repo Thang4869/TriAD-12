@@ -2,76 +2,76 @@
  * Header Component
  */
 #main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--color-brand-border);
-    z-index: var(--z-header);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, box-shadow, height;
-    transform: translateY(0) !important;
-    opacity: 1 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-brand-border);
+  z-index: var(--z-header);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow, height;
+  transform: translateY(0) !important;
+  opacity: 1 !important;
 }
 
 .header-shrink {
-    background: rgba(255, 255, 255, 0.98) !important;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
 }
 
 .header-shrink .h-20 {
-    height: 60px !important;
+  height: 60px !important;
 }
 
 .header-shrink .text-2xl {
-    font-size: 1.25rem !important;
+  font-size: 1.25rem !important;
 }
 
 .header-shrink .w-72 {
-    width: 200px !important;
+  width: 200px !important;
 }
 
 body {
-    padding-top: 80px; /* Tương ứng với chiều cao header */
+  padding-top: 80px; /* Tương ứng với chiều cao header */
 }
 
 @media (max-width: 768px) {
-    body {
-        padding-top: 64px; /* Chiều cao header trên mobile */
-    }
+  body {
+    padding-top: 64px; /* Chiều cao header trên mobile */
+  }
 }
 
 /* Navigation */
 nav a {
-    position: relative;
-    color: var(--color-brand-dark);
-    transition: color var(--transition-medium);
-    font-weight: 500;
+  position: relative;
+  color: var(--color-brand-dark);
+  transition: color var(--transition-medium);
+  font-weight: 500;
 }
 
 nav a::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-brand-accent);
-    border-radius: 2px;
-    transition: width var(--transition-medium);
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-brand-accent);
+  border-radius: 2px;
+  transition: width var(--transition-medium);
 }
 
 nav a:hover::after,
 nav a.active::after {
-    width: 100%;
+  width: 100%;
 }
 
 nav a.active {
-    color: var(--color-brand-accent) !important;
+  color: var(--color-brand-accent) !important;
 }

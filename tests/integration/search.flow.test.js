@@ -1,10 +1,10 @@
-import { screen, fireEvent, waitFor } from '@testing-library/dom';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { bootstrap } from '../../src/app/bootstrap.js';
-import { ProductModel } from '../../src/shared/models/ProductModel.js';
-import { notificationController } from '../../src/modules/notification/index.js';
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { bootstrap } from "../../src/app/bootstrap.js";
+import { ProductModel } from "../../src/shared/models/ProductModel.js";
+import { notificationController } from "../../src/modules/notification/index.js";
 
-describe('Search Flow Integration', () => {
+describe("Search Flow Integration", () => {
   beforeEach(async () => {
     document.body.innerHTML = `
       <div id="header-container"></div>
@@ -32,26 +32,26 @@ describe('Search Flow Integration', () => {
     vi.useFakeTimers();
 
     await bootstrap();
-    
+
     vi.runAllTimers();
 
     const mockProducts = [
-      new ProductModel({ 
-        id: 1, 
-        name: 'Glass Container', 
-        color: 'White', 
-        price: 150000, 
-        image: 'test.jpg' 
+      new ProductModel({
+        id: 1,
+        name: "Glass Container",
+        color: "White",
+        price: 150000,
+        image: "test.jpg",
       }),
-      new ProductModel({ 
-        id: 2, 
-        name: 'Thermo Mug', 
-        color: 'Black', 
-        price: 120000, 
-        image: 'test.jpg' 
-      })
+      new ProductModel({
+        id: 2,
+        name: "Thermo Mug",
+        color: "Black",
+        price: 120000,
+        image: "test.jpg",
+      }),
     ];
-    
+
     if (window.productsController?.service) {
       window.productsController.service.products = mockProducts;
       window.productsController.service.filteredProducts = mockProducts;
@@ -60,49 +60,63 @@ describe('Search Flow Integration', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    vi.clearAllTimers(); 
+    vi.clearAllTimers();
     vi.clearAllMocks();
-    document.body.innerHTML = '';
-    if (notificationController && typeof notificationController.destroy === 'function') {
+    document.body.innerHTML = "";
+    if (
+      notificationController &&
+      typeof notificationController.destroy === "function"
+    ) {
       notificationController.destroy();
     }
   });
 
-  it('should show search suggestions when typing', async () => {
-    const searchInput = document.getElementById('search-input');
-    const suggestionContainer = document.getElementById('search-suggestion');
-    
+  it("should show search suggestions when typing", async () => {
+    const searchInput = document.getElementById("search-input");
+    const suggestionContainer = document.getElementById("search-suggestion");
+
     if (window.productsController?.renderer) {
-      window.productsController.renderer.renderSuggestions = (keyword, products, callback) => {
+      window.productsController.renderer.renderSuggestions = (
+        keyword,
+        products,
+        callback,
+      ) => {
         if (keyword && products.length > 0) {
-          suggestionContainer.classList.remove('hidden');
-          suggestionContainer.innerHTML = products.map(p => `
+          suggestionContainer.classList.remove("hidden");
+          suggestionContainer.innerHTML = products
+            .map(
+              (p) => `
             <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer" data-id="${p.id}">
               ${p.name}
             </div>
-          `).join('');
+          `,
+            )
+            .join("");
         } else {
-          suggestionContainer.classList.add('hidden');
-          suggestionContainer.innerHTML = '';
+          suggestionContainer.classList.add("hidden");
+          suggestionContainer.innerHTML = "";
         }
       };
     }
-    
-    fireEvent.input(searchInput, { target: { value: 'glass' } });
-    
-    await waitFor(() => {
-      expect(suggestionContainer.classList.contains('hidden')).toBe(false);
-    }, { timeout: 500 });
+
+    fireEvent.input(searchInput, { target: { value: "glass" } });
+
+    await waitFor(
+      () => {
+        expect(suggestionContainer.classList.contains("hidden")).toBe(false);
+      },
+      { timeout: 500 },
+    );
   });
 
-  it('should hide suggestions when search is empty', async () => {
-    const searchInput = document.getElementById('search-input');
-    const suggestionContainer = document.getElementById('search-suggestion');
-    
-    fireEvent.input(searchInput, { target: { value: '' } });
-    
+  it("should hide suggestions when search is empty", async () => {
+    const searchInput = document.getElementById("search-input");
+    const suggestionContainer = document.getElementById("search-suggestion");
+
+    fireEvent.input(searchInput, { target: { value: "" } });
+
     await waitFor(() => {
-      expect(suggestionContainer.classList.contains('hidden')).toBe(true);
+      expect(suggestionContainer.classList.contains("hidden")).toBe(true);
     });
   });
 });

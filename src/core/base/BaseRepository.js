@@ -7,16 +7,16 @@ export class BaseRepository {
 
   findAll() {
     const data = this.storage.get(this.key, []);
-    return data.map(item => this.modelClass.fromJSON(item));
+    return data.map((item) => this.modelClass.fromJSON(item));
   }
 
   findById(id) {
     const items = this.findAll();
-    return items.find(item => item.id === id) || null;
+    return items.find((item) => item.id === id) || null;
   }
 
   save(items) {
-    const data = items.map(item => item.toJSON());
+    const data = items.map((item) => item.toJSON());
     this.storage.set(this.key, data);
   }
 

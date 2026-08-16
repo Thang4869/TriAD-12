@@ -1,31 +1,30 @@
 /* css/animations/fly-to-cart.css */
 
 .fly-element {
-    position: fixed;
-    z-index: 9999;
-    pointer-events: none;
-    transition: none;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    will-change: transform, opacity;
-    background: white;
-    padding: 8px;
-    object-fit: contain;
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  transition: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  will-change: transform, opacity;
+  background: white;
+  padding: 8px;
+  object-fit: contain;
 }
 
 @keyframes flyPulse {
-    0% { 
-        transform: scale(1); 
-    }
-    50% { 
-        transform: scale(1.4); 
-    }
-    100% { 
-        transform: scale(1); 
-    }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .cart-badge-pulse {
-    animation: flyPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: flyPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-

@@ -2,23 +2,23 @@
  * Cart Component
  */
 .cart-scroll::-webkit-scrollbar {
-    width: 4px;
+  width: 4px;
 }
 
 .cart-scroll::-webkit-scrollbar-thumb {
-    background-color: var(--color-brand-border);
-    border-radius: 4px;
+  background-color: var(--color-brand-border);
+  border-radius: 4px;
 }
 
 .cart-scroll::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 /* Cart item animations */
 .cart-item-enter {
-    animation: slideIn 0.3s ease forwards;
+  animation: slideIn 0.3s ease forwards;
 }
 
 .cart-item-exit {
-    animation: slideOut 0.3s ease forwards;
+  animation: slideOut 0.3s ease forwards;
 }

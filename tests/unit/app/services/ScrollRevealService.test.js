@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { initScrollReveal } from '../../../../src/app/services/ScrollRevealService.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { initScrollReveal } from "../../../../src/app/services/ScrollRevealService.js";
 
-describe('ScrollRevealService', () => {
+describe("ScrollRevealService", () => {
   let originalIntersectionObserver;
   let originalMutationObserver;
 
@@ -22,7 +22,7 @@ describe('ScrollRevealService', () => {
       _callback: callback,
     }));
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = "";
     vi.useFakeTimers();
   });
 
@@ -33,33 +33,33 @@ describe('ScrollRevealService', () => {
     vi.restoreAllMocks();
   });
 
-  it('should do nothing if no sections exist', () => {
+  it("should do nothing if no sections exist", () => {
     document.body.innerHTML = `<div id="some-other"></div>`;
     initScrollReveal();
-    expect(document.querySelector('#home')).toBeNull();
-    expect(document.querySelectorAll('section:not(#home)').length).toBe(0);
+    expect(document.querySelector("#home")).toBeNull();
+    expect(document.querySelectorAll("section:not(#home)").length).toBe(0);
     expect(global.IntersectionObserver).toHaveBeenCalled();
     const instance = global.IntersectionObserver.mock.results[0]?.value;
     expect(instance.observe).not.toHaveBeenCalled();
   });
 
-  it('should apply hero effect but skip sections if none', () => {
+  it("should apply hero effect but skip sections if none", () => {
     document.body.innerHTML = `<section id="home"></section>`;
     initScrollReveal();
-    const hero = document.getElementById('home');
-    expect(hero.style.opacity).toBe('0');
-    expect(hero.style.transform).toBe('translateY(30px)');
+    const hero = document.getElementById("home");
+    expect(hero.style.opacity).toBe("0");
+    expect(hero.style.transform).toBe("translateY(30px)");
 
     vi.advanceTimersByTime(400);
-    expect(hero.style.opacity).toBe('1');
-    expect(hero.style.transform).toBe('translateY(0)');
+    expect(hero.style.opacity).toBe("1");
+    expect(hero.style.transform).toBe("translateY(0)");
 
     expect(global.IntersectionObserver).toHaveBeenCalled();
     const instance = global.IntersectionObserver.mock.results[0]?.value;
     expect(instance.observe).not.toHaveBeenCalled();
   });
 
-  it('should apply hero effect and observe sections', () => {
+  it("should apply hero effect and observe sections", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section" id="s1"></section>
@@ -67,16 +67,16 @@ describe('ScrollRevealService', () => {
     `;
     initScrollReveal();
 
-    const hero = document.getElementById('home');
-    expect(hero.style.opacity).toBe('0');
+    const hero = document.getElementById("home");
+    expect(hero.style.opacity).toBe("0");
     vi.advanceTimersByTime(400);
-    expect(hero.style.opacity).toBe('1');
+    expect(hero.style.opacity).toBe("1");
 
-    const sections = document.querySelectorAll('.section');
-    sections.forEach(s => {
-      expect(s.style.opacity).toBe('0');
-      expect(s.style.transform).toContain('translateY(50px)');
-      expect(s.classList.contains('scroll-reveal')).toBe(true);
+    const sections = document.querySelectorAll(".section");
+    sections.forEach((s) => {
+      expect(s.style.opacity).toBe("0");
+      expect(s.style.transform).toContain("translateY(50px)");
+      expect(s.classList.contains("scroll-reveal")).toBe(true);
     });
 
     expect(global.IntersectionObserver).toHaveBeenCalled();
@@ -84,7 +84,7 @@ describe('ScrollRevealService', () => {
     expect(observerInstance.observe).toHaveBeenCalledTimes(2);
   });
 
-  it('should reveal section when intersecting', () => {
+  it("should reveal section when intersecting", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section" id="s1"></section>
@@ -94,15 +94,15 @@ describe('ScrollRevealService', () => {
     const observerInstance = global.IntersectionObserver.mock.results[0]?.value;
     expect(observerInstance).toBeDefined();
 
-    const section = document.getElementById('s1');
+    const section = document.getElementById("s1");
     const entry = { target: section, isIntersecting: true };
     observerInstance._callback([entry]);
 
-    expect(section.style.opacity).toBe('1');
-    expect(section.style.transform).toBe('translateY(0)');
+    expect(section.style.opacity).toBe("1");
+    expect(section.style.transform).toBe("translateY(0)");
   });
 
-  it('should skip product grid logic if grid not found', () => {
+  it("should skip product grid logic if grid not found", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -111,7 +111,7 @@ describe('ScrollRevealService', () => {
     expect(global.MutationObserver).not.toHaveBeenCalled();
   });
 
-  it('should observe product grid mutations', () => {
+  it("should observe product grid mutations", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -122,12 +122,12 @@ describe('ScrollRevealService', () => {
     expect(global.MutationObserver).toHaveBeenCalled();
     const mutationInstance = global.MutationObserver.mock.results[0]?.value;
     expect(mutationInstance.observe).toHaveBeenCalledWith(
-      document.getElementById('product-grid'),
-      { childList: true, subtree: false }
+      document.getElementById("product-grid"),
+      { childList: true, subtree: false },
     );
   });
 
-  it('should reveal newly added product cards', () => {
+  it("should reveal newly added product cards", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -138,24 +138,25 @@ describe('ScrollRevealService', () => {
     const mutationInstance = global.MutationObserver.mock.results[0]?.value;
     const mutationCallback = mutationInstance._callback;
 
-    const grid = document.getElementById('product-grid');
-    const newCard = document.createElement('div');
-    newCard.className = 'product-card';
+    const grid = document.getElementById("product-grid");
+    const newCard = document.createElement("div");
+    newCard.className = "product-card";
     grid.appendChild(newCard);
 
-    mutationCallback([{ type: 'childList', target: grid }]);
+    mutationCallback([{ type: "childList", target: grid }]);
 
-    const card = grid.querySelector('.product-card');
-    expect(card.style.opacity).toBe('0');
-    expect(card.style.transform).toContain('translateY(30px)');
+    const card = grid.querySelector(".product-card");
+    expect(card.style.opacity).toBe("0");
+    expect(card.style.transform).toContain("translateY(30px)");
 
     const allObserverCalls = global.IntersectionObserver.mock.calls;
     expect(allObserverCalls.length).toBeGreaterThanOrEqual(2);
-    const cardObserverInstance = global.IntersectionObserver.mock.results[1]?.value;
+    const cardObserverInstance =
+      global.IntersectionObserver.mock.results[1]?.value;
     expect(cardObserverInstance.observe).toHaveBeenCalledWith(card);
   });
 
-  it('should reveal product card when intersecting', () => {
+  it("should reveal product card when intersecting", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -167,33 +168,33 @@ describe('ScrollRevealService', () => {
 
     vi.advanceTimersByTime(200);
 
-    const card = document.getElementById('card1');
+    const card = document.getElementById("card1");
     const observerInstance = global.IntersectionObserver.mock.results[1]?.value;
     expect(observerInstance).toBeDefined();
 
     const entry = { target: card, isIntersecting: true };
     observerInstance._callback([entry]);
 
-    expect(card.style.opacity).toBe('1');
-    expect(card.style.transform).toBe('translateY(0) scale(1)');
+    expect(card.style.opacity).toBe("1");
+    expect(card.style.transform).toBe("translateY(0) scale(1)");
   });
 
-  it('should handle sections and grid even without hero', () => {
+  it("should handle sections and grid even without hero", () => {
     document.body.innerHTML = `
       <section class="section"></section>
       <div id="product-grid"><div class="product-card"></div></div>
     `;
     initScrollReveal();
-    const section = document.querySelector('.section');
-    expect(section.style.opacity).toBe('0');
-    expect(section.style.transform).toContain('translateY(50px)');
+    const section = document.querySelector(".section");
+    expect(section.style.opacity).toBe("0");
+    expect(section.style.transform).toContain("translateY(50px)");
 
-    const grid = document.getElementById('product-grid');
+    const grid = document.getElementById("product-grid");
     expect(grid).toBeDefined();
     expect(global.MutationObserver).toHaveBeenCalled();
   });
 
-  it('should not re-observe cards already with class observed', () => {
+  it("should not re-observe cards already with class observed", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -203,20 +204,20 @@ describe('ScrollRevealService', () => {
     `;
     initScrollReveal();
 
-    const card = document.querySelector('.product-card');
-    expect(card.style.opacity).toBe('');
-    expect(card.style.transform).toBe('');
+    const card = document.querySelector(".product-card");
+    expect(card.style.opacity).toBe("");
+    expect(card.style.transform).toBe("");
     expect(global.IntersectionObserver).toHaveBeenCalledTimes(1);
   });
 
-  it('should not set timeout for hero if hero missing', () => {
+  it("should not set timeout for hero if hero missing", () => {
     document.body.innerHTML = `<section class="section"></section>`;
-    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+    const setTimeoutSpy = vi.spyOn(global, "setTimeout");
     initScrollReveal();
     expect(setTimeoutSpy).not.toHaveBeenCalled();
   });
 
-  it('should handle empty product-grid', () => {
+  it("should handle empty product-grid", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -225,7 +226,7 @@ describe('ScrollRevealService', () => {
     expect(() => initScrollReveal()).not.toThrow();
   });
 
-  it('should not throw if mutationObserver not available', () => {
+  it("should not throw if mutationObserver not available", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -235,7 +236,7 @@ describe('ScrollRevealService', () => {
   });
 });
 
-describe('ScrollRevealService - additional branches', () => {
+describe("ScrollRevealService - additional branches", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <section id="home"></section>
@@ -258,44 +259,48 @@ describe('ScrollRevealService - additional branches', () => {
     vi.useRealTimers();
   });
 
-  it('should handle missing sections gracefully', () => {
+  it("should handle missing sections gracefully", () => {
     document.body.innerHTML = `<div id="home"></div>`;
     initScrollReveal();
-    const home = document.getElementById('home');
-    expect(home.style.opacity).toBe('0');
+    const home = document.getElementById("home");
+    expect(home.style.opacity).toBe("0");
     vi.advanceTimersByTime(400);
-    expect(home.style.opacity).toBe('1');
+    expect(home.style.opacity).toBe("1");
   });
 
-  it('should observe product cards even when grid exists but no cards initially', () => {
-    const grid = document.getElementById('product-grid');
+  it("should observe product cards even when grid exists but no cards initially", () => {
+    const grid = document.getElementById("product-grid");
     initScrollReveal();
 
     expect(global.MutationObserver).toHaveBeenCalled();
-    const mutationObserverInstance = global.MutationObserver.mock.results[0]?.value;
+    const mutationObserverInstance =
+      global.MutationObserver.mock.results[0]?.value;
     expect(mutationObserverInstance).toBeDefined();
     const callback = mutationObserverInstance._callback;
     expect(callback).toBeDefined();
 
-    const newCard = document.createElement('div');
-    newCard.className = 'product-card';
+    const newCard = document.createElement("div");
+    newCard.className = "product-card";
     grid.appendChild(newCard);
-    callback([{ type: 'childList', target: grid }]);
+    callback([{ type: "childList", target: grid }]);
 
-    const cards = grid.querySelectorAll('.product-card');
+    const cards = grid.querySelectorAll(".product-card");
     expect(cards.length).toBe(1);
-    const cardObserver = global.IntersectionObserver.mock.results[global.IntersectionObserver.mock.results.length - 1]?.value;
+    const cardObserver =
+      global.IntersectionObserver.mock.results[
+        global.IntersectionObserver.mock.results.length - 1
+      ]?.value;
     expect(cardObserver).toBeDefined();
     expect(cardObserver.observe).toHaveBeenCalledWith(newCard);
   });
 
-  it('should not error if product-grid is missing', () => {
+  it("should not error if product-grid is missing", () => {
     document.body.innerHTML = `<section id="home"></section>`;
     expect(() => initScrollReveal()).not.toThrow();
   });
 });
 
-describe('ScrollRevealService - additional coverage', () => {
+describe("ScrollRevealService - additional coverage", () => {
   let originalIntersectionObserver;
   let originalMutationObserver;
 
@@ -316,7 +321,7 @@ describe('ScrollRevealService - additional coverage', () => {
       _callback: callback,
     }));
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = "";
     vi.useFakeTimers();
   });
 
@@ -327,20 +332,20 @@ describe('ScrollRevealService - additional coverage', () => {
     vi.restoreAllMocks();
   });
 
-  it('should safely skip hero manipulation when hero element does not exist', () => {
+  it("should safely skip hero manipulation when hero element does not exist", () => {
     document.body.innerHTML = `<section class="section"></section>`;
     initScrollReveal();
     expect(() => initScrollReveal()).not.toThrow();
   });
 
-  it('should safely skip product-grid manipulation when grid does not exist', () => {
+  it("should safely skip product-grid manipulation when grid does not exist", () => {
     document.body.innerHTML = `<section id="home"></section><section class="section"></section>`;
     initScrollReveal();
     expect(() => initScrollReveal()).not.toThrow();
     expect(global.MutationObserver).not.toHaveBeenCalled();
   });
 
-  it('should trigger MutationObserver when new product cards are added', () => {
+  it("should trigger MutationObserver when new product cards are added", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section"></section>
@@ -351,22 +356,22 @@ describe('ScrollRevealService - additional coverage', () => {
     const mutationInstance = global.MutationObserver.mock.results[0]?.value;
     expect(mutationInstance).toBeDefined();
 
-    const grid = document.getElementById('product-grid');
-    const newCard = document.createElement('div');
-    newCard.className = 'product-card';
+    const grid = document.getElementById("product-grid");
+    const newCard = document.createElement("div");
+    newCard.className = "product-card";
     grid.appendChild(newCard);
 
     const mutationCallback = mutationInstance._callback;
-    mutationCallback([{ type: 'childList', target: grid }]);
+    mutationCallback([{ type: "childList", target: grid }]);
 
     const cardObserver = global.IntersectionObserver.mock.results[1]?.value;
     expect(cardObserver).toBeDefined();
     expect(cardObserver.observe).toHaveBeenCalledWith(newCard);
-    expect(newCard.style.opacity).toBe('0');
-    expect(newCard.style.transform).toContain('translateY(30px)');
+    expect(newCard.style.opacity).toBe("0");
+    expect(newCard.style.transform).toContain("translateY(30px)");
   });
 
-  it('should assign IntersectionObserver to sections with correct threshold', () => {
+  it("should assign IntersectionObserver to sections with correct threshold", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section" id="s1"></section>
@@ -382,11 +387,11 @@ describe('ScrollRevealService - additional coverage', () => {
     expect(callArgs[0]).toBeInstanceOf(Function);
     expect(callArgs[1]).toEqual({
       threshold: 0.15,
-      rootMargin: '0px 0px -50px 0px'
+      rootMargin: "0px 0px -50px 0px",
     });
   });
 
-  it('should not re-observe cards that already have observed class', () => {
+  it("should not re-observe cards that already have observed class", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <div id="product-grid">
@@ -394,7 +399,7 @@ describe('ScrollRevealService - additional coverage', () => {
       </div>
     `;
     initScrollReveal();
-    const card = document.querySelector('.product-card');
-    expect(card.style.opacity).toBe('');
+    const card = document.querySelector(".product-card");
+    expect(card.style.opacity).toBe("");
   });
 });

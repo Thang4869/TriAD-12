@@ -1,26 +1,27 @@
-import { formatPrice } from '../../shared/utils/helpers.js';
+import { formatPrice } from "../../shared/utils/helpers.js";
 
 export class ProductCardComponent {
-    constructor(product, options = {}) {
-        this.product = product;
-        this.options = {
-            onAddToCart: null,
-            onOpenModal: null,
-            ...options
-        };
-    }
+  constructor(product, options = {}) {
+    this.product = product;
+    this.options = {
+      onAddToCart: null,
+      onOpenModal: null,
+      ...options,
+    };
+  }
 
-    render() {
-        const div = document.createElement('div');
-        div.className = 'product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden';
-        div.dataset.productId = this.product.id;
+  render() {
+    const div = document.createElement("div");
+    div.className =
+      "product-card group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden";
+    div.dataset.productId = this.product.id;
 
-        div.innerHTML = `
+    div.innerHTML = `
             <div class="cursor-pointer" data-action="open-modal" data-id="${this.product.id}">
                 <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
                     <img src="${this.product.image}" 
                          alt="${this.product.name}" 
-                         class="product-image w-full h-72 object-contain transition-transform duration-500 rounded-2xl group-hover:scale-150 ${this.product.filter || ''}"
+                         class="product-image w-full h-72 object-contain transition-transform duration-500 rounded-2xl group-hover:scale-150 ${this.product.filter || ""}"
                          style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
                          loading="lazy">
                 </div>
@@ -39,19 +40,23 @@ export class ProductCardComponent {
             </div>
         `;
 
-        div.querySelector('[data-action="add-to-cart"]')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (this.options.onAddToCart) {
-                this.options.onAddToCart(this.product, e);
-            }
-        });
+    div
+      .querySelector('[data-action="add-to-cart"]')
+      ?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (this.options.onAddToCart) {
+          this.options.onAddToCart(this.product, e);
+        }
+      });
 
-        div.querySelector('[data-action="open-modal"]')?.addEventListener('click', () => {
-            if (this.options.onOpenModal) {
-                this.options.onOpenModal(this.product.id);
-            }
-        });
+    div
+      .querySelector('[data-action="open-modal"]')
+      ?.addEventListener("click", () => {
+        if (this.options.onOpenModal) {
+          this.options.onOpenModal(this.product.id);
+        }
+      });
 
-        return div;
-    }
+    return div;
+  }
 }

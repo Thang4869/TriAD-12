@@ -1,13 +1,13 @@
-import { screen, fireEvent, waitFor } from '@testing-library/dom';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { bootstrap } from '../../src/app/bootstrap.js';
-import { notificationController } from '../../src/modules/notification/index.js';
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { bootstrap } from "../../src/app/bootstrap.js";
+import { notificationController } from "../../src/modules/notification/index.js";
 
-vi.mock('../../src/shared/utils/loader.js', () => ({
+vi.mock("../../src/shared/utils/loader.js", () => ({
   loadComponents: vi.fn().mockResolvedValue([]),
 }));
 
-describe('Cart Flow Integration', () => {
+describe("Cart Flow Integration", () => {
   beforeEach(async () => {
     document.body.innerHTML = `
       <!-- All required containers -->
@@ -34,21 +34,24 @@ describe('Cart Flow Integration', () => {
     `;
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      text: () => Promise.resolve('<div>Mock HTML</div>'),
+      text: () => Promise.resolve("<div>Mock HTML</div>"),
     });
     await bootstrap();
   });
 
   afterEach(() => {
     vi.clearAllMocks();
-    document.body.innerHTML = '';
-    if (notificationController && typeof notificationController.destroy === 'function') {
+    document.body.innerHTML = "";
+    if (
+      notificationController &&
+      typeof notificationController.destroy === "function"
+    ) {
       notificationController.destroy();
     }
   });
 
-  it('should add product to cart and update badge', async () => {
-    const grid = document.getElementById('product-grid');
+  it("should add product to cart and update badge", async () => {
+    const grid = document.getElementById("product-grid");
     grid.innerHTML = `
       <div class="product-card" data-product-id="1">
         <img src="../images/21.jpg" alt="Product">
@@ -56,12 +59,12 @@ describe('Cart Flow Integration', () => {
       </div>
     `;
 
-    const addBtn = screen.getByText('Add to Cart');
+    const addBtn = screen.getByText("Add to Cart");
     fireEvent.click(addBtn);
 
     await waitFor(() => {
-      const badge = document.getElementById('cart-badge');
-      expect(badge.textContent).toBe('1');
+      const badge = document.getElementById("cart-badge");
+      expect(badge.textContent).toBe("1");
     });
   });
 });

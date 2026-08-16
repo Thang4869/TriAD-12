@@ -1,13 +1,13 @@
 export class StorageService {
-  constructor(prefix = 'triad_') {
+  constructor(prefix = "triad_") {
     this.prefix = prefix;
     this._memory = new Map();
   }
 
   _isAvailable() {
     try {
-      localStorage.setItem('_test_', 'test');
-      localStorage.removeItem('_test_');
+      localStorage.setItem("_test_", "test");
+      localStorage.removeItem("_test_");
       return true;
     } catch {
       return false;
@@ -66,7 +66,7 @@ export class StorageService {
     if (this._isAvailable()) {
       try {
         const keys = Object.keys(localStorage);
-        keys.forEach(key => {
+        keys.forEach((key) => {
           if (key.startsWith(this.prefix)) {
             localStorage.removeItem(key);
           }
@@ -83,7 +83,7 @@ export class StorageService {
     if (this._isAvailable()) {
       try {
         const keys = Object.keys(localStorage);
-        keys.forEach(key => {
+        keys.forEach((key) => {
           if (key.startsWith(this.prefix)) {
             result.push(key.substring(this.prefix.length));
           }

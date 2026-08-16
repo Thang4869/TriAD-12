@@ -17,7 +17,7 @@ export class BaseService {
   }
 
   findById(id) {
-    return this._items.find(item => item.id === id) || null;
+    return this._items.find((item) => item.id === id) || null;
   }
 
   save(items) {
