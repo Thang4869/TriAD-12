@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { initHeaderNavigation } from '../../../../src/app/HeaderNavigationService.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { initHeaderNavigation } from "../../../../src/app/HeaderNavigationService.js";
 
-describe('HeaderNavigationService', () => {
+describe("HeaderNavigationService", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <nav>
@@ -17,17 +17,17 @@ describe('HeaderNavigationService', () => {
     `;
   });
 
-  it('should add active class to current page link', () => {
-    initHeaderNavigation('about');
-    const links = document.querySelectorAll('nav a');
-    expect(links[1].classList.contains('active')).toBe(true);
-    expect(links[0].classList.contains('active')).toBe(false);
+  it("should add active class to current page link", () => {
+    initHeaderNavigation("about");
+    const links = document.querySelectorAll("nav a");
+    expect(links[1].classList.contains("active")).toBe(true);
+    expect(links[0].classList.contains("active")).toBe(false);
   });
 
-  it('should warn if no links', () => {
-    document.body.innerHTML = '';
-    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    initHeaderNavigation('home');
+  it("should warn if no links", () => {
+    document.body.innerHTML = "";
+    const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    initHeaderNavigation("home");
     expect(consoleWarn).toHaveBeenCalled();
   });
 });
