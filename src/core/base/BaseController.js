@@ -15,7 +15,7 @@ export class BaseController {
   setupEventListeners() {}
 
   destroy() {
-    this._eventSubscriptions.forEach(unsubscribe => unsubscribe());
+    this._eventSubscriptions.forEach((unsubscribe) => unsubscribe());
     this._eventSubscriptions = [];
     this._isInitialized = false;
   }
