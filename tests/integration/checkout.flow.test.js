@@ -1,9 +1,9 @@
-import { screen, fireEvent } from '@testing-library/dom';
-import { afterEach } from 'vitest';
-import { bootstrap } from '../../src/app/bootstrap.js';
-import { notificationController } from '../../src/modules/notification/index.js';
+import { screen, fireEvent } from "@testing-library/dom";
+import { afterEach } from "vitest";
+import { bootstrap } from "../../src/app/bootstrap.js";
+import { notificationController } from "../../src/modules/notification/index.js";
 
-describe('Checkout flow', () => {
+describe("Checkout flow", () => {
   beforeEach(async () => {
     document.body.innerHTML = `
       <div id="header-container"></div>
@@ -31,13 +31,16 @@ describe('Checkout flow', () => {
   });
 
   afterEach(() => {
-    if (notificationController && typeof notificationController.destroy === 'function') {
+    if (
+      notificationController &&
+      typeof notificationController.destroy === "function"
+    ) {
       notificationController.destroy();
     }
-    document.body.innerHTML = '';
+    document.body.innerHTML = "";
   });
 
-  it('should complete checkout successfully', async () => {
-    expect(document.getElementById('header-container')).toBeTruthy();
+  it("should complete checkout successfully", async () => {
+    expect(document.getElementById("header-container")).toBeTruthy();
   });
 });
