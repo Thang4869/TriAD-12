@@ -1,8 +1,8 @@
-import { Logger } from '../../core/services/Logger.js';
-import { NotificationService } from './NotificationService.js';
-import { NotificationRenderer } from './NotificationRenderer.js';
-import { eventBus } from '../../core/services/EventBus.js';
-import { EVENTS } from '../../shared/constants/Events.js';
+import { Logger } from "../../core/services/Logger.js";
+import { NotificationService } from "./NotificationService.js";
+import { NotificationRenderer } from "./NotificationRenderer.js";
+import { eventBus } from "../../core/services/EventBus.js";
+import { EVENTS } from "../../shared/constants/Events.js";
 
 export class NotificationController {
   constructor() {
@@ -17,8 +17,8 @@ export class NotificationController {
     this._documentEventsAttached = false;
     this._retryTimer = null;
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this._init());
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => this._init());
     } else {
       this._init();
     }
@@ -30,17 +30,17 @@ export class NotificationController {
     this._exposeAPI();
     this._updateUI();
     this._initialized = true;
-    Logger.info('Notification Controller initialized');
+    Logger.info("Notification Controller initialized");
   }
 
   _setupEventListeners() {
     if (this._listenersAttached) return;
 
     const findElements = () => {
-      this.btn = document.getElementById('notification-btn');
-      this.mobileBtn = document.getElementById('mobile-notification-btn');
-      this.overlay = document.getElementById('notification-overlay');
-      this.markAllBtn = document.getElementById('mark-all-read');
+      this.btn = document.getElementById("notification-btn");
+      this.mobileBtn = document.getElementById("mobile-notification-btn");
+      this.overlay = document.getElementById("notification-overlay");
+      this.markAllBtn = document.getElementById("mark-all-read");
 
       if (!this.btn && !this.mobileBtn) {
         if (this._retryCount < this._maxRetries) {
@@ -54,40 +54,46 @@ export class NotificationController {
       this._retryCount = 0;
 
       if (this.btn) {
-        this.btn.addEventListener('click', (e) => this._toggleDropdown(e));
+        this.btn.addEventListener("click", (e) => this._toggleDropdown(e));
       }
       if (this.mobileBtn) {
-        this.mobileBtn.addEventListener('click', (e) => this._toggleDropdown(e));
+        this.mobileBtn.addEventListener("click", (e) =>
+          this._toggleDropdown(e),
+        );
       }
       if (this.overlay) {
-        this.overlay.addEventListener('click', () => this._closeDropdown());
+        this.overlay.addEventListener("click", () => this._closeDropdown());
       }
       if (this.markAllBtn) {
-        this.markAllBtn.addEventListener('click', (e) => {
+        this.markAllBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           this.markAllAsRead();
         });
       }
 
       if (!this._documentEventsAttached) {
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && this._isOpen) {
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && this._isOpen) {
             this._closeDropdown();
           }
         });
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener("click", (e) => {
           if (this._isOpen) {
-            const dropdown = document.getElementById('notification-dropdown');
-            if (dropdown && !dropdown.contains(e.target) &&
-                !this.btn?.contains(e.target) && !this.mobileBtn?.contains(e.target)) {
+            const dropdown = document.getElementById("notification-dropdown");
+            if (
+              dropdown &&
+              !dropdown.contains(e.target) &&
+              !this.btn?.contains(e.target) &&
+              !this.mobileBtn?.contains(e.target)
+            ) {
               this._closeDropdown();
             }
           }
         });
 
-        document.addEventListener('click', (e) => {
-          const item = e.target.closest('.notification-item');
+        document.addEventListener("click", (e) => {
+          const item = e.target.closest(".notification-item");
           if (item) {
             const id = Number(item.dataset.id);
             if (id) this.markAsRead(id);
@@ -97,14 +103,18 @@ export class NotificationController {
         if (window.eventBus) {
           eventBus.on(EVENTS.CHECKOUT_COMPLETED, (data) => {
             if (data?.order) {
-              this.add('New Order', `Order #${data.order.id} placed!`, 'order');
+              this.add("New Order", `Order #${data.order.id} placed!`, "order");
             }
           });
         }
 
-        window.addEventListener('error', (e) => {
+        window.addEventListener("error", (e) => {
           if (e.error?.message) {
-            this.add('System Error', 'An unexpected error occurred.', 'warning');
+            this.add(
+              "System Error",
+              "An unexpected error occurred.",
+              "warning",
+            );
           }
         });
 
@@ -156,20 +166,26 @@ export class NotificationController {
     this.renderer.updateBadge(this.service.getUnreadCount());
   }
 
-  add(title, message, type = 'info') {
+  add(title, message, type = "info") {
     const notif = this.service.add(title, message, type);
     this._updateUI();
     if (this._isOpen) {
       this.renderer.renderList(this.service.getAll());
     }
     if (window.toast) {
-      const map = { info: 'info', success: 'success', warning: 'warning', promotion: 'info', order: 'info' };
-      window.toast[map[type] || 'info'](title, message);
+      const map = {
+        info: "info",
+        success: "success",
+        warning: "warning",
+        promotion: "info",
+        order: "info",
+      };
+      window.toast[map[type] || "info"](title, message);
     }
-    const btn = document.getElementById('notification-btn');
+    const btn = document.getElementById("notification-btn");
     if (btn) {
-      btn.style.animation = 'bellRing 0.5s ease';
-      setTimeout(() => btn.style.animation = '', 600);
+      btn.style.animation = "bellRing 0.5s ease";
+      setTimeout(() => (btn.style.animation = ""), 600);
     }
     return notif;
   }
@@ -188,7 +204,8 @@ export class NotificationController {
     if (changed) {
       this._updateUI();
       if (this._isOpen) this.renderer.renderList(this.service.getAll());
-      if (window.toast) window.toast.success('All clear!', 'All notifications marked as read.');
+      if (window.toast)
+        window.toast.success("All clear!", "All notifications marked as read.");
     }
     return changed;
   }
