@@ -1,51 +1,93 @@
 <section id="reviews" class="py-20 bg-white border-t border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <span class="text-sm font-medium text-brand-accent tracking-widest uppercase">Testimonials</span>
-            <h2 class="text-3xl md:text-4xl font-bold mt-2">What Our Customers Say</h2>
-            <div class="flex items-center justify-center gap-1 mt-3">
-                <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
-                <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
-                <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
-                <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
-                <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
-                <span class="ml-2 font-medium" id="avg-rating">4.9/5</span>
-                <span class="text-brand-gray text-sm" id="total-reviews">(0 reviews)</span>
-            </div>
-        </div>
-
-        <!-- Review Grid -->
-        <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Reviews sẽ được render bằng JavaScript -->
-        </div>
-
-        <!-- Review Form -->
-        <div class="mt-12 max-w-2xl mx-auto bg-gray-50 p-8 rounded-2xl">
-            <h3 class="text-xl font-bold text-center mb-4">Share Your Experience</h3>
-            <form id="review-form" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="review-name" placeholder="Your Name" class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
-                    <input type="email" id="review-email" placeholder="Email" class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black">
-                </div>
-                <div>
-                    <textarea id="review-content" rows="3" placeholder="Write your review..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"></textarea>
-                </div>
-                <div id="star-rating" class="flex items-center gap-2">
-                    <span class="text-sm font-medium">Rating:</span>
-                    <div class="flex gap-1">
-                        <i class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating" data-value="1"></i>
-                        <i class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating" data-value="2"></i>
-                        <i class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating" data-value="3"></i>
-                        <i class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating" data-value="4"></i>
-                        <i class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating" data-value="5"></i>
-                    </div>
-                    <span id="selected-rating" class="text-sm text-brand-gray ml-2">0/5</span>
-                </div>
-                <button type="submit" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                    Submit Review
-                </button>
-            </form>
-        </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <span
+        class="text-sm font-medium text-brand-accent tracking-widest uppercase"
+        >Testimonials</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold mt-2">
+        What Our Customers Say
+      </h2>
+      <div class="flex items-center justify-center gap-1 mt-3">
+        <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
+        <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
+        <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
+        <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
+        <i class="ph-fill ph-star text-yellow-400 text-xl"></i>
+        <span class="ml-2 font-medium" id="avg-rating">4.9/5</span>
+        <span class="text-brand-gray text-sm" id="total-reviews"
+          >(0 reviews)</span
+        >
+      </div>
     </div>
+
+    <!-- Review Grid -->
+    <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Reviews sẽ được render bằng JavaScript -->
+    </div>
+
+    <!-- Review Form -->
+    <div class="mt-12 max-w-2xl mx-auto bg-gray-50 p-8 rounded-2xl">
+      <h3 class="text-xl font-bold text-center mb-4">Share Your Experience</h3>
+      <form id="review-form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <input
+            type="text"
+            id="review-name"
+            placeholder="Your Name"
+            class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+          />
+          <input
+            type="email"
+            id="review-email"
+            placeholder="Email"
+            class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+          />
+        </div>
+        <div>
+          <textarea
+            id="review-content"
+            rows="3"
+            placeholder="Write your review..."
+            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"
+          ></textarea>
+        </div>
+        <div id="star-rating" class="flex items-center gap-2">
+          <span class="text-sm font-medium">Rating:</span>
+          <div class="flex gap-1">
+            <i
+              class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating"
+              data-value="1"
+            ></i>
+            <i
+              class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating"
+              data-value="2"
+            ></i>
+            <i
+              class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating"
+              data-value="3"
+            ></i>
+            <i
+              class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating"
+              data-value="4"
+            ></i>
+            <i
+              class="ph ph-star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors star-rating"
+              data-value="5"
+            ></i>
+          </div>
+          <span id="selected-rating" class="text-sm text-brand-gray ml-2"
+            >0/5</span
+          >
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+        >
+          Submit Review
+        </button>
+      </form>
+    </div>
+  </div>
 </section>
