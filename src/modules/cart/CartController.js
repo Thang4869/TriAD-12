@@ -1,117 +1,117 @@
-import { CartService } from './CartService.js';
-import { CartRenderer } from './CartRenderer.js';
-import { EVENTS } from '../../shared/constants/Events.js';
-import { eventBus } from '../../core/services/EventBus.js';
+import { CartService } from "./CartService.js";
+import { CartRenderer } from "./CartRenderer.js";
+import { EVENTS } from "../../shared/constants/Events.js";
+import { eventBus } from "../../core/services/EventBus.js";
 
 export class CartController {
-    constructor() {
-        this.service = new CartService();
-        this.renderer = new CartRenderer();
-        this.isDrawerOpen = false;
+  constructor() {
+    this.service = new CartService();
+    this.renderer = new CartRenderer();
+    this.isDrawerOpen = false;
 
-        this.setupEventListeners();
-        this.service.load();
+    this.setupEventListeners();
+    this.service.load();
+  }
+
+  setupEventListeners() {
+    eventBus.on(EVENTS.CART_UPDATED, (data) => {
+      this.renderer.render(data.items);
+      this.renderer.updateBadge(data.count);
+      this.renderer.setCheckoutEnabled(!data.isEmpty);
+    });
+
+    document.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-id]");
+      if (!target) return;
+
+      const id = Number(target.dataset.id);
+      const action = target.dataset.action;
+
+      if (action === "remove") {
+        this.removeItem(id);
+      } else if (action === "increase") {
+        this.increaseItem(id);
+      } else if (action === "decrease") {
+        this.decreaseItem(id);
+      }
+    });
+  }
+
+  addToCart(product, quantity = 1, flyElement = null) {
+    console.log("Adding to cart:", product);
+    const result = this.service.add(product, quantity);
+
+    if (flyElement && window.flyToCart) {
+      window.flyToCart.fly(flyElement);
     }
 
-    setupEventListeners() {
-        eventBus.on(EVENTS.CART_UPDATED, (data) => {
-            this.renderer.render(data.items);
-            this.renderer.updateBadge(data.count);
-            this.renderer.setCheckoutEnabled(!data.isEmpty);
-        });
+    return result;
+  }
 
-        document.addEventListener('click', (e) => {
-            const target = e.target.closest('[data-id]');
-            if (!target) return;
+  removeItem(id) {
+    return this.service.remove(id);
+  }
 
-            const id = Number(target.dataset.id);
-            const action = target.dataset.action;
+  increaseItem(id) {
+    return this.service.increase(id);
+  }
 
-            if (action === 'remove') {
-                this.removeItem(id);
-            } else if (action === 'increase') {
-                this.increaseItem(id);
-            } else if (action === 'decrease') {
-                this.decreaseItem(id);
-            }
-        });
-    }
+  decreaseItem(id) {
+    return this.service.decrease(id);
+  }
 
-    addToCart(product, quantity = 1, flyElement = null) {
-        console.log('Adding to cart:', product);
-        const result = this.service.add(product, quantity);
+  clear() {
+    return this.service.clear();
+  }
 
-        if (flyElement && window.flyToCart) {
-            window.flyToCart.fly(flyElement);
-        }
+  getItems() {
+    return this.service.items;
+  }
 
-        return result;
-    }
+  getTotal() {
+    return this.service.total;
+  }
 
-    removeItem(id) {
-        return this.service.remove(id);
-    }
+  getCount() {
+    return this.service.count;
+  }
 
-    increaseItem(id) {
-        return this.service.increase(id);
-    }
+  openDrawer() {
+    if (this.isDrawerOpen) return;
 
-    decreaseItem(id) {
-        return this.service.decrease(id);
-    }
+    const overlay = document.getElementById("cart-overlay");
+    const drawer = document.getElementById("cart-drawer");
 
-    clear() {
-        return this.service.clear();
-    }
+    if (!overlay || !drawer) return;
 
-    getItems() {
-        return this.service.items;
-    }
+    overlay.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      overlay.classList.remove("opacity-0");
+      drawer.classList.remove("translate-x-full");
+    });
 
-    getTotal() {
-        return this.service.total;
-    }
+    this.isDrawerOpen = true;
+    document.body.style.overflow = "hidden";
+    eventBus.emit(EVENTS.DRAWER_OPENED);
+  }
 
-    getCount() {
-        return this.service.count;
-    }
+  closeDrawer() {
+    if (!this.isDrawerOpen) return;
 
-    openDrawer() {
-        if (this.isDrawerOpen) return;
+    const overlay = document.getElementById("cart-overlay");
+    const drawer = document.getElementById("cart-drawer");
 
-        const overlay = document.getElementById('cart-overlay');
-        const drawer = document.getElementById('cart-drawer');
+    if (!overlay || !drawer) return;
 
-        if (!overlay || !drawer) return;
+    overlay.classList.add("opacity-0");
+    drawer.classList.add("translate-x-full");
 
-        overlay.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            overlay.classList.remove('opacity-0');
-            drawer.classList.remove('translate-x-full');
-        });
+    setTimeout(() => {
+      overlay.classList.add("hidden");
+    }, 300);
 
-        this.isDrawerOpen = true;
-        document.body.style.overflow = 'hidden';
-        eventBus.emit(EVENTS.DRAWER_OPENED);
-    }
-
-    closeDrawer() {
-        if (!this.isDrawerOpen) return;
-
-        const overlay = document.getElementById('cart-overlay');
-        const drawer = document.getElementById('cart-drawer');
-
-        if (!overlay || !drawer) return;
-
-        overlay.classList.add('opacity-0');
-        drawer.classList.add('translate-x-full');
-
-        setTimeout(() => {
-            overlay.classList.add('hidden');
-        }, 300);
-
-        this.isDrawerOpen = false;
-        document.body.style.overflow = '';
-        eventBus.emit(EVENTS.DRAWER_CLOSED);
-    }
+    this.isDrawerOpen = false;
+    document.body.style.overflow = "";
+    eventBus.emit(EVENTS.DRAWER_CLOSED);
+  }
 }
