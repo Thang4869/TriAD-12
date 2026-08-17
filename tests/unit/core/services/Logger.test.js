@@ -1,9 +1,28 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { LoggerService, Logger } from "../../../../src/core/services/Logger.js";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+
+import {
+  Logger,
+  LoggerService,
+} from "../../../../src/core/services/Logger.js";
 
 describe("LoggerService", () => {
   let logger;
   let consoleSpy;
+
+  const setLocationSearch = (search) => {
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { search },
+      writable: true,
+    });
+  };
 
   beforeEach(() => {
     logger = new LoggerService();
@@ -18,83 +37,109 @@ describe("LoggerService", () => {
     };
 
     localStorage.removeItem("debug");
-
-    Object.defineProperty(window, "location", {
-      value: { search: "" },
-      writable: true,
-      configurable: true,
-    });
+    setLocationSearch("");
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     localStorage.removeItem("debug");
-
-    Object.defineProperty(window, "location", {
-      value: { search: "" },
-      writable: true,
-      configurable: true,
-    });
+    setLocationSearch("");
   });
 
-  describe("initialization", () => {
-    it("should set default level to INFO unless debug is enabled", () => {
+  describe("debug detection", () => {
+    it("uses INFO level when no debug flag is enabled", () => {
       expect(logger.level).toBe(1);
     });
 
-    it("should enable DEBUG level when localStorage debug=true", () => {
-      localStorage.setItem("debug", "true");
+    it.each([
+      {
+        name: "localStorage",
+        prepare: () => {
+          localStorage.setItem("debug", "true");
+        },
+      },
+      {
+        name: "URL",
+        prepare: () => {
+          setLocationSearch("?debug=true");
+        },
+      },
+    ])("enables DEBUG from $name", ({ prepare }) => {
+      prepare();
 
-      const newLogger = new LoggerService();
-
-      expect(newLogger.level).toBe(0);
+      expect(new LoggerService().level).toBe(0);
     });
 
-    it("should enable DEBUG level when URL param debug=true", () => {
+    it.each([
+      {
+        name: "URL=true with localStorage=false",
+        prepare: () => {
+          localStorage.setItem("debug", "false");
+          setLocationSearch("?debug=true");
+        },
+      },
+      {
+        name: "URL=false with localStorage=true",
+        prepare: () => {
+          localStorage.setItem("debug", "true");
+          setLocationSearch("?debug=false");
+        },
+      },
+    ])("enables DEBUG when either source is true: $name", ({ prepare }) => {
+      prepare();
+
+      expect(new LoggerService().level).toBe(0);
+    });
+
+    it.each([
+      {
+        name: "URL=false",
+        prepare: () => {
+          setLocationSearch("?debug=false");
+        },
+      },
+      {
+        name: "localStorage=false",
+        prepare: () => {
+          localStorage.setItem("debug", "false");
+        },
+      },
+    ])(
+      "keeps INFO when an explicit debug flag is false: $name",
+      ({ prepare }) => {
+        prepare();
+
+        expect(new LoggerService().level).toBe(1);
+      },
+    );
+
+    it("falls back to INFO when debug detection throws", () => {
       Object.defineProperty(window, "location", {
-        value: { search: "?debug=true" },
-        writable: true,
         configurable: true,
+        get() {
+          throw new Error("Location unavailable");
+        },
       });
 
-      const newLogger = new LoggerService();
-
-      expect(newLogger.level).toBe(0);
+      expect(new LoggerService().level).toBe(1);
     });
 
-    it("should not enable DEBUG when no debug flags are present", () => {
-      const newLogger = new LoggerService();
+    it("keeps DEBUG disabled when window is undefined", () => {
+      vi.stubGlobal("window", undefined);
 
-      expect(newLogger.level).toBe(1);
-    });
-
-    it("should handle localStorage errors gracefully during debug detection", () => {
-      const originalGetItem = localStorage.getItem;
-
-      localStorage.getItem = vi.fn().mockImplementation(() => {
-        throw new Error("Storage error");
-      });
-
-      const newLogger = new LoggerService();
-
-      expect(newLogger.level).toBe(1);
-
-      localStorage.getItem = originalGetItem;
+      expect(new LoggerService().level).toBe(1);
     });
   });
 
   describe("level management", () => {
-    it("should change log level with setLevel()", () => {
+    it("updates the current log level with setLevel", () => {
       logger.setLevel(3);
 
-      expect(logger.level).toBe(3);
-    });
-
-    it("should support changing log level multiple times", () => {
-      logger.setLevel(3);
       expect(logger.level).toBe(3);
 
       logger.setLevel(0);
+
       expect(logger.level).toBe(0);
     });
   });
@@ -104,162 +149,122 @@ describe("LoggerService", () => {
       logger.setLevel(0);
     });
 
-    it("should log DEBUG with multiple arguments", () => {
-      logger.debug("msg", "extra", 123);
-
-      expect(consoleSpy.debug).toHaveBeenCalledWith(
+    it.each([
+      [
+        "debug",
+        "debug",
         "[DEBUG]",
-        "msg",
-        "extra",
-        123,
-      );
-    });
+        ["message", "extra", 123],
+      ],
+      [
+        "info",
+        "info",
+        "[INFO]",
+        ["message", 456, true],
+      ],
+      [
+        "warn",
+        "warn",
+        "[WARN]",
+        ["message", { key: "value" }],
+      ],
+      [
+        "error",
+        "error",
+        "[ERROR]",
+        ["message", new Error("test")],
+      ],
+    ])(
+      "writes %s messages with all arguments",
+      (method, consoleMethod, prefix, args) => {
+        logger[method](...args);
 
-    it("should log INFO with multiple arguments", () => {
-      logger.info("msg", 456, true);
-
-      expect(consoleSpy.info).toHaveBeenCalledWith("[INFO]", "msg", 456, true);
-    });
-
-    it("should log WARN with multiple arguments", () => {
-      logger.warn("msg", { key: "value" });
-
-      expect(consoleSpy.warn).toHaveBeenCalledWith("[WARN]", "msg", {
-        key: "value",
-      });
-    });
-
-    it("should log ERROR with multiple arguments", () => {
-      const error = new Error("test");
-
-      logger.error("msg", error);
-
-      expect(consoleSpy.error).toHaveBeenCalledWith("[ERROR]", "msg", error);
-    });
+        expect(consoleSpy[consoleMethod]).toHaveBeenCalledWith(
+          prefix,
+          ...args,
+        );
+      },
+    );
   });
 
   describe("log level filtering", () => {
-    it("should log DEBUG only when level <= DEBUG", () => {
-      logger.setLevel(0);
-      logger.debug("debug msg");
+    it.each([
+      ["debug", 0, 1, "debug", "[DEBUG]"],
+      ["info", 1, 2, "info", "[INFO]"],
+      ["warn", 2, 3, "warn", "[WARN]"],
+      ["error", 3, 4, "error", "[ERROR]"],
+    ])(
+      "logs %s at its minimum level and suppresses it above that level",
+      (
+        method,
+        enabledLevel,
+        disabledLevel,
+        consoleMethod,
+        prefix,
+      ) => {
+        logger.setLevel(enabledLevel);
 
-      expect(consoleSpy.debug).toHaveBeenCalledWith("[DEBUG]", "debug msg");
+        logger[method]("visible");
 
-      logger.setLevel(1);
-      logger.debug("should not log");
+        expect(consoleSpy[consoleMethod]).toHaveBeenCalledTimes(1);
+        expect(consoleSpy[consoleMethod]).toHaveBeenCalledWith(
+          prefix,
+          "visible",
+        );
 
-      expect(consoleSpy.debug).toHaveBeenCalledTimes(1);
-    });
+        logger.setLevel(disabledLevel);
 
-    it("should log INFO only when level <= INFO", () => {
-      logger.setLevel(1);
-      logger.info("info msg");
+        logger[method]("hidden");
 
-      expect(consoleSpy.info).toHaveBeenCalledWith("[INFO]", "info msg");
+        expect(consoleSpy[consoleMethod]).toHaveBeenCalledTimes(1);
+      },
+    );
 
-      logger.setLevel(2);
-      logger.info("should not log");
-
-      expect(consoleSpy.info).toHaveBeenCalledTimes(1);
-    });
-
-    it("should log WARN only when level <= WARN", () => {
-      logger.setLevel(2);
-      logger.warn("warn msg");
-
-      expect(consoleSpy.warn).toHaveBeenCalledWith("[WARN]", "warn msg");
-
-      logger.setLevel(3);
-      logger.warn("should not log");
-
-      expect(consoleSpy.warn).toHaveBeenCalledTimes(1);
-    });
-
-    it("should log ERROR only when level <= ERROR", () => {
-      logger.setLevel(3);
-      logger.error("error msg");
-
-      expect(consoleSpy.error).toHaveBeenCalledWith("[ERROR]", "error msg");
-
+    it("suppresses all log methods at NONE level", () => {
       logger.setLevel(4);
-      logger.error("should not log");
 
-      expect(consoleSpy.error).toHaveBeenCalledTimes(1);
+      logger.debug("hidden");
+      logger.info("hidden");
+      logger.warn("hidden");
+      logger.error("hidden");
+
+      expect(consoleSpy.debug).not.toHaveBeenCalled();
+      expect(consoleSpy.info).not.toHaveBeenCalled();
+      expect(consoleSpy.warn).not.toHaveBeenCalled();
+      expect(consoleSpy.error).not.toHaveBeenCalled();
     });
   });
 
   describe("group", () => {
-    it("should execute group callback only in DEBUG mode", () => {
-      const fn = vi.fn();
+    it("opens, executes, and closes a group in DEBUG mode", () => {
+      const callback = vi.fn();
 
       logger.setLevel(0);
-      logger.group("test", fn);
+
+      logger.group("test", callback);
 
       expect(consoleSpy.group).toHaveBeenCalledWith("test");
-      expect(fn).toHaveBeenCalled();
-      expect(consoleSpy.groupEnd).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(consoleSpy.groupEnd).toHaveBeenCalledTimes(1);
+    });
 
-      consoleSpy.group.mockClear();
-      consoleSpy.groupEnd.mockClear();
-      fn.mockClear();
+    it("does nothing when DEBUG mode is disabled", () => {
+      const callback = vi.fn();
 
       logger.setLevel(1);
-      logger.group("test", fn);
+
+      logger.group("test", callback);
 
       expect(consoleSpy.group).not.toHaveBeenCalled();
-      expect(fn).not.toHaveBeenCalled();
+      expect(callback).not.toHaveBeenCalled();
       expect(consoleSpy.groupEnd).not.toHaveBeenCalled();
-    });
-
-    it("should not call group or groupEnd when level > DEBUG", () => {
-      const fn = vi.fn();
-
-      logger.setLevel(2);
-      logger.group("test", fn);
-
-      expect(consoleSpy.group).not.toHaveBeenCalled();
-      expect(fn).not.toHaveBeenCalled();
-      expect(consoleSpy.groupEnd).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("LoggerService without window", () => {
-    it("should not enable DEBUG when window is undefined", async () => {
-      vi.stubGlobal("window", undefined);
-      vi.resetModules();
-
-      const { LoggerService: LoggerServiceWithoutWindow } =
-        await import("../../../../src/core/services/Logger.js");
-
-      const loggerWithoutWindow = new LoggerServiceWithoutWindow();
-
-      expect(loggerWithoutWindow.level).toBe(1);
-
-      vi.unstubAllGlobals();
-      vi.resetModules();
-
-      await import("../../../../src/core/services/Logger.js");
     });
   });
 
   describe("exported Logger instance", () => {
-    it("should be an instance of LoggerService", () => {
+    it("exports a LoggerService singleton with a defined level", () => {
       expect(Logger).toBeInstanceOf(LoggerService);
-    });
-
-    it("should have a defined log level", () => {
       expect(Logger.level).toBeDefined();
-    });
-  });
-
-  describe("additional coverage", () => {
-    it("should verify multiple DEBUG calls", () => {
-      logger.setLevel(0);
-
-      logger.debug("msg1");
-      logger.debug("msg2");
-
-      expect(consoleSpy.debug).toHaveBeenCalledTimes(2);
     });
   });
 });
