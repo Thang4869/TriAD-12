@@ -15,7 +15,7 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  test: {
+ test: {
     globals: true,
     environment: "jsdom",
     setupFiles: "./tests/setup.js",
@@ -37,22 +37,25 @@ export default defineConfig({
         functions: 90,
         lines: 90,
       },
-      coverage: {
-        exclude: [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/tests/**",
-          "**/*.config.js",
-          "**/index.js",
-          "**/playwright-report/**",
-          "**/e2e/**",
-          "**/playwright.config.ts",
-          "**/src/shared/services/api.service.js",
-          "**/src/shared/types/repository.interface.js",
-          "**/src/ui/**",
-          "**/src/modules/*/index.js",
-        ],
-      },
+      exclude: [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/tests/**",
+        "**/*.config.js",
+        "**/index.js",
+
+        "**/playwright-report/**",
+        "**/e2e/**",
+        "**/playwright.config.ts",
+
+        "**/src/shared/services/api.service.js",
+        "**/src/shared/types/**",
+        "**/src/ui/**",
+
+        "**/src/modules/*/index.js",
+        "**/src/shared/models/index.js",
+        "**/src/index.js",
+      ],
     },
     testTimeout: 30000,
     hookTimeout: 30000,
