@@ -42,6 +42,19 @@ describe("CheckoutValidator", () => {
     expect(result.errors).toContain("Invalid email format");
   });
 
+  it("should reject email with whitespace only", () => {
+    const data = {
+      firstName: "John",
+      lastName: "Doe",
+      email: "   ",
+      phone: "0123456789",
+      address: "123 Main St",
+    };
+    const result = validator.validate(data);
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("Invalid email format");
+  });
+
   it("should validate phone number (10-12 digits)", () => {
     const data = {
       firstName: "John",
@@ -55,20 +68,78 @@ describe("CheckoutValidator", () => {
     expect(result.errors).toContain("Invalid phone number (10-12 digits)");
   });
 
-  it("should validate card details when payment method is card", () => {
+  it("should reject phone with whitespace only", () => {
     const data = {
+      firstName: "John",
+      lastName: "Doe",
+      email: "john@example.com",
+      phone: "   ",
+      address: "123 Main St",
+    };
+    const result = validator.validate(data);
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("Invalid phone number (10-12 digits)");
+  });
+
+  describe("card validation", () => {
+    const baseData = {
       firstName: "John",
       lastName: "Doe",
       email: "john@example.com",
       phone: "0123456789",
       address: "123 Main St",
       paymentMethod: "card",
-      cardNumber: "1234",
-      cardExpiry: "12/25",
-      cardCvv: "123",
     };
-    const result = validator.validate(data);
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("Invalid card number (must be 16 digits)");
+
+    it("should require card number", () => {
+      const data = { ...baseData, cardNumber: "" };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Card number is required");
+    });
+
+    it("should require card expiry", () => {
+      const data = { ...baseData, cardNumber: "1234567890123456", cardExpiry: "" };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Card expiry is required");
+    });
+
+    it("should require CVV", () => {
+      const data = { ...baseData, cardNumber: "1234567890123456", cardExpiry: "12/25", cardCvv: "" };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("CVV is required");
+    });
+
+    it("should reject invalid card number (length < 16)", () => {
+      const data = { ...baseData, cardNumber: "1234", cardExpiry: "12/25", cardCvv: "123" };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Invalid card number (must be 16 digits)");
+    });
+
+    it("should accept valid card details", () => {
+      const data = {
+        ...baseData,
+        cardNumber: "1234567890123456",
+        cardExpiry: "12/25",
+        cardCvv: "123",
+      };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("should accept card number with spaces", () => {
+      const data = {
+        ...baseData,
+        cardNumber: "1234 5678 9012 3456",
+        cardExpiry: "12/25",
+        cardCvv: "123",
+      };
+      const result = validator.validate(data);
+      expect(result.isValid).toBe(true);
+    });
   });
 });

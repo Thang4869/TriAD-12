@@ -49,4 +49,23 @@ describe("CheckoutRenderer", () => {
       "500.000 ₫",
     );
   });
+
+  it("should return early if itemsContainer is missing", () => {
+    document.body.innerHTML = `<span id="checkout-total">0 ₫</span>`;
+    const renderer2 = new CheckoutRenderer();
+    expect(renderer2.itemsContainer).toBeNull();
+
+    renderer2.renderSummary([{ name: "Test", quantity: 1, subtotal: 100 }]);
+
+    expect(document.getElementById("checkout-total").textContent).toBe("0 ₫");
+  });
+
+  it("should not update total when totalElement is missing", () => {
+    document.body.innerHTML = `<div id="checkout-items"></div>`;
+    const renderer2 = new CheckoutRenderer();
+    expect(renderer2.totalElement).toBeNull();
+
+    renderer2.updateTotal(1000);
+    expect(document.getElementById("checkout-total")).toBeNull();
+  });
 });
