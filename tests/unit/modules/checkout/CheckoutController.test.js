@@ -22,6 +22,8 @@ describe("CheckoutController", () => {
   let mockEventBusEmit;
 
   beforeEach(() => {
+    vi.stubGlobal("requestAnimationFrame", (cb) => cb());
+
     document.body.innerHTML = `
       <button id="checkout-btn"></button>
       <button id="close-checkout-btn"></button>
@@ -34,16 +36,16 @@ describe("CheckoutController", () => {
         <div id="card-details" class="hidden"></div>
         <input type="radio" name="payment" value="cod" checked>
         <input type="radio" name="payment" value="card">
-        <input id="card-number">
-        <input id="card-expiry">
-        <input id="card-cvv">
+        <input id="card-number" value="1234567890123456">
+        <input id="card-expiry" value="12/25">
+        <input id="card-cvv" value="123">
         <button type="submit">Place Order</button>
       </form>
-      <div id="checkout-modal" class="hidden">
-        <div class="bg-white"></div>
+      <div id="checkout-modal" class="hidden opacity-0">
+        <div class="bg-white scale-95"></div>
       </div>
-      <div id="success-modal" class="hidden">
-        <div class="bg-white"></div>
+      <div id="success-modal" class="hidden opacity-0">
+        <div class="bg-white scale-95"></div>
       </div>
       <button id="success-close-btn"></button>
       <div id="checkout-items"></div>
@@ -99,11 +101,12 @@ describe("CheckoutController", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
     document.body.innerHTML = "";
-    window.cartController = undefined;
-    window.toast = undefined;
-    window.notifications = undefined;
-    window.productsController = undefined;
+    delete window.cartController;
+    delete window.toast;
+    delete window.notifications;
+    delete window.productsController;
     mockEventBusEmit.mockRestore();
   });
 
@@ -145,6 +148,11 @@ describe("CheckoutController", () => {
       successClose.click();
       expect(successSpy).toHaveBeenCalled();
     });
+
+    it("should handle initialization smoothly when DOM elements are missing", () => {
+      document.body.innerHTML = "";
+      expect(() => new CheckoutController()).not.toThrow();
+    });
   });
 
   describe("openCheckout", () => {
@@ -153,15 +161,21 @@ describe("CheckoutController", () => {
       controller.openCheckout();
       expect(mockToast.warning).toHaveBeenCalledWith(
         "Empty Cart",
-        "Please add items to your cart first.",
+        "Please add items to your cart first."
       );
       expect(mockRendererInstance.renderSummary).not.toHaveBeenCalled();
       expect(
-        document.getElementById("checkout-modal").classList.contains("hidden"),
+        document.getElementById("checkout-modal").classList.contains("hidden")
       ).toBe(true);
     });
 
-    it("should open checkout modal with cart items", () => {
+    it("should handle empty cart when window.toast is undefined", () => {
+      delete window.toast;
+      mockCartController.getItems.mockReturnValue([]);
+      expect(() => controller.openCheckout()).not.toThrow();
+    });
+
+    it("should open checkout modal with cart items and trigger animation", () => {
       const items = [{ id: 1, name: "Product", quantity: 1, subtotal: 100000 }];
       mockCartController.getItems.mockReturnValue(items);
       controller.openCheckout();
@@ -169,22 +183,40 @@ describe("CheckoutController", () => {
       expect(mockRendererInstance.renderSummary).toHaveBeenCalledWith(items);
       expect(controller.items).toBe(items);
       const modal = document.getElementById("checkout-modal");
+      const content = modal.querySelector(".bg-white");
+
       expect(modal.classList.contains("hidden")).toBe(false);
+      expect(modal.classList.contains("opacity-0")).toBe(false);
+      expect(content.classList.contains("scale-95")).toBe(false);
       expect(document.body.style.overflow).toBe("hidden");
       expect(mockEventBusEmit).toHaveBeenCalledWith(EVENTS.CHECKOUT_STARTED);
+    });
+
+    it("should handle openCheckout when window.cartController is undefined", () => {
+      delete window.cartController;
+      controller.openCheckout();
+      expect(mockToast.warning).toHaveBeenCalledWith(
+        "Empty Cart",
+        "Please add items to your cart first."
+      );
     });
   });
 
   describe("closeCheckout", () => {
     it("should close checkout modal and reset overflow", () => {
       const modal = document.getElementById("checkout-modal");
-      modal.classList.remove("hidden");
-      modal.classList.remove("opacity-0");
+      const content = modal.querySelector(".bg-white");
+      modal.classList.remove("hidden", "opacity-0");
+      content.classList.remove("scale-95");
       document.body.style.overflow = "hidden";
 
       controller.closeCheckout();
+
       expect(modal.classList.contains("opacity-0")).toBe(true);
+      expect(content.classList.contains("scale-95")).toBe(true);
+
       vi.runAllTimers();
+
       expect(modal.classList.contains("hidden")).toBe(true);
       expect(document.body.style.overflow).toBe("");
     });
@@ -208,13 +240,26 @@ describe("CheckoutController", () => {
       controller.handleSubmit(event);
       expect(mockToast.error).toHaveBeenCalledWith(
         "Validation Error",
-        "Error 1, Error 2",
+        "Error 1, Error 2"
       );
       expect(mockServiceInstance.processCheckout).not.toHaveBeenCalled();
     });
 
-    it("should process checkout successfully", () => {
-      const items = [{ id: 1, name: "Product", quantity: 2, subtotal: 200000 }];
+    it("should handle validation error when window.toast is undefined", () => {
+      delete window.toast;
+      mockValidatorInstance.validate.mockReturnValue({
+        isValid: false,
+        errors: ["Error 1"],
+      });
+      const event = new Event("submit", { cancelable: true });
+      expect(() => controller.handleSubmit(event)).not.toThrow();
+    });
+
+    it("should process checkout successfully with all window objects available", () => {
+      const items = [
+        { id: 1, name: "Product 1", quantity: 2, subtotal: 200000 },
+        { id: 2, name: "Product 2", quantity: 1, subtotal: 100000 },
+      ];
       controller.items = items;
       mockValidatorInstance.validate.mockReturnValue({
         isValid: true,
@@ -228,8 +273,9 @@ describe("CheckoutController", () => {
 
       expect(mockToast.info).toHaveBeenCalledWith(
         "Processing",
-        "Please wait while we process your order...",
+        "Please wait while we process your order..."
       );
+
       vi.advanceTimersByTime(1500);
 
       expect(mockServiceInstance.processCheckout).toHaveBeenCalled();
@@ -237,49 +283,122 @@ describe("CheckoutController", () => {
       expect(mockCartController.closeDrawer).toHaveBeenCalled();
       expect(mockNotifications.add).toHaveBeenCalledWith(
         "Order Placed!",
-        "Order #ORD-456 confirmed with 2 item(s). Thank you!",
-        "success",
+        "Order #ORD-456 confirmed with 3 item(s). Thank you!",
+        "success"
       );
       expect(mockToast.success).toHaveBeenCalledWith(
         "Order Placed!",
-        "Order #ORD-456 confirmed.",
+        "Order #ORD-456 confirmed."
       );
       expect(
-        document.getElementById("success-modal").classList.contains("hidden"),
+        document.getElementById("success-modal").classList.contains("hidden")
       ).toBe(false);
     });
 
-    it("should handle error during checkout", () => {
+    it("should process checkout successfully when optional window objects are undefined", () => {
+      delete window.toast;
+      delete window.cartController;
+      delete window.notifications;
+
+      controller.items = [{ id: 1, name: "Item", quantity: 1, subtotal: 100 }];
+      mockValidatorInstance.validate.mockReturnValue({
+        isValid: true,
+        errors: [],
+      });
+      mockServiceInstance.processCheckout.mockReturnValue({ id: "ORD-789" });
+
+      const event = new Event("submit", { cancelable: true });
+      controller.handleSubmit(event);
+
+      vi.advanceTimersByTime(1500);
+
+      expect(mockServiceInstance.processCheckout).toHaveBeenCalled();
+    });
+
+    it("should handle fallback paymentMethod when radio is not checked", () => {
+      document
+        .querySelectorAll('input[name="payment"]')
+        .forEach((r) => (r.checked = false));
+
+      const event = new Event("submit", { cancelable: true });
+      controller.handleSubmit(event);
+
+      expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
+        expect.objectContaining({ paymentMethod: "cod" })
+      );
+    });
+
+    it("should handle optional card input elements when missing in DOM", () => {
+      document.getElementById("card-number")?.remove();
+      document.getElementById("card-expiry")?.remove();
+      document.getElementById("card-cvv")?.remove();
+
+      const event = new Event("submit", { cancelable: true });
+      controller.handleSubmit(event);
+
+      expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cardNumber: undefined,
+          cardExpiry: undefined,
+          cardCvv: undefined,
+        })
+      );
+    });
+
+    it("should handle error during checkout execution", () => {
       mockValidatorInstance.validate.mockReturnValue({
         isValid: true,
         errors: [],
       });
       mockServiceInstance.processCheckout.mockImplementation(() => {
-        throw new Error("Service error");
+        throw new Error("Service failure");
       });
 
       const event = new Event("submit", { cancelable: true });
       controller.handleSubmit(event);
+
       vi.advanceTimersByTime(1500);
 
       expect(mockToast.error).toHaveBeenCalledWith(
         "Error",
-        "Failed to process order. Please try again.",
+        "Failed to process order. Please try again."
       );
       expect(mockNotifications.add).toHaveBeenCalledWith(
         "Order Failed",
         "There was an error processing your order. Please try again.",
-        "warning",
+        "warning"
       );
+    });
+
+    it("should handle error during checkout when toast and notifications are undefined", () => {
+      delete window.toast;
+      delete window.notifications;
+
+      mockValidatorInstance.validate.mockReturnValue({
+        isValid: true,
+        errors: [],
+      });
+      mockServiceInstance.processCheckout.mockImplementation(() => {
+        throw new Error("Service failure");
+      });
+
+      const event = new Event("submit", { cancelable: true });
+      controller.handleSubmit(event);
+
+      expect(() => vi.advanceTimersByTime(1500)).not.toThrow();
     });
   });
 
   describe("showSuccess", () => {
-    it("should show success modal", () => {
+    it("should display success modal and update styles", () => {
       const modal = document.getElementById("success-modal");
-      expect(modal.classList.contains("hidden")).toBe(true);
+      const content = modal.querySelector(".bg-white");
+
       controller.showSuccess("ORD-123");
+
       expect(modal.classList.contains("hidden")).toBe(false);
+      expect(modal.classList.contains("opacity-0")).toBe(false);
+      expect(content.classList.contains("scale-95")).toBe(false);
       expect(document.body.style.overflow).toBe("hidden");
     });
   });
@@ -287,16 +406,28 @@ describe("CheckoutController", () => {
   describe("closeSuccess", () => {
     it("should close success modal and reset filters", () => {
       const modal = document.getElementById("success-modal");
-      modal.classList.remove("hidden");
-      modal.classList.remove("opacity-0");
+      modal.classList.remove("hidden", "opacity-0");
       document.body.style.overflow = "hidden";
 
       controller.closeSuccess();
       expect(modal.classList.contains("opacity-0")).toBe(true);
+
       vi.runAllTimers();
+
       expect(modal.classList.contains("hidden")).toBe(true);
       expect(document.body.style.overflow).toBe("");
       expect(mockProductsController.resetFilters).toHaveBeenCalled();
+    });
+
+    it("should close success modal when window.productsController is undefined", () => {
+      delete window.productsController;
+
+      controller.closeSuccess();
+      vi.runAllTimers();
+
+      expect(
+        document.getElementById("success-modal").classList.contains("hidden")
+      ).toBe(true);
     });
   });
 
@@ -314,23 +445,22 @@ describe("CheckoutController", () => {
       const cardDetails = document.getElementById("card-details");
       cardDetails.classList.remove("hidden");
 
-      document.querySelector('input[value="cod"]').checked = true;
+      document.querySelector(
+        'input[name="payment"][value="cod"]'
+      ).checked = true;
       controller.toggleCardDetails();
+
       expect(cardDetails.classList.contains("hidden")).toBe(true);
     });
 
-    it("should handle checkout without toast", () => {
-      delete window.toast;
-      const items = [{ id: 1, name: "Product", quantity: 1, subtotal: 100 }];
-      mockCartController.getItems.mockReturnValue(items);
-      controller.openCheckout();
-    });
-
-    it("toggleCardDetails should handle no selected radio", () => {
+    it("should handle toggleCardDetails when no radio is checked", () => {
+      const cardDetails = document.getElementById("card-details");
       document
         .querySelectorAll('input[name="payment"]')
         .forEach((r) => (r.checked = false));
-      expect(() => controller.toggleCardDetails()).not.toThrow();
+
+      controller.toggleCardDetails();
+      expect(cardDetails.classList.contains("hidden")).toBe(true);
     });
   });
 });
