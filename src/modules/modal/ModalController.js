@@ -6,7 +6,6 @@ import { eventBus } from "../../core/services/EventBus.js";
 export class ModalController {
   constructor() {
     this.service = new ModalService();
-    this.setupEventListeners();
 
     this.overlay = document.getElementById("product-modal-overlay");
     this.content = document.getElementById("product-modal-content");
@@ -15,6 +14,8 @@ export class ModalController {
     this.image = document.getElementById("modal-img");
     this.quantityEl = document.getElementById("modal-quantity");
     this._isClosing = false;
+
+    this.setupEventListeners();
   }
 
   close() {
