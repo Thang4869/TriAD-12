@@ -135,9 +135,19 @@ describe("ProductsService", () => {
       service.applyFilters();
       expect(service.hasMore).toBe(false);
       const current = service.getCurrentPage();
-      const result = service.loadMore();
-      expect(result).toEqual(current);
+      expect(service.loadMore()).toEqual(current);
       expect(service.page).toBe(1);
+    });
+  });
+
+  describe("totalCount", () => {
+    it("should return correct total count of filtered products", () => {
+      const service = new ProductsService(mockRepo, mockEventBus);
+      service.load();
+      expect(service.totalCount).toBe(3);
+
+      service.updateFilters({ keyword: "glass" });
+      expect(service.totalCount).toBe(1);
     });
   });
 

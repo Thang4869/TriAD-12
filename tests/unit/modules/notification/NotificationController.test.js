@@ -16,8 +16,8 @@ describe("NotificationController", () => {
 
   const setupDOM = (withButtons = true) => {
     document.body.innerHTML = `
-      ${withButtons ? '<button id="notification-btn"></button>' : ''}
-      ${withButtons ? '<button id="mobile-notification-btn"></button>' : ''}
+      ${withButtons ? '<button id="notification-btn"></button>' : ""}
+      ${withButtons ? '<button id="mobile-notification-btn"></button>' : ""}
       <div id="notification-overlay"></div>
       <div id="notification-dropdown" class="hidden"></div>
       <div id="notification-list"></div>
@@ -28,10 +28,10 @@ describe("NotificationController", () => {
   };
 
   beforeEach(() => {
-    global.localStorage = {
+    vi.stubGlobal("localStorage", {
       getItem: vi.fn().mockReturnValue(null),
       setItem: vi.fn(),
-    };
+    });
 
     mockToast = {
       info: vi.fn(),
@@ -39,20 +39,22 @@ describe("NotificationController", () => {
       warning: vi.fn(),
       error: vi.fn(),
     };
-    window.toast = mockToast;
+    vi.stubGlobal("toast", mockToast);
 
     vi.useFakeTimers();
     setupDOM(true);
-    vi.mocked(eventBus.on).mockClear();
-    vi.mocked(eventBus.emit).mockClear();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
+    if (controller?.destroy) {
+      controller.destroy();
+      controller = null;
+    }
     vi.useRealTimers();
     vi.restoreAllMocks();
-    delete window.toast;
+    vi.unstubAllGlobals();
     document.body.innerHTML = "";
-    if (controller?.destroy) controller.destroy();
   });
 
   describe("initialization", () => {
@@ -66,7 +68,7 @@ describe("NotificationController", () => {
       Object.defineProperty(document, "readyState", { value: "loading", configurable: true });
       const spy = vi.spyOn(document, "addEventListener");
       controller = new NotificationController();
-      const handler = spy.mock.calls.find(c => c[0] === "DOMContentLoaded")[1];
+      const handler = spy.mock.calls.find((c) => c[0] === "DOMContentLoaded")[1];
       handler();
       expect(controller._initialized).toBe(true);
       Object.defineProperty(document, "readyState", { value: "complete", configurable: true });
@@ -88,6 +90,13 @@ describe("NotificationController", () => {
       vi.clearAllMocks();
     });
 
+    it("should return early when _listenersAttached is true (covers line 37)", () => {
+      controller._listenersAttached = true;
+      const spy = vi.spyOn(document, "getElementById");
+      controller._setupEventListeners();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it("should retry finding buttons when both are missing", () => {
       setupDOM(false);
       controller = new NotificationController();
@@ -99,39 +108,60 @@ describe("NotificationController", () => {
       expect(controller._retryCount).toBe(1);
     });
 
-    it("should attach click event to notification-btn", () => {
+    it("should stop retrying when _retryCount reaches _maxRetries", () => {
+      setupDOM(false);
+      controller = new NotificationController();
+      controller._listenersAttached = false;
+      controller._retryCount = 20;
+      const spy = vi.spyOn(global, "setTimeout");
+      controller._setupEventListeners();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it("should retry finding elements and initialize when elements appear later", () => {
+      setupDOM(false);
+      const controllerRetry = new NotificationController();
+      setTimeout(() => {
+        setupDOM(true);
+      }, 500);
+      vi.advanceTimersByTime(1000);
+      expect(controllerRetry.btn).toBeDefined();
+      expect(controllerRetry.markAllBtn).toBeDefined();
+      controllerRetry.destroy();
+    });
+
+    it("should attach click event to notification-btn and trigger _toggleDropdown", () => {
       const btn = document.getElementById("notification-btn");
-      const spy = vi.spyOn(btn, "addEventListener");
+      const spy = vi.spyOn(controller, "_toggleDropdown");
       controller._setupEventListeners();
-      expect(spy).toHaveBeenCalledWith("click", expect.any(Function));
+      btn.dispatchEvent(new Event("click"));
+      expect(spy).toHaveBeenCalled();
     });
 
-    it("should attach click event to mobile-notification-btn", () => {
+    it("should attach click event to mobile-notification-btn and trigger _toggleDropdown", () => {
       const btn = document.getElementById("mobile-notification-btn");
-      const spy = vi.spyOn(btn, "addEventListener");
+      const spy = vi.spyOn(controller, "_toggleDropdown");
       controller._setupEventListeners();
-      expect(spy).toHaveBeenCalledWith("click", expect.any(Function));
+      btn.dispatchEvent(new Event("click"));
+      expect(spy).toHaveBeenCalled();
     });
 
-    it("should attach click event to overlay", () => {
+    it("should attach click event to overlay and trigger _closeDropdown", () => {
       const overlay = document.getElementById("notification-overlay");
-      const spy = vi.spyOn(overlay, "addEventListener");
+      const spy = vi.spyOn(controller, "_closeDropdown");
       controller._setupEventListeners();
-      expect(spy).toHaveBeenCalledWith("click", expect.any(Function));
+      overlay.dispatchEvent(new Event("click"));
+      expect(spy).toHaveBeenCalled();
     });
 
-    it("should attach click event to mark-all-read button", () => {
-      const btn = document.getElementById("mark-all-read");
-      const spy = vi.spyOn(btn, "addEventListener");
-      controller._setupEventListeners();
-      expect(spy).toHaveBeenCalledWith("click", expect.any(Function));
-    });
-
-    it("should handle click on mark-all-read and call markAllAsRead", () => {
+    it("should attach click event to mark-all-read button and stop propagation", () => {
       const btn = document.getElementById("mark-all-read");
       const spy = vi.spyOn(controller, "markAllAsRead");
       controller._setupEventListeners();
-      btn.dispatchEvent(new Event("click", { bubbles: true }));
+      const event = new Event("click", { bubbles: true });
+      const stopSpy = vi.spyOn(event, "stopPropagation");
+      btn.dispatchEvent(event);
+      expect(stopSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
     });
 
@@ -167,13 +197,32 @@ describe("NotificationController", () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it("should not close dropdown when clicking inside dropdown", () => {
+    it("should not close dropdown when clicking inside dropdown or on toggle buttons", () => {
       controller._isOpen = true;
       const spy = vi.spyOn(controller, "_closeDropdown");
       controller._setupEventListeners();
       const dropdown = document.getElementById("notification-dropdown");
+
       dropdown.contains = vi.fn(() => true);
       dropdown.dispatchEvent(new Event("click", { bubbles: true }));
+      expect(spy).not.toHaveBeenCalled();
+
+      dropdown.contains = vi.fn(() => false);
+      const btn = document.getElementById("notification-btn");
+      btn.dispatchEvent(new Event("click", { bubbles: true }));
+      expect(spy).not.toHaveBeenCalled();
+
+      const mobileBtn = document.getElementById("mobile-notification-btn");
+      mobileBtn.dispatchEvent(new Event("click", { bubbles: true }));
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it("should handle click outside gracefully when dropdown element is missing", () => {
+      controller._isOpen = true;
+      controller._setupEventListeners();
+      document.getElementById("notification-dropdown")?.remove();
+      const spy = vi.spyOn(controller, "_closeDropdown");
+      document.body.dispatchEvent(new Event("click", { bubbles: true }));
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -199,16 +248,32 @@ describe("NotificationController", () => {
     });
 
     it("should subscribe to CHECKOUT_COMPLETED when window.eventBus exists", () => {
-      window.eventBus = { on: vi.fn() };
+      vi.stubGlobal("eventBus", eventBus);
       controller._setupEventListeners();
       expect(eventBus.on).toHaveBeenCalledWith(EVENTS.CHECKOUT_COMPLETED, expect.any(Function));
-      delete window.eventBus;
     });
 
     it("should not subscribe if window.eventBus is undefined", () => {
-      delete window.eventBus;
       controller._setupEventListeners();
       expect(eventBus.on).not.toHaveBeenCalled();
+    });
+
+    it("should handle CHECKOUT_COMPLETED callback and add order notification", () => {
+      vi.stubGlobal("eventBus", eventBus);
+      const addSpy = vi.spyOn(controller, "add");
+
+      controller._setupEventListeners();
+
+      const checkoutCallback = vi.mocked(eventBus.on).mock.calls.find(
+        (call) => call[0] === EVENTS.CHECKOUT_COMPLETED
+      )?.[1];
+
+      expect(checkoutCallback).toBeDefined();
+      checkoutCallback({ order: { id: "1001" } });
+      expect(addSpy).toHaveBeenCalledWith("New Order", "Order #1001 placed!", "order");
+
+      checkoutCallback({});
+      checkoutCallback(null);
     });
 
     it("should add system error on window error with message", () => {
@@ -236,7 +301,9 @@ describe("NotificationController", () => {
   });
 
   describe("dropdown", () => {
-    beforeEach(() => { controller = new NotificationController(); });
+    beforeEach(() => {
+      controller = new NotificationController();
+    });
 
     it("should open dropdown via _toggleDropdown", () => {
       const show = vi.spyOn(controller.renderer, "showDropdown");
@@ -317,7 +384,7 @@ describe("NotificationController", () => {
       });
 
       it("should not call toast if window.toast is undefined", () => {
-        delete window.toast;
+        vi.stubGlobal("toast", undefined);
         expect(() => controller.add("Test", "Msg")).not.toThrow();
       });
 
@@ -396,7 +463,7 @@ describe("NotificationController", () => {
       });
 
       it("should not show toast if window.toast undefined", () => {
-        delete window.toast;
+        vi.stubGlobal("toast", undefined);
         controller.add("A", "1");
         expect(() => controller.markAllAsRead()).not.toThrow();
       });
@@ -423,11 +490,14 @@ describe("NotificationController", () => {
       expect(typeof window.notifications.getCount).toBe("function");
     });
 
-    it("should proxy methods correctly", () => {
+    it("should proxy all methods correctly including getter functions", () => {
       controller = new NotificationController();
       const addSpy = vi.spyOn(controller, "add");
       const markSpy = vi.spyOn(controller, "markAsRead");
       const markAllSpy = vi.spyOn(controller, "markAllAsRead");
+      const getUnreadSpy = vi.spyOn(controller.service, "getUnread");
+      const getAllSpy = vi.spyOn(controller.service, "getAll");
+      const getCountSpy = vi.spyOn(controller.service, "getUnreadCount");
 
       window.notifications.add("Title", "Msg", "info");
       expect(addSpy).toHaveBeenCalledWith("Title", "Msg", "info");
@@ -437,11 +507,22 @@ describe("NotificationController", () => {
 
       window.notifications.markAllAsRead();
       expect(markAllSpy).toHaveBeenCalled();
+
+      window.notifications.getUnread();
+      expect(getUnreadSpy).toHaveBeenCalled();
+
+      window.notifications.getAll();
+      expect(getAllSpy).toHaveBeenCalled();
+
+      window.notifications.getCount();
+      expect(getCountSpy).toHaveBeenCalled();
     });
   });
 
   describe("destroy and reinit", () => {
-    beforeEach(() => { controller = new NotificationController(); });
+    beforeEach(() => {
+      controller = new NotificationController();
+    });
 
     it("destroy should clear timer and reset flags", () => {
       controller._retryTimer = setTimeout(() => {}, 1000);

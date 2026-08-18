@@ -134,7 +134,7 @@ function getComponentsForPage(page) {
     ],
   };
 
-  const pageSpecific = pageComponents[page] || pageComponents.home;
+  const pageSpecific = pageComponents[page];
   return [...sharedComponents, ...pageSpecific];
 }
 
