@@ -119,28 +119,32 @@ describe("ReviewsController", () => {
   });
 
   describe("renderReviews", () => {
-    it("should render reviews when there are reviews", () => {
+    it("should render latest reviews and update grid when reviews exist", () => {
       const mockReviews = [
         {
           id: "1",
-          name: "John",
-          content: "Great",
+          name: "Alice",
+          content: "Great product!",
           rating: 5,
           createdAt: new Date().toISOString(),
         },
       ];
-      mockServiceInstance.getAll.mockReturnValue(mockReviews);
       mockServiceInstance.getLatest.mockReturnValue(mockReviews);
       controller.renderReviews(mockReviews);
 
       const grid = document.getElementById("reviews-grid");
-      expect(grid.innerHTML).toContain("John");
-      expect(grid.innerHTML).toContain("Great");
+      expect(grid.innerHTML).toContain("Alice");
+      expect(grid.innerHTML).toContain("Great product!");
       expect(grid.innerHTML).toContain("★★★★★");
       expect(mockServiceInstance.getLatest).toHaveBeenCalledWith(3);
+      expect(mockServiceInstance.escapeHtml).toHaveBeenCalledWith("Alice");
+      expect(mockServiceInstance.escapeHtml).toHaveBeenCalledWith("Great product!");
+      expect(mockServiceInstance.formatDate).toHaveBeenCalled();
+      expect(mockServiceInstance.getAvatarColor).toHaveBeenCalledWith("Alice");
+      expect(mockServiceInstance.getInitials).toHaveBeenCalledWith("Alice");
     });
 
-    it("should hit empty state and execute return statement (lines 80-81)", () => {
+    it("should render empty state when reviews are empty", () => {
       controller.renderReviews([]);
       const grid = document.getElementById("reviews-grid");
       expect(grid.innerHTML).toContain("No reviews yet");
@@ -187,6 +191,17 @@ describe("ReviewsController", () => {
       const addEventListenerSpy = vi.spyOn(form, "addEventListener");
       controller.setupEventListeners();
       expect(addEventListenerSpy).toHaveBeenCalledWith("submit", expect.any(Function));
+    });
+
+    it("should execute preventDefault and call handleSubmit on form submit event", () => {
+      const form = document.getElementById("review-form");
+      const handleSubmitSpy = vi.spyOn(controller, "handleSubmit").mockImplementation(() => {});
+
+      const submitEvent = new Event("submit", { cancelable: true, bubbles: true });
+      form.dispatchEvent(submitEvent);
+
+      expect(handleSubmitSpy).toHaveBeenCalledWith(submitEvent);
+      expect(submitEvent.defaultPrevented).toBe(true);
     });
 
     it("should do nothing if form is missing", () => {
