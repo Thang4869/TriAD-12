@@ -9,11 +9,13 @@ describe("ProductsService", () => {
 
   beforeEach(() => {
     mockRepo = {
-      findAll: vi.fn().mockReturnValue([
-        new Product({ id: 1, name: "Glass Container", price: 150000 }),
-        new Product({ id: 2, name: "Thermo Mug", price: 120000 }),
-        new Product({ id: 3, name: "Airtight Jar", price: 80000 }),
-      ]),
+      findAll: vi
+        .fn()
+        .mockReturnValue([
+          new Product({ id: 1, name: "Glass Container", price: 150000 }),
+          new Product({ id: 2, name: "Thermo Mug", price: 120000 }),
+          new Product({ id: 3, name: "Airtight Jar", price: 80000 }),
+        ]),
       findById: vi.fn(),
     };
     mockEventBus = { emit: vi.fn() };
@@ -177,7 +179,11 @@ describe("ProductsService", () => {
     });
 
     it("should reset filters to default", () => {
-      service.updateFilters({ keyword: "glass", maxPrice: 100000, sort: "price-asc" });
+      service.updateFilters({
+        keyword: "glass",
+        maxPrice: 100000,
+        sort: "price-asc",
+      });
       expect(service.filters.keyword).toBe("glass");
       expect(service.filters.maxPrice).toBe(100000);
       expect(service.filters.sort).toBe("price-asc");
