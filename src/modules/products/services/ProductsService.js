@@ -1,17 +1,25 @@
 import { EVENTS } from "../../../shared/constants/Events.js";
 
+/**
+ * ProductsService - trước đây tải TOÀN BỘ sản phẩm vào bộ nhớ rồi lọc/sort/
+ * phân trang bằng JavaScript thuần. Giờ backend đã hỗ trợ lọc/sort/phân trang
+ * thật (xem CatalogService.findAll phía backend, giới hạn tối đa 50 item/trang
+ * - PAGINATION_DEFAULTS.MAX_LIMIT), nên service này gọi lại backend mỗi khi
+ * filter thay đổi thay vì filter mảng có sẵn. Điều này đúng với cách một
+ * catalog thật (vài nghìn sản phẩm) cần hoạt động.
+ *
+ * `this.products` luôn là danh sách các sản phẩm ĐÃ tải (dồn từ trang 1 tới
+ * trang hiện tại) để phục vụ "Load more" và gợi ý tìm kiếm tức thời.
+ */
 export class ProductsService {
-  /**
-   * @param {ProductsRepository} repository
-   * @param {EventBus} eventBus
-   */
   constructor(repository, eventBus) {
     this.repository = repository;
     this.eventBus = eventBus;
     this.products = [];
-    this.filteredProducts = [];
     this.filters = this.getDefaultFilters();
     this.page = 1;
+    this.totalPages = 1;
+    this.total = 0;
     this.pageSize = 12;
   }
 
@@ -24,86 +32,106 @@ export class ProductsService {
     };
   }
 
-  load() {
-    this.products = this.repository.findAll();
-    this.filteredProducts = [...this.products];
-    this.applyFilters();
-    this.eventBus.emit(EVENTS.PRODUCTS_LOADED, { count: this.products.length });
-    return this.filteredProducts;
-  }
-
-  applyFilters() {
-    const { keyword, minPrice, maxPrice, sort } = this.filters;
-
-    this.filteredProducts = this.products.filter((product) => {
-      const matchKeyword = !keyword || product.matchesKeyword(keyword);
-      const matchPrice = product.matchesPriceRange(minPrice, maxPrice);
-      return matchKeyword && matchPrice;
-    });
-
-    this.applySort(sort);
-    this.page = 1;
-
-    this.eventBus.emit(EVENTS.PRODUCTS_FILTERED, {
-      total: this.filteredProducts.length,
-      filters: this.filters,
-    });
-
-    return this.filteredProducts;
-  }
-
-  applySort(sort) {
+  _sortParams(sort) {
     switch (sort) {
       case "price-asc":
-        this.filteredProducts.sort((a, b) => a.price - b.price);
-        break;
+        return { sortBy: "price", sortOrder: "asc" };
       case "price-desc":
-        this.filteredProducts.sort((a, b) => b.price - a.price);
-        break;
+        return { sortBy: "price", sortOrder: "desc" };
       case "name-asc":
-        this.filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-        break;
+        return { sortBy: "name", sortOrder: "asc" };
       case "name-desc":
-        this.filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
-        break;
+        return { sortBy: "name", sortOrder: "desc" };
       default:
-        break;
+        return { sortBy: "createdAt", sortOrder: "desc" };
+    }
+  }
+
+  _queryParams(page) {
+    const { keyword, minPrice, maxPrice, sort } = this.filters;
+    const { sortBy, sortOrder } = this._sortParams(sort);
+    return {
+      page,
+      limit: this.pageSize,
+      keyword: keyword || undefined,
+      minPrice: minPrice || undefined,
+      maxPrice: maxPrice || undefined,
+      sortBy,
+      sortOrder,
+    };
+  }
+
+  /** Tải trang đầu tiên - dùng khi khởi động app. */
+  async load() {
+    return this._replace(1);
+  }
+
+  /** Tải lại từ trang 1 (dùng cho load()/updateFilters()/resetFilters()) - thay toàn bộ danh sách. */
+  async _replace(page) {
+    this.eventBus.emit(EVENTS.PRODUCTS_LOADING, { loading: true });
+    try {
+      const result = await this.repository.findPage(this._queryParams(page));
+      this.products = result.products;
+      this.page = result.page;
+      this.totalPages = result.totalPages;
+      this.total = result.total;
+
+      this.eventBus.emit(EVENTS.PRODUCTS_LOADED, { count: this.total });
+      this.eventBus.emit(EVENTS.PRODUCTS_FILTERED, {
+        total: this.total,
+        filters: this.filters,
+      });
+      return this.products;
+    } finally {
+      this.eventBus.emit(EVENTS.PRODUCTS_LOADING, { loading: false });
     }
   }
 
   getCurrentPage() {
-    const start = 0;
-    const end = this.page * this.pageSize;
-    return this.filteredProducts.slice(start, end);
+    return this.products;
   }
 
   get hasMore() {
-    return this.filteredProducts.length > this.page * this.pageSize;
-  }
-
-  loadMore() {
-    if (!this.hasMore) return this.getCurrentPage();
-    this.page++;
-    return this.getCurrentPage();
+    return this.page < this.totalPages;
   }
 
   get totalCount() {
-    return this.filteredProducts.length;
+    return this.total;
   }
 
-  updateFilters(newFilters) {
+  /**
+   * Tải thêm trang kế tiếp và NỐI vào danh sách hiện có.
+   * Trả về chỉ những sản phẩm MỚI (không phải toàn bộ danh sách), để
+   * ProductsController có thể append đúng vào DOM mà không render trùng lặp.
+   */
+  async loadMore() {
+    if (!this.hasMore) return [];
+    const nextPage = this.page + 1;
+    const result = await this.repository.findPage(this._queryParams(nextPage));
+
+    this.products = [...this.products, ...result.products];
+    this.page = result.page;
+    this.totalPages = result.totalPages;
+    this.total = result.total;
+
+    return result.products;
+  }
+
+  async updateFilters(newFilters) {
     this.filters = { ...this.filters, ...newFilters };
-    this.applyFilters();
-    return this.filteredProducts;
+    return this._replace(1);
   }
 
-  resetFilters() {
+  async resetFilters() {
     this.filters = this.getDefaultFilters();
-    this.applyFilters();
-    return this.filteredProducts;
+    return this._replace(1);
   }
 
+  /**
+   * Tìm trong danh sách ĐÃ TẢI (không gọi API). Đủ dùng cho modal chi tiết
+   * sản phẩm vì modal chỉ mở từ một card đang hiển thị trên trang.
+   */
   getProductById(id) {
-    return this.repository.findById(id);
+    return this.products.find((p) => p.id === id) || null;
   }
 }

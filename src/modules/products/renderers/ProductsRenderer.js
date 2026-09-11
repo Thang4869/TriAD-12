@@ -36,8 +36,8 @@ export class ProductsRenderer extends BaseRenderer {
       }
     });
 
-    this.updateCount(totalCount || products.length);
-    this.updateLoadMore(products.length < (totalCount || products.length));
+    this.updateCount(totalCount ?? products.length);
+    this.updateLoadMore(products.length < (totalCount ?? products.length));
   }
 
   append(products) {
@@ -51,7 +51,7 @@ export class ProductsRenderer extends BaseRenderer {
       }
     });
 
-    const total = parseInt(this.countElement?.dataset.total || "0");
+    const total = parseInt(this.countElement?.dataset.total || "0", 10);
     const current = this.container.querySelectorAll(".product-card").length;
     this.updateLoadMore(current < total);
   }
@@ -82,7 +82,8 @@ export class ProductsRenderer extends BaseRenderer {
             <span class="text-2xl font-bold">${formatPrice(product.price)}</span>
             <button data-action="add-to-cart" 
                     data-id="${product.id}"
-                    class="add-to-cart-btn bg-black text-white px-5 py-3 rounded-full hover:bg-gray-800 transition-all">
+                    class="add-to-cart-btn bg-black text-white px-5 py-3 rounded-full hover:bg-gray-800 transition-all"
+                    ${product.inStock ? "" : "disabled"}>
               <i class="ph ph-shopping-cart"></i>
             </button>
           </div>
@@ -108,6 +109,25 @@ export class ProductsRenderer extends BaseRenderer {
           window.productsController.resetFilters();
         }
       });
+  }
+
+  /** Hiển thị khi gọi API sản phẩm bị lỗi (mất mạng, backend down...). */
+  renderError(error) {
+    if (!this.findContainer()) return;
+    this.container.innerHTML = `
+      <div class="col-span-full text-center py-20">
+        <i class="ph ph-warning-circle text-6xl text-red-300"></i>
+        <p class="mt-4 text-gray-500">Không tải được danh sách sản phẩm. Vui lòng thử lại sau.</p>
+      </div>
+    `;
+    Logger.error("Products render error:", error);
+  }
+
+  /** Bật/tắt trạng thái loading nhẹ trên nút "Load more" khi đang gọi API. */
+  setLoading(isLoading) {
+    this.loadMoreContainer
+      ?.querySelector("#load-more-btn")
+      ?.toggleAttribute("disabled", isLoading);
   }
 
   updateCount(count) {
@@ -163,7 +183,8 @@ export class ProductsRenderer extends BaseRenderer {
 
     container.querySelectorAll("[data-id]").forEach((el) => {
       el.addEventListener("click", () => {
-        const id = Number(el.dataset.id);
+        // Backend dùng UUID (string) làm product id, KHÔNG được ép Number() nữa.
+        const id = el.dataset.id;
         if (typeof onSuggestionClick === "function") {
           onSuggestionClick(id);
         }
