@@ -1,16 +1,6 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  Logger,
-  LoggerService,
-} from "../../../../src/core/services/Logger.js";
+import { Logger, LoggerService } from "../../../../src/core/services/Logger.js";
 
 describe("LoggerService", () => {
   let logger;
@@ -150,39 +140,16 @@ describe("LoggerService", () => {
     });
 
     it.each([
-      [
-        "debug",
-        "debug",
-        "[DEBUG]",
-        ["message", "extra", 123],
-      ],
-      [
-        "info",
-        "info",
-        "[INFO]",
-        ["message", 456, true],
-      ],
-      [
-        "warn",
-        "warn",
-        "[WARN]",
-        ["message", { key: "value" }],
-      ],
-      [
-        "error",
-        "error",
-        "[ERROR]",
-        ["message", new Error("test")],
-      ],
+      ["debug", "debug", "[DEBUG]", ["message", "extra", 123]],
+      ["info", "info", "[INFO]", ["message", 456, true]],
+      ["warn", "warn", "[WARN]", ["message", { key: "value" }]],
+      ["error", "error", "[ERROR]", ["message", new Error("test")]],
     ])(
       "writes %s messages with all arguments",
       (method, consoleMethod, prefix, args) => {
         logger[method](...args);
 
-        expect(consoleSpy[consoleMethod]).toHaveBeenCalledWith(
-          prefix,
-          ...args,
-        );
+        expect(consoleSpy[consoleMethod]).toHaveBeenCalledWith(prefix, ...args);
       },
     );
   });
@@ -195,13 +162,7 @@ describe("LoggerService", () => {
       ["error", 3, 4, "error", "[ERROR]"],
     ])(
       "logs %s at its minimum level and suppresses it above that level",
-      (
-        method,
-        enabledLevel,
-        disabledLevel,
-        consoleMethod,
-        prefix,
-      ) => {
+      (method, enabledLevel, disabledLevel, consoleMethod, prefix) => {
         logger.setLevel(enabledLevel);
 
         logger[method]("visible");
