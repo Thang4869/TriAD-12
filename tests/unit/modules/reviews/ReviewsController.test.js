@@ -138,7 +138,9 @@ describe("ReviewsController", () => {
       expect(grid.innerHTML).toContain("★★★★★");
       expect(mockServiceInstance.getLatest).toHaveBeenCalledWith(3);
       expect(mockServiceInstance.escapeHtml).toHaveBeenCalledWith("Alice");
-      expect(mockServiceInstance.escapeHtml).toHaveBeenCalledWith("Great product!");
+      expect(mockServiceInstance.escapeHtml).toHaveBeenCalledWith(
+        "Great product!",
+      );
       expect(mockServiceInstance.formatDate).toHaveBeenCalled();
       expect(mockServiceInstance.getAvatarColor).toHaveBeenCalledWith("Alice");
       expect(mockServiceInstance.getInitials).toHaveBeenCalledWith("Alice");
@@ -158,29 +160,45 @@ describe("ReviewsController", () => {
 
   describe("updateStats", () => {
     it("should update avg-rating and total-reviews elements", () => {
-      mockServiceInstance.getStats.mockReturnValue({ total: 10, averageDisplay: "4.5/5" });
+      mockServiceInstance.getStats.mockReturnValue({
+        total: 10,
+        averageDisplay: "4.5/5",
+      });
       controller.updateStats([]);
       expect(document.getElementById("avg-rating").textContent).toBe("4.5/5");
-      expect(document.getElementById("total-reviews").textContent).toBe("(10 reviews)");
+      expect(document.getElementById("total-reviews").textContent).toBe(
+        "(10 reviews)",
+      );
     });
 
     it("should handle missing avg-rating element", () => {
       document.getElementById("avg-rating")?.remove();
-      mockServiceInstance.getStats.mockReturnValue({ total: 5, averageDisplay: "3.2/5" });
+      mockServiceInstance.getStats.mockReturnValue({
+        total: 5,
+        averageDisplay: "3.2/5",
+      });
       expect(() => controller.updateStats([])).not.toThrow();
-      expect(document.getElementById("total-reviews").textContent).toBe("(5 reviews)");
+      expect(document.getElementById("total-reviews").textContent).toBe(
+        "(5 reviews)",
+      );
     });
 
     it("should handle missing total-reviews element", () => {
       document.getElementById("total-reviews")?.remove();
-      mockServiceInstance.getStats.mockReturnValue({ total: 5, averageDisplay: "3.2/5" });
+      mockServiceInstance.getStats.mockReturnValue({
+        total: 5,
+        averageDisplay: "3.2/5",
+      });
       expect(() => controller.updateStats([])).not.toThrow();
     });
 
     it("should handle both elements missing", () => {
       document.getElementById("avg-rating")?.remove();
       document.getElementById("total-reviews")?.remove();
-      mockServiceInstance.getStats.mockReturnValue({ total: 5, averageDisplay: "3.2/5" });
+      mockServiceInstance.getStats.mockReturnValue({
+        total: 5,
+        averageDisplay: "3.2/5",
+      });
       expect(() => controller.updateStats([])).not.toThrow();
     });
   });
@@ -190,14 +208,22 @@ describe("ReviewsController", () => {
       const form = document.getElementById("review-form");
       const addEventListenerSpy = vi.spyOn(form, "addEventListener");
       controller.setupEventListeners();
-      expect(addEventListenerSpy).toHaveBeenCalledWith("submit", expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        "submit",
+        expect.any(Function),
+      );
     });
 
     it("should execute preventDefault and call handleSubmit on form submit event", () => {
       const form = document.getElementById("review-form");
-      const handleSubmitSpy = vi.spyOn(controller, "handleSubmit").mockImplementation(() => {});
+      const handleSubmitSpy = vi
+        .spyOn(controller, "handleSubmit")
+        .mockImplementation(() => {});
 
-      const submitEvent = new Event("submit", { cancelable: true, bubbles: true });
+      const submitEvent = new Event("submit", {
+        cancelable: true,
+        bubbles: true,
+      });
       form.dispatchEvent(submitEvent);
 
       expect(handleSubmitSpy).toHaveBeenCalledWith(submitEvent);
@@ -269,7 +295,10 @@ describe("ReviewsController", () => {
       document.getElementById("review-content").value = "Good";
       const showToastSpy = vi.spyOn(controller, "showToast");
       controller.handleSubmit(submitEvent);
-      expect(showToastSpy).toHaveBeenCalledWith("Please enter your name.", "warning");
+      expect(showToastSpy).toHaveBeenCalledWith(
+        "Please enter your name.",
+        "warning",
+      );
       expect(mockServiceInstance.add).not.toHaveBeenCalled();
     });
 
@@ -278,7 +307,10 @@ describe("ReviewsController", () => {
       document.getElementById("review-content").value = "";
       const showToastSpy = vi.spyOn(controller, "showToast");
       controller.handleSubmit(submitEvent);
-      expect(showToastSpy).toHaveBeenCalledWith("Please write your review.", "warning");
+      expect(showToastSpy).toHaveBeenCalledWith(
+        "Please write your review.",
+        "warning",
+      );
       expect(mockServiceInstance.add).not.toHaveBeenCalled();
     });
 
@@ -288,7 +320,10 @@ describe("ReviewsController", () => {
       document.getElementById("review-content").value = "Good";
       const showToastSpy = vi.spyOn(controller, "showToast");
       controller.handleSubmit(submitEvent);
-      expect(showToastSpy).toHaveBeenCalledWith("Please select a rating.", "warning");
+      expect(showToastSpy).toHaveBeenCalledWith(
+        "Please select a rating.",
+        "warning",
+      );
       expect(mockServiceInstance.add).not.toHaveBeenCalled();
     });
   });
@@ -297,13 +332,22 @@ describe("ReviewsController", () => {
     describe("when window.toast is available", () => {
       it("should call window.toast with correct type and title", () => {
         controller.showToast("Test message", "success");
-        expect(window.toast.success).toHaveBeenCalledWith("Success", "Test message");
+        expect(window.toast.success).toHaveBeenCalledWith(
+          "Success",
+          "Test message",
+        );
 
         controller.showToast("Warning message", "warning");
-        expect(window.toast.warning).toHaveBeenCalledWith("Warning", "Warning message");
+        expect(window.toast.warning).toHaveBeenCalledWith(
+          "Warning",
+          "Warning message",
+        );
 
         controller.showToast("Error message", "error");
-        expect(window.toast.error).toHaveBeenCalledWith("Error", "Error message");
+        expect(window.toast.error).toHaveBeenCalledWith(
+          "Error",
+          "Error message",
+        );
 
         controller.showToast("Info message", "info");
         expect(window.toast.info).toHaveBeenCalledWith("Info", "Info message");
@@ -342,9 +386,10 @@ describe("ReviewsController", () => {
         types.forEach((type) => {
           controller.showToast(`Message ${type}`, type);
           expect(createElementSpy).toHaveBeenCalledWith("div");
-          const toastEl = createElementSpy.mock.results[
-            createElementSpy.mock.calls.length - 1
-          ].value;
+          const toastEl =
+            createElementSpy.mock.results[
+              createElementSpy.mock.calls.length - 1
+            ].value;
           expect(toastEl.style.background).toBe(colors[type]);
           expect(toastEl.textContent).toBe(`Message ${type}`);
           expect(appendChildSpy).toHaveBeenCalledWith(toastEl);
