@@ -49,7 +49,11 @@ describe("CheckoutService", () => {
 
   describe("Order Management", () => {
     it("should return a copied array of orders via getOrders", () => {
-      const orderData = { items: [], customer: { name: "Test" }, total: 100000 };
+      const orderData = {
+        items: [],
+        customer: { name: "Test" },
+        total: 100000,
+      };
       service.createOrder(orderData);
 
       const orders1 = service.getOrders();
@@ -69,11 +73,17 @@ describe("CheckoutService", () => {
       expect(order).toBeInstanceOf(Order);
       expect(service.getOrders().length).toBe(1);
       expect(storage.set).toHaveBeenCalled();
-      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CHECKOUT_COMPLETED, { order });
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CHECKOUT_COMPLETED, {
+        order,
+      });
     });
 
     it("should find order by id or return null if not found", () => {
-      const orderData = { items: [], customer: { name: "John" }, total: 100000 };
+      const orderData = {
+        items: [],
+        customer: { name: "John" },
+        total: 100000,
+      };
       const order = service.createOrder(orderData);
 
       const found = service.getOrderById(order.id);
@@ -88,7 +98,7 @@ describe("CheckoutService", () => {
     });
   });
 
-describe("Checkout Processing", () => {
+  describe("Checkout Processing", () => {
     it("should process checkout with shipping fee when total is below threshold", () => {
       const formData = {
         firstName: "Jane",

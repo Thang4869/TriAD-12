@@ -161,11 +161,11 @@ describe("CheckoutController", () => {
       controller.openCheckout();
       expect(mockToast.warning).toHaveBeenCalledWith(
         "Empty Cart",
-        "Please add items to your cart first."
+        "Please add items to your cart first.",
       );
       expect(mockRendererInstance.renderSummary).not.toHaveBeenCalled();
       expect(
-        document.getElementById("checkout-modal").classList.contains("hidden")
+        document.getElementById("checkout-modal").classList.contains("hidden"),
       ).toBe(true);
     });
 
@@ -197,7 +197,7 @@ describe("CheckoutController", () => {
       controller.openCheckout();
       expect(mockToast.warning).toHaveBeenCalledWith(
         "Empty Cart",
-        "Please add items to your cart first."
+        "Please add items to your cart first.",
       );
     });
   });
@@ -240,7 +240,7 @@ describe("CheckoutController", () => {
       controller.handleSubmit(event);
       expect(mockToast.error).toHaveBeenCalledWith(
         "Validation Error",
-        "Error 1, Error 2"
+        "Error 1, Error 2",
       );
       expect(mockServiceInstance.processCheckout).not.toHaveBeenCalled();
     });
@@ -273,7 +273,7 @@ describe("CheckoutController", () => {
 
       expect(mockToast.info).toHaveBeenCalledWith(
         "Processing",
-        "Please wait while we process your order..."
+        "Please wait while we process your order...",
       );
 
       vi.advanceTimersByTime(1500);
@@ -284,14 +284,14 @@ describe("CheckoutController", () => {
       expect(mockNotifications.add).toHaveBeenCalledWith(
         "Order Placed!",
         "Order #ORD-456 confirmed with 3 item(s). Thank you!",
-        "success"
+        "success",
       );
       expect(mockToast.success).toHaveBeenCalledWith(
         "Order Placed!",
-        "Order #ORD-456 confirmed."
+        "Order #ORD-456 confirmed.",
       );
       expect(
-        document.getElementById("success-modal").classList.contains("hidden")
+        document.getElementById("success-modal").classList.contains("hidden"),
       ).toBe(false);
     });
 
@@ -324,7 +324,7 @@ describe("CheckoutController", () => {
       controller.handleSubmit(event);
 
       expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
-        expect.objectContaining({ paymentMethod: "cod" })
+        expect.objectContaining({ paymentMethod: "cod" }),
       );
     });
 
@@ -341,7 +341,7 @@ describe("CheckoutController", () => {
           cardNumber: undefined,
           cardExpiry: undefined,
           cardCvv: undefined,
-        })
+        }),
       );
     });
 
@@ -361,12 +361,12 @@ describe("CheckoutController", () => {
 
       expect(mockToast.error).toHaveBeenCalledWith(
         "Error",
-        "Failed to process order. Please try again."
+        "Failed to process order. Please try again.",
       );
       expect(mockNotifications.add).toHaveBeenCalledWith(
         "Order Failed",
         "There was an error processing your order. Please try again.",
-        "warning"
+        "warning",
       );
     });
 
@@ -426,7 +426,7 @@ describe("CheckoutController", () => {
       vi.runAllTimers();
 
       expect(
-        document.getElementById("success-modal").classList.contains("hidden")
+        document.getElementById("success-modal").classList.contains("hidden"),
       ).toBe(true);
     });
   });
@@ -445,9 +445,8 @@ describe("CheckoutController", () => {
       const cardDetails = document.getElementById("card-details");
       cardDetails.classList.remove("hidden");
 
-      document.querySelector(
-        'input[name="payment"][value="cod"]'
-      ).checked = true;
+      document.querySelector('input[name="payment"][value="cod"]').checked =
+        true;
       controller.toggleCardDetails();
 
       expect(cardDetails.classList.contains("hidden")).toBe(true);
