@@ -57,7 +57,11 @@ describe("ProductsController", () => {
     global.document.getElementById = vi.fn();
     global.document.addEventListener = vi.fn();
 
-    controller = new ProductsController(serviceMock, rendererMock, eventBusMock);
+    controller = new ProductsController(
+      serviceMock,
+      rendererMock,
+      eventBusMock,
+    );
   });
 
   afterEach(() => {
@@ -79,7 +83,10 @@ describe("ProductsController", () => {
 
   describe("Event Listeners Setup", () => {
     it("should listen to PRODUCTS_FILTERED event", () => {
-      expect(eventBusMock.on).toHaveBeenCalledWith(EVENTS.PRODUCTS_FILTERED, expect.any(Function));
+      expect(eventBusMock.on).toHaveBeenCalledWith(
+        EVENTS.PRODUCTS_FILTERED,
+        expect.any(Function),
+      );
     });
 
     describe("setupSearch", () => {
@@ -90,16 +97,21 @@ describe("ProductsController", () => {
 
         controller.setupSearch();
 
-        expect(addEventListenerSpy).toHaveBeenCalledWith("input", expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          "input",
+          expect.any(Function),
+        );
         const handler = addEventListenerSpy.mock.calls[0][1];
         const mockEvent = { target: { value: "abc" } };
         handler(mockEvent);
 
-        expect(serviceMock.updateFilters).toHaveBeenCalledWith({ keyword: "abc" });
+        expect(serviceMock.updateFilters).toHaveBeenCalledWith({
+          keyword: "abc",
+        });
         expect(rendererMock.renderSuggestions).toHaveBeenCalledWith(
           "abc",
           expect.any(Array),
-          expect.any(Function)
+          expect.any(Function),
         );
       });
 
@@ -118,20 +130,27 @@ describe("ProductsController", () => {
         const handler = addEventListenerSpy.mock.calls[0][1];
         handler({ target: { value: "pro" } });
 
-        const renderSuggestionsCall = rendererMock.renderSuggestions.mock.calls[0];
+        const renderSuggestionsCall =
+          rendererMock.renderSuggestions.mock.calls[0];
         const suggestionCallback = renderSuggestionsCall[2];
 
         const productMock = { id: 2, name: "Product B" };
-        serviceMock.getProductById = vi.fn((id) => (id === 2 ? productMock : null));
+        serviceMock.getProductById = vi.fn((id) =>
+          id === 2 ? productMock : null,
+        );
         const suggestionContainer = document.createElement("div");
         suggestionContainer.classList.add = vi.fn();
         document.getElementById.mockReturnValue(suggestionContainer);
 
         suggestionCallback(2);
 
-        expect(serviceMock.updateFilters).toHaveBeenCalledWith({ keyword: productMock.name });
+        expect(serviceMock.updateFilters).toHaveBeenCalledWith({
+          keyword: productMock.name,
+        });
         expect(rendererMock.searchInput.value).toBe(productMock.name);
-        expect(suggestionContainer.classList.add).toHaveBeenCalledWith("hidden");
+        expect(suggestionContainer.classList.add).toHaveBeenCalledWith(
+          "hidden",
+        );
       });
     });
 
@@ -143,11 +162,16 @@ describe("ProductsController", () => {
 
         controller.setupSort();
 
-        expect(addEventListenerSpy).toHaveBeenCalledWith("change", expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          "change",
+          expect.any(Function),
+        );
         const handler = addEventListenerSpy.mock.calls[0][1];
         handler({ target: { value: "price-asc" } });
 
-        expect(serviceMock.updateFilters).toHaveBeenCalledWith({ sort: "price-asc" });
+        expect(serviceMock.updateFilters).toHaveBeenCalledWith({
+          sort: "price-asc",
+        });
       });
 
       it("should return early if sortSelect not found", () => {
@@ -166,12 +190,17 @@ describe("ProductsController", () => {
 
         controller.setupPriceFilter();
 
-        expect(addEventListenerSpy).toHaveBeenCalledWith("input", expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          "input",
+          expect.any(Function),
+        );
         const handler = addEventListenerSpy.mock.calls[0][1];
         handler({ target: { value: "200000" } });
 
         expect(rendererMock.updatePriceDisplay).toHaveBeenCalledWith(200000);
-        expect(serviceMock.updateFilters).toHaveBeenCalledWith({ maxPrice: 200000 });
+        expect(serviceMock.updateFilters).toHaveBeenCalledWith({
+          maxPrice: 200000,
+        });
       });
 
       it("should return early if priceSlider not found", () => {
@@ -190,7 +219,10 @@ describe("ProductsController", () => {
 
         controller.setupReset();
 
-        expect(addEventListenerSpy).toHaveBeenCalledWith("click", expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          "click",
+          expect.any(Function),
+        );
         const handler = addEventListenerSpy.mock.calls[0][1];
         handler();
 
@@ -245,7 +277,10 @@ describe("ProductsController", () => {
 
         controller.setupLoadMore();
 
-        expect(addEventListenerSpy).toHaveBeenCalledWith("click", expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          "click",
+          expect.any(Function),
+        );
         const handler = addEventListenerSpy.mock.calls[0][1];
         const loadMoreSpy = vi.spyOn(controller, "loadMore");
         handler();
@@ -280,11 +315,17 @@ describe("ProductsController", () => {
         window.cartController = { addToCart: vi.fn() };
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
         const mockEvent = { target: button, stopPropagation: vi.fn() };
         clickHandler(mockEvent);
 
-        expect(window.cartController.addToCart).toHaveBeenCalledWith(mockProduct, 1, img);
+        expect(window.cartController.addToCart).toHaveBeenCalledWith(
+          mockProduct,
+          1,
+          img,
+        );
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
       });
 
@@ -301,7 +342,9 @@ describe("ProductsController", () => {
         window.modalController = { open: vi.fn() };
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
         clickHandler({ target: button });
 
         expect(window.modalController.open).toHaveBeenCalledWith(1);
@@ -315,7 +358,9 @@ describe("ProductsController", () => {
         });
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
         clickHandler({ target: document.createElement("div") });
 
         expect(window.cartController?.addToCart).not.toHaveBeenCalled();
@@ -335,8 +380,12 @@ describe("ProductsController", () => {
         delete window.cartController;
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
-        expect(() => clickHandler({ target: button, stopPropagation: vi.fn() })).not.toThrow();
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
+        expect(() =>
+          clickHandler({ target: button, stopPropagation: vi.fn() }),
+        ).not.toThrow();
       });
 
       it("should not throw error if window.modalController is undefined", () => {
@@ -352,7 +401,9 @@ describe("ProductsController", () => {
         delete window.modalController;
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
         expect(() => clickHandler({ target: button })).not.toThrow();
       });
 
@@ -369,7 +420,9 @@ describe("ProductsController", () => {
         window.cartController = { addToCart: vi.fn() };
         controller.setupProductActions();
 
-        const clickHandler = document.addEventListener.mock.calls.find((c) => c[0] === "click")[1];
+        const clickHandler = document.addEventListener.mock.calls.find(
+          (c) => c[0] === "click",
+        )[1];
         clickHandler({ target: button, stopPropagation: vi.fn() });
 
         expect(window.cartController.addToCart).not.toHaveBeenCalled();
@@ -487,7 +540,9 @@ describe("ProductsController", () => {
   describe("PRODUCTS_FILTERED event handling", () => {
     it("should render products when event is emitted", () => {
       const data = { total: 10 };
-      const onFiltered = eventBusMock.on.mock.calls.find((c) => c[0] === EVENTS.PRODUCTS_FILTERED)[1];
+      const onFiltered = eventBusMock.on.mock.calls.find(
+        (c) => c[0] === EVENTS.PRODUCTS_FILTERED,
+      )[1];
       const currentPage = [{ id: 3 }];
       serviceMock.getCurrentPage = vi.fn(() => currentPage);
       onFiltered(data);

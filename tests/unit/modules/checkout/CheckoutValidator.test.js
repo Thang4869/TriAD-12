@@ -99,24 +99,40 @@ describe("CheckoutValidator", () => {
     });
 
     it("should require card expiry", () => {
-      const data = { ...baseData, cardNumber: "1234567890123456", cardExpiry: "" };
+      const data = {
+        ...baseData,
+        cardNumber: "1234567890123456",
+        cardExpiry: "",
+      };
       const result = validator.validate(data);
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain("Card expiry is required");
     });
 
     it("should require CVV", () => {
-      const data = { ...baseData, cardNumber: "1234567890123456", cardExpiry: "12/25", cardCvv: "" };
+      const data = {
+        ...baseData,
+        cardNumber: "1234567890123456",
+        cardExpiry: "12/25",
+        cardCvv: "",
+      };
       const result = validator.validate(data);
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain("CVV is required");
     });
 
     it("should reject invalid card number (length < 16)", () => {
-      const data = { ...baseData, cardNumber: "1234", cardExpiry: "12/25", cardCvv: "123" };
+      const data = {
+        ...baseData,
+        cardNumber: "1234",
+        cardExpiry: "12/25",
+        cardCvv: "123",
+      };
       const result = validator.validate(data);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Invalid card number (must be 16 digits)");
+      expect(result.errors).toContain(
+        "Invalid card number (must be 16 digits)",
+      );
     });
 
     it("should accept valid card details", () => {

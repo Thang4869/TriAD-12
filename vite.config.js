@@ -14,8 +14,20 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    // Chạy backend cục bộ ở http://localhost:5000 (npm run dev trong repo DNEK).
+    // Khi đó frontend chỉ cần gọi fetch("/api/...") như bình thường, Vite sẽ
+    // tự forward sang backend, khỏi lo CORS lúc phát triển.
+    // Trên production (Vercel), bỏ qua proxy này - dùng VITE_API_BASE_URL
+    // trỏ thẳng tới domain backend trên Render (xem .env.example).
+    proxy: {
+      "/api": {
+        target:
+          process.env.VITE_DEV_API_PROXY_TARGET || "http://localhost:5000",
+        changeOrigin: true,
+      },
+    },
   },
- test: {
+  test: {
     globals: true,
     environment: "jsdom",
     setupFiles: "./tests/setup.js",

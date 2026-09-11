@@ -30,10 +30,12 @@ describe("HeaderNavigationService", () => {
 
     it("should warn if no menu links found", () => {
       document.body.innerHTML = "";
-      const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarn = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
       initHeaderNavigation("home");
       expect(consoleWarn).toHaveBeenCalledWith(
-        expect.stringContaining("Header navigation links not found.")
+        expect.stringContaining("Header navigation links not found."),
       );
     });
 
@@ -50,14 +52,16 @@ describe("HeaderNavigationService", () => {
 
     it("should correctly handle href with TriAD-12 prefix", () => {
       initHeaderNavigation("contact");
-      const contactLink = document.querySelector('nav a[href="TriAD-12/contact.html"]');
+      const contactLink = document.querySelector(
+        'nav a[href="TriAD-12/contact.html"]',
+      );
       expect(contactLink.classList.contains("active")).toBe(true);
     });
   });
 
   describe("normalizePath (indirectly via initHeaderNavigation)", () => {
     it("should handle null/undefined href gracefully (no error, no active class)", () => {
-      const noHrefLink = document.querySelector('nav a:not([href])');
+      const noHrefLink = document.querySelector("nav a:not([href])");
       expect(noHrefLink).toBeTruthy();
 
       initHeaderNavigation("home");

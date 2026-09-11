@@ -218,7 +218,9 @@ describe("FlyToCart", () => {
     it("should handle when getBoundingClientRect returns null and retryRect also null", () => {
       vi.spyOn(badge, "getBoundingClientRect").mockReturnValue(null);
 
-      const findSpy = vi.spyOn(flyToCart, "findCartBadge").mockReturnValue(badge);
+      const findSpy = vi
+        .spyOn(flyToCart, "findCartBadge")
+        .mockReturnValue(badge);
 
       const callback = vi.fn();
 
@@ -239,7 +241,9 @@ describe("FlyToCart", () => {
 
       vi.spyOn(badge, "getBoundingClientRect").mockReturnValue(null);
 
-      const findSpy = vi.spyOn(flyToCart, "findCartBadge").mockReturnValue(newBadge);
+      const findSpy = vi
+        .spyOn(flyToCart, "findCartBadge")
+        .mockReturnValue(newBadge);
 
       const callback = vi.fn();
 

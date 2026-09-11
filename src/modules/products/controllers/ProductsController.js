@@ -14,13 +14,28 @@ export class ProductsController {
     this.isLoading = false;
 
     this.setupEventListeners();
-    this.service.load();
+    // Không gọi service.load() ở đây nữa vì giờ nó là bất đồng bộ (gọi API
+    // thật). Nơi khởi tạo controller (bootstrap.js) phải `await controller.init()`.
+  }
+
+  /** Gọi ngay sau khi khởi tạo controller, trước khi hiển thị trang. */
+  async init() {
+    try {
+      await this.service.load();
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      this.renderer.renderError?.(error);
+    }
   }
 
   setupEventListeners() {
     this.eventBus.on(EVENTS.PRODUCTS_FILTERED, (data) => {
       const items = this.service.getCurrentPage();
       this.renderer.render(items, data.total);
+    });
+
+    this.eventBus.on(EVENTS.PRODUCTS_LOADING, (data) => {
+      this.renderer.setLoading?.(data.loading);
     });
 
     this.setupSearch();
@@ -36,19 +51,23 @@ export class ProductsController {
     if (!input) return;
 
     const debouncedSearch = DomUtils.debounce((value) => {
-      this.service.updateFilters({ keyword: value.trim() });
+      this.service.updateFilters({ keyword: value.trim() }).catch((error) => {
+        console.error("Search failed:", error);
+      });
     }, 300);
 
     input.addEventListener("input", (e) => {
       const keyword = e.target.value.trim();
       debouncedSearch(keyword);
+      // Gợi ý tức thời lấy từ danh sách đã tải trong bộ nhớ (không gọi API
+      // riêng cho dropdown gợi ý, để giữ UX phản hồi tức thì).
       const results = this.service.products
         .filter((p) => p.matchesKeyword(keyword))
         .slice(0, 5);
       this.renderer.renderSuggestions(keyword, results, (id) => {
         const product = this.service.getProductById(id);
         if (product) {
-          this.service.updateFilters({ keyword: product.name });
+          this.service.updateFilters({ keyword: product.name }).catch(() => {});
           if (this.renderer.searchInput)
             this.renderer.searchInput.value = product.name;
           document.getElementById("search-suggestion")?.classList.add("hidden");
@@ -61,7 +80,9 @@ export class ProductsController {
     const select = this.renderer.sortSelect;
     if (!select) return;
     select.addEventListener("change", (e) => {
-      this.service.updateFilters({ sort: e.target.value });
+      this.service.updateFilters({ sort: e.target.value }).catch((error) => {
+        console.error("Sort failed:", error);
+      });
     });
   }
 
@@ -71,7 +92,9 @@ export class ProductsController {
     slider.addEventListener("input", (e) => {
       const value = Number(e.target.value);
       this.renderer.updatePriceDisplay(value);
-      this.service.updateFilters({ maxPrice: value });
+      this.service.updateFilters({ maxPrice: value }).catch((error) => {
+        console.error("Filter failed:", error);
+      });
     });
   }
 
@@ -115,14 +138,9 @@ export class ProductsController {
       const target = e.target.closest("[data-action]");
       if (!target) return;
 
-      console.log(
-        "Product action clicked:",
-        target.dataset.action,
-        target.dataset.id,
-      );
-
       const action = target.dataset.action;
-      const id = Number(target.dataset.id);
+      // Backend dùng UUID (string) làm product id, KHÔNG được ép Number() nữa.
+      const id = target.dataset.id;
 
       if (action === "add-to-cart") {
         e.stopPropagation();
@@ -139,19 +157,21 @@ export class ProductsController {
     });
   }
 
-  loadMore() {
+  async loadMore() {
     if (this.isLoading) return;
     if (!this.service.hasMore) return;
     this.isLoading = true;
-    const items = this.service.loadMore();
-    this.renderer.append(items);
-    setTimeout(() => {
+    try {
+      const newItems = await this.service.loadMore();
+      this.renderer.append(newItems);
+    } catch (error) {
+      console.error("Load more failed:", error);
+    } finally {
       this.isLoading = false;
-    }, 300);
+    }
   }
 
-  resetFilters() {
-    this.service.resetFilters();
+  async resetFilters() {
     if (this.renderer.searchInput) this.renderer.searchInput.value = "";
     if (this.renderer.sortSelect) this.renderer.sortSelect.value = "default";
     if (this.renderer.priceSlider) {
@@ -162,6 +182,11 @@ export class ProductsController {
     if (container) {
       container.classList.add("hidden");
       container.innerHTML = "";
+    }
+    try {
+      await this.service.resetFilters();
+    } catch (error) {
+      console.error("Reset filters failed:", error);
     }
   }
 

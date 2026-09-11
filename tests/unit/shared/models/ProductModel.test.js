@@ -50,11 +50,15 @@ describe("ProductModel", () => {
     });
 
     it("should return display name as 'name - color'", () => {
-      expect(product.displayName).toBe("TriAD Storage Container (1000ml) - White");
+      expect(product.displayName).toBe(
+        "TriAD Storage Container (1000ml) - White",
+      );
     });
 
     it("should return searchable text in lowercase", () => {
-      expect(product.searchableText).toBe("triad storage container (1000ml) white");
+      expect(product.searchableText).toBe(
+        "triad storage container (1000ml) white",
+      );
     });
   });
 

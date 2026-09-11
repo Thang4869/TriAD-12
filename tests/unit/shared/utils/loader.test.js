@@ -28,7 +28,8 @@ describe("loader", () => {
     vi.restoreAllMocks();
   });
 
-  const waitForPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const waitForPromises = () =>
+    new Promise((resolve) => setTimeout(resolve, 0));
 
   describe("loadComponent", () => {
     it("should load and insert HTML when response ok", async () => {
@@ -40,9 +41,11 @@ describe("loader", () => {
 
       const result = await loadComponent("test-container", "test.html");
       expect(result).toBe(mockHtml);
-      expect(document.getElementById("test-container").innerHTML).toBe(mockHtml);
+      expect(document.getElementById("test-container").innerHTML).toBe(
+        mockHtml,
+      );
       expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("Loading:")
+        expect.stringContaining("Loading:"),
       );
       expect(console.log).toHaveBeenCalledWith("Loaded: test.html");
     });
@@ -58,7 +61,7 @@ describe("loader", () => {
       expect(result).toBeNull();
       expect(console.error).toHaveBeenCalledWith(
         "Error loading test.html:",
-        expect.any(Error)
+        expect.any(Error),
       );
       const error = console.error.mock.calls[0][1];
       expect(error.message).toBe("HTTP 404: Not Found");
@@ -70,7 +73,7 @@ describe("loader", () => {
       expect(result).toBeNull();
       expect(console.error).toHaveBeenCalledWith(
         "Error loading test.html:",
-        expect.any(Error)
+        expect.any(Error),
       );
     });
 
@@ -83,7 +86,7 @@ describe("loader", () => {
       const result = await loadComponent("non-existent", "test.html");
       expect(result).toBeNull();
       expect(console.warn).toHaveBeenCalledWith(
-        "Element #non-existent not found"
+        "Element #non-existent not found",
       );
     });
 
@@ -181,7 +184,7 @@ describe("loader", () => {
 
       expect(console.error).toHaveBeenCalledWith(
         "Error injecting component:",
-        expect.any(Error)
+        expect.any(Error),
       );
       const error = console.error.mock.calls[0][1];
       expect(error.message).toBe("HTTP 500");
@@ -198,7 +201,7 @@ describe("loader", () => {
       await waitForPromises();
 
       expect(console.warn).toHaveBeenCalledWith(
-        "Selector not found: #non-existent"
+        "Selector not found: #non-existent",
       );
       expect(console.log).not.toHaveBeenCalled();
     });
@@ -212,7 +215,7 @@ describe("loader", () => {
 
       expect(console.error).toHaveBeenCalledWith(
         "Error injecting component:",
-        expect.any(Error)
+        expect.any(Error),
       );
     });
 

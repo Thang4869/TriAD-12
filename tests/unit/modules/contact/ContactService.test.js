@@ -16,9 +16,7 @@ describe("ContactService", () => {
   let originalOpen;
 
   beforeEach(async () => {
-    const { Logger } = await import(
-      "../../../../src/core/services/Logger.js"
-    );
+    const { Logger } = await import("../../../../src/core/services/Logger.js");
     LoggerMock = Logger;
     LoggerMock.debug.mockClear();
     LoggerMock.info.mockClear();

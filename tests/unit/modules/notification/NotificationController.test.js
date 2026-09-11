@@ -59,19 +59,30 @@ describe("NotificationController", () => {
 
   describe("initialization", () => {
     it("should initialize when document is ready", () => {
-      Object.defineProperty(document, "readyState", { value: "complete", configurable: true });
+      Object.defineProperty(document, "readyState", {
+        value: "complete",
+        configurable: true,
+      });
       controller = new NotificationController();
       expect(controller._initialized).toBe(true);
     });
 
     it("should initialize via DOMContentLoaded when document is loading", () => {
-      Object.defineProperty(document, "readyState", { value: "loading", configurable: true });
+      Object.defineProperty(document, "readyState", {
+        value: "loading",
+        configurable: true,
+      });
       const spy = vi.spyOn(document, "addEventListener");
       controller = new NotificationController();
-      const handler = spy.mock.calls.find((c) => c[0] === "DOMContentLoaded")[1];
+      const handler = spy.mock.calls.find(
+        (c) => c[0] === "DOMContentLoaded",
+      )[1];
       handler();
       expect(controller._initialized).toBe(true);
-      Object.defineProperty(document, "readyState", { value: "complete", configurable: true });
+      Object.defineProperty(document, "readyState", {
+        value: "complete",
+        configurable: true,
+      });
     });
 
     it("should not re-init if already initialized", () => {
@@ -250,7 +261,10 @@ describe("NotificationController", () => {
     it("should subscribe to CHECKOUT_COMPLETED when window.eventBus exists", () => {
       vi.stubGlobal("eventBus", eventBus);
       controller._setupEventListeners();
-      expect(eventBus.on).toHaveBeenCalledWith(EVENTS.CHECKOUT_COMPLETED, expect.any(Function));
+      expect(eventBus.on).toHaveBeenCalledWith(
+        EVENTS.CHECKOUT_COMPLETED,
+        expect.any(Function),
+      );
     });
 
     it("should not subscribe if window.eventBus is undefined", () => {
@@ -264,13 +278,17 @@ describe("NotificationController", () => {
 
       controller._setupEventListeners();
 
-      const checkoutCallback = vi.mocked(eventBus.on).mock.calls.find(
-        (call) => call[0] === EVENTS.CHECKOUT_COMPLETED
-      )?.[1];
+      const checkoutCallback = vi
+        .mocked(eventBus.on)
+        .mock.calls.find((call) => call[0] === EVENTS.CHECKOUT_COMPLETED)?.[1];
 
       expect(checkoutCallback).toBeDefined();
       checkoutCallback({ order: { id: "1001" } });
-      expect(addSpy).toHaveBeenCalledWith("New Order", "Order #1001 placed!", "order");
+      expect(addSpy).toHaveBeenCalledWith(
+        "New Order",
+        "Order #1001 placed!",
+        "order",
+      );
 
       checkoutCallback({});
       checkoutCallback(null);
@@ -279,8 +297,14 @@ describe("NotificationController", () => {
     it("should add system error on window error with message", () => {
       const spy = vi.spyOn(controller, "add");
       controller._setupEventListeners();
-      window.dispatchEvent(new ErrorEvent("error", { error: new Error("Test") }));
-      expect(spy).toHaveBeenCalledWith("System Error", "An unexpected error occurred.", "warning");
+      window.dispatchEvent(
+        new ErrorEvent("error", { error: new Error("Test") }),
+      );
+      expect(spy).toHaveBeenCalledWith(
+        "System Error",
+        "An unexpected error occurred.",
+        "warning",
+      );
     });
 
     it("should not add system error if error has no message", () => {
@@ -459,7 +483,10 @@ describe("NotificationController", () => {
       it("should show toast if window.toast exists", () => {
         controller.add("A", "1");
         controller.markAllAsRead();
-        expect(mockToast.success).toHaveBeenCalledWith("All clear!", "All notifications marked as read.");
+        expect(mockToast.success).toHaveBeenCalledWith(
+          "All clear!",
+          "All notifications marked as read.",
+        );
       });
 
       it("should not show toast if window.toast undefined", () => {

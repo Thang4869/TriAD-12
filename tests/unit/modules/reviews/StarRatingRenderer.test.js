@@ -46,14 +46,20 @@ describe("StarRatingRenderer", () => {
   it("should return early if container is not found", () => {
     document.getElementById("star-rating")?.remove();
     expect(() => {
-      const newRenderer = new StarRatingRenderer("#star-rating", "#selected-rating");
+      const newRenderer = new StarRatingRenderer(
+        "#star-rating",
+        "#selected-rating",
+      );
       expect(newRenderer.container).toBeNull();
     }).not.toThrow();
   });
 
   it("should handle missing display element", () => {
     document.getElementById("selected-rating")?.remove();
-    const newRenderer = new StarRatingRenderer("#star-rating", "#selected-rating");
+    const newRenderer = new StarRatingRenderer(
+      "#star-rating",
+      "#selected-rating",
+    );
     const stars = document.querySelectorAll(".star-rating");
     stars[0].click();
     expect(newRenderer.getRating()).toBe(1);

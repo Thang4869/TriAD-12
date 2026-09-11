@@ -54,13 +54,21 @@ describe("CartService", () => {
           total: 0,
           count: 0,
           isEmpty: true,
-        })
+        }),
       );
     });
 
     it("should load existing items from repository", () => {
       const existingItems = [
-        { id: 1, name: "A", price: 100, quantity: 2, subtotal: 200, image: "", color: "White" },
+        {
+          id: 1,
+          name: "A",
+          price: 100,
+          quantity: 2,
+          subtotal: 200,
+          image: "",
+          color: "White",
+        },
       ];
       mockRepo.findAll.mockReturnValueOnce(existingItems);
 
@@ -78,7 +86,7 @@ describe("CartService", () => {
           total: 200,
           count: 2,
           isEmpty: false,
-        })
+        }),
       );
     });
   });
@@ -93,10 +101,10 @@ describe("CartService", () => {
       expect(service.count).toBe(2);
       expect(service.total).toBe(200000);
       expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        "cart:item:added",
-        { product: mockProduct, quantity: 2 }
-      );
+      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:added", {
+        product: mockProduct,
+        quantity: 2,
+      });
     });
 
     it("should increment quantity if product already exists", () => {
@@ -111,10 +119,10 @@ describe("CartService", () => {
       expect(service.count).toBe(4);
       expect(service.total).toBe(400000);
       expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        "cart:item:added",
-        { product: mockProduct, quantity: 3 }
-      );
+      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:added", {
+        product: mockProduct,
+        quantity: 3,
+      });
     });
 
     it("should default quantity to 1 if not provided", () => {
@@ -137,10 +145,9 @@ describe("CartService", () => {
       expect(service.count).toBe(0);
       expect(service.isEmpty).toBe(true);
       expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        "cart:item:removed",
-        { id: 1 }
-      );
+      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:removed", {
+        id: 1,
+      });
     });
 
     it("should do nothing if id not found", () => {
@@ -155,7 +162,7 @@ describe("CartService", () => {
       expect(mockRepo.save).not.toHaveBeenCalled();
       expect(eventBus.emit).not.toHaveBeenCalledWith(
         "cart:item:removed",
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -282,7 +289,7 @@ describe("CartService", () => {
           total: service.total,
           count: service.count,
           isEmpty: service.isEmpty,
-        })
+        }),
       );
     });
 
@@ -299,7 +306,7 @@ describe("CartService", () => {
           total: service.total,
           count: service.count,
           isEmpty: service.isEmpty,
-        })
+        }),
       );
     });
   });

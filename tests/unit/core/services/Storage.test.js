@@ -27,7 +27,10 @@ describe("StorageService", () => {
     it("should set and get value", () => {
       mockLocalStorage.getItem.mockReturnValue(null);
       storage.set("key", "value");
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith("test_key", '"value"');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        "test_key",
+        '"value"',
+      );
 
       mockLocalStorage.getItem.mockReturnValue('"value"');
       expect(storage.get("key")).toBe("value");
@@ -128,9 +131,11 @@ describe("StorageService", () => {
     });
 
     it("should return false if localStorage throws error", () => {
-      const setItemMock = vi.spyOn(localStorage, "setItem").mockImplementation(() => {
-        throw new Error("Storage error");
-      });
+      const setItemMock = vi
+        .spyOn(localStorage, "setItem")
+        .mockImplementation(() => {
+          throw new Error("Storage error");
+        });
       const realStorage = new StorageService("test_");
       expect(realStorage._isAvailable()).toBe(false);
       setItemMock.mockRestore();

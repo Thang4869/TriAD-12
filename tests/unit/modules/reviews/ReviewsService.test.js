@@ -42,7 +42,7 @@ describe("ReviewsService", () => {
       service.save(reviews);
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
         "triad_reviews",
-        JSON.stringify(reviews)
+        JSON.stringify(reviews),
       );
       expect(service.getAll()).toEqual(reviews);
     });
@@ -75,7 +75,11 @@ describe("ReviewsService", () => {
 
   describe("Statistics", () => {
     it("should return empty stats when no reviews", () => {
-      expect(service.getStats()).toEqual({ total: 0, average: 0, averageDisplay: "0/5" });
+      expect(service.getStats()).toEqual({
+        total: 0,
+        average: 0,
+        averageDisplay: "0/5",
+      });
     });
 
     it("should calculate average rating correctly", () => {

@@ -33,13 +33,13 @@ export class CartService {
   }
 
   remove(id) {
-      const initialLength = this.items.length;
-      this.items = this.items.filter((item) => item.id !== id);
-      if (this.items.length !== initialLength) {
-          this.save();
-          eventBus.emit(EVENTS.CART_ITEM_REMOVED, { id });
-      }
-      return this.items;
+    const initialLength = this.items.length;
+    this.items = this.items.filter((item) => item.id !== id);
+    if (this.items.length !== initialLength) {
+      this.save();
+      eventBus.emit(EVENTS.CART_ITEM_REMOVED, { id });
+    }
+    return this.items;
   }
 
   increase(id) {

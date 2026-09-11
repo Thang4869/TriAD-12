@@ -71,7 +71,7 @@ describe("NotificationService", () => {
       expect(service.getUnreadCount()).toBe(0);
       expect(Logger.warn).toHaveBeenCalledWith(
         "Load notifications error:",
-        expect.any(Error)
+        expect.any(Error),
       );
     });
 
@@ -115,7 +115,7 @@ describe("NotificationService", () => {
 
       expect(Logger.warn).toHaveBeenCalledWith(
         "Save notifications error:",
-        expect.any(Error)
+        expect.any(Error),
       );
       expect(() => service.save()).not.toThrow();
     });
@@ -221,7 +221,7 @@ describe("NotificationService", () => {
       const changed = service.markAllAsRead();
       expect(changed).toBe(true);
       expect(service.getUnreadCount()).toBe(0);
-      service.getAll().forEach(n => expect(n.read).toBe(true));
+      service.getAll().forEach((n) => expect(n.read).toBe(true));
       expect(mockLocalStorage.setItem).toHaveBeenCalled();
     });
 
@@ -274,7 +274,7 @@ describe("NotificationService", () => {
       service.add("Unread", "Msg");
       const unread = service.getUnread();
       expect(unread.length).toBe(3);
-      unread.forEach(n => expect(n.read).toBe(false));
+      unread.forEach((n) => expect(n.read).toBe(false));
     });
 
     it("getLatest should return latest notifications by limit", () => {
