@@ -6,6 +6,7 @@ export const EVENTS = {
   CART_ITEM_REMOVED: "cart:item:removed",
   CART_CLEARED: "cart:cleared",
   PRODUCTS_LOADED: "products:loaded",
+  PRODUCTS_LOADING: "products:loading",
   PRODUCTS_FILTERED: "products:filtered",
   PRODUCT_SELECTED: "product:selected",
   CHECKOUT_STARTED: "checkout:started",
