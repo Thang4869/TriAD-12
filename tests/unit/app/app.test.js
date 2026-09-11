@@ -1,37 +1,37 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { App } from '../../../src/app/app.js';
-import { eventBus } from '../../../src/core/services/EventBus.js';
-import { EVENTS } from '../../../src/shared/constants/Events.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { App } from "../../../src/app/app.js";
+import { eventBus } from "../../../src/core/services/EventBus.js";
+import { EVENTS } from "../../../src/shared/constants/Events.js";
 
 // Mock các module
-vi.mock('../../../src/modules/toast/ToastService.js', () => ({
+vi.mock("../../../src/modules/toast/ToastService.js", () => ({
   toast: {
     info: vi.fn(),
-    error: vi.fn()
-  }
+    error: vi.fn(),
+  },
 }));
 
-vi.mock('../../../src/modules/fly-to-cart/FlyToCartService.js', () => ({
-  flyToCart: { fly: vi.fn() }
+vi.mock("../../../src/modules/fly-to-cart/FlyToCartService.js", () => ({
+  flyToCart: { fly: vi.fn() },
 }));
 
-vi.mock('../../../src/core/services/Logger.js', () => ({
+vi.mock("../../../src/core/services/Logger.js", () => ({
   Logger: {
     info: vi.fn(),
-    error: vi.fn()
-  }
+    error: vi.fn(),
+  },
 }));
 
-vi.mock('../../../src/core/services/EventBus.js', () => ({
+vi.mock("../../../src/core/services/EventBus.js", () => ({
   eventBus: {
-    emit: vi.fn()
-  }
+    emit: vi.fn(),
+  },
 }));
 
-import { toast } from '../../../src/modules/toast/ToastService.js';
-import { Logger } from '../../../src/core/services/Logger.js';
+import { toast } from "../../../src/modules/toast/ToastService.js";
+import { Logger } from "../../../src/core/services/Logger.js";
 
-describe('App', () => {
+describe("App", () => {
   let app;
   let mockContainer;
 
@@ -40,14 +40,14 @@ describe('App', () => {
 
     mockContainer = {
       get: vi.fn((name) => {
-        if (name === 'cartController') return {};
-        if (name === 'productsController') return {};
-        if (name === 'modalController') return {};
-        if (name === 'checkoutController') return {};
-        if (name === 'blogController') return {};
-        if (name === 'reviewsController') return {};
+        if (name === "cartController") return {};
+        if (name === "productsController") return {};
+        if (name === "modalController") return {};
+        if (name === "checkoutController") return {};
+        if (name === "blogController") return {};
+        if (name === "reviewsController") return {};
         return undefined;
-      })
+      }),
     };
 
     app = new App({
@@ -55,7 +55,7 @@ describe('App', () => {
       routerService: {},
       uiService: {},
       keyboardService: {},
-      errorHandler: {}
+      errorHandler: {},
     });
 
     vi.clearAllMocks();
@@ -65,7 +65,7 @@ describe('App', () => {
     vi.useRealTimers(); // Khôi phục timers thật
   });
 
-  it('should initialize and set up global references', async () => {
+  it("should initialize and set up global references", async () => {
     expect(app._initialized).toBe(false);
     await app.init();
 
@@ -80,31 +80,39 @@ describe('App', () => {
     expect(app.blogController).toBeDefined();
     expect(app.reviewsController).toBeDefined();
     expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.APP_READY);
-    expect(toast.info).toHaveBeenCalledWith('Welcome!', expect.any(String));
-    expect(Logger.info).toHaveBeenCalledWith('Application ready!');
+    expect(toast.info).toHaveBeenCalledWith("Welcome!", expect.any(String));
+    expect(Logger.info).toHaveBeenCalledWith("Application ready!");
   });
 
-  it('should not re-initialize if already initialized', async () => {
+  it("should not re-initialize if already initialized", async () => {
     await app.init();
     vi.advanceTimersByTime(1000); // Cần advance để timer trong init chạy
 
-    const setupSpy = vi.spyOn(app, '_setupGlobalReferences');
+    const setupSpy = vi.spyOn(app, "_setupGlobalReferences");
     await app.init();
     expect(setupSpy).not.toHaveBeenCalled();
     expect(app._initialized).toBe(true);
   });
 
-  it('should handle errors during initialization', async () => {
-    mockContainer.get = vi.fn(() => { throw new Error('Test error'); });
+  it("should handle errors during initialization", async () => {
+    mockContainer.get = vi.fn(() => {
+      throw new Error("Test error");
+    });
     await app.init();
     vi.advanceTimersByTime(1000);
 
-    expect(Logger.error).toHaveBeenCalledWith('Failed to initialize app:', expect.any(Error));
-    expect(toast.error).toHaveBeenCalledWith('Error', 'Failed to initialize application. Please refresh.');
+    expect(Logger.error).toHaveBeenCalledWith(
+      "Failed to initialize app:",
+      expect.any(Error),
+    );
+    expect(toast.error).toHaveBeenCalledWith(
+      "Error",
+      "Failed to initialize application. Please refresh.",
+    );
     expect(app._initialized).toBe(false);
   });
 
-  it('should set up global references correctly', () => {
+  it("should set up global references correctly", () => {
     app._setupGlobalReferences();
     expect(window.cartController).toBe(app.cartController);
     expect(window.productsController).toBe(app.productsController);
