@@ -73,20 +73,36 @@ describe("ModalController", () => {
   describe("constructor", () => {
     it("should initialize service and DOM references", () => {
       expect(modalController.service).toBeDefined();
-      expect(modalController.overlay).toBe(document.getElementById("product-modal-overlay"));
-      expect(modalController.content).toBe(document.getElementById("product-modal-content"));
-      expect(modalController.title).toBe(document.getElementById("modal-title"));
-      expect(modalController.price).toBe(document.getElementById("modal-price"));
+      expect(modalController.overlay).toBe(
+        document.getElementById("product-modal-overlay"),
+      );
+      expect(modalController.content).toBe(
+        document.getElementById("product-modal-content"),
+      );
+      expect(modalController.title).toBe(
+        document.getElementById("modal-title"),
+      );
+      expect(modalController.price).toBe(
+        document.getElementById("modal-price"),
+      );
       expect(modalController.image).toBe(document.getElementById("modal-img"));
-      expect(modalController.quantityEl).toBe(document.getElementById("modal-quantity"));
+      expect(modalController.quantityEl).toBe(
+        document.getElementById("modal-quantity"),
+      );
       expect(modalController._isClosing).toBe(false);
     });
 
     it("should set up event listeners", () => {
       const onSpy = vi.spyOn(eventBus, "on");
       new ModalController();
-      expect(onSpy).toHaveBeenCalledWith(EVENTS.MODAL_OPENED, expect.any(Function));
-      expect(onSpy).toHaveBeenCalledWith(EVENTS.MODAL_CLOSED, expect.any(Function));
+      expect(onSpy).toHaveBeenCalledWith(
+        EVENTS.MODAL_OPENED,
+        expect.any(Function),
+      );
+      expect(onSpy).toHaveBeenCalledWith(
+        EVENTS.MODAL_CLOSED,
+        expect.any(Function),
+      );
     });
   });
 
@@ -98,7 +114,9 @@ describe("ModalController", () => {
       modalController.open(1);
 
       expect(openSpy).toHaveBeenCalledWith(1);
-      expect(emitSpy).toHaveBeenCalledWith(EVENTS.MODAL_OPENED, { productId: 1 });
+      expect(emitSpy).toHaveBeenCalledWith(EVENTS.MODAL_OPENED, {
+        productId: 1,
+      });
     });
 
     it("should render product details when product exists", () => {
@@ -417,7 +435,7 @@ describe("ModalController", () => {
       modalController.open(1);
       const closeSpy = vi.spyOn(modalController, "close");
       const overlay = document.getElementById("product-modal-overlay");
-      
+
       expect(overlay.classList.contains("hidden")).toBe(false);
 
       overlay.click();
