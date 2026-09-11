@@ -56,7 +56,12 @@ describe("ToastRenderer", () => {
     });
 
     it("should use custom icon if provided", () => {
-      const data = { title: "Test", message: "Msg", type: "info", icon: "ph-fill ph-star" };
+      const data = {
+        title: "Test",
+        message: "Msg",
+        type: "info",
+        icon: "ph-fill ph-star",
+      };
       const el = renderer.createElement(data);
       expect(el.querySelector(".icon").className).toContain("ph-star");
     });
@@ -73,7 +78,9 @@ describe("ToastRenderer", () => {
       const data = { title: "New", message: "Toast" };
       const el = renderer.render(data);
       expect(renderer.toasts).toContain(el);
-      expect(document.getElementById("toast-container").children.length).toBe(1);
+      expect(document.getElementById("toast-container").children.length).toBe(
+        1,
+      );
     });
 
     it("should return existing duplicate toast without creating new", () => {
@@ -88,7 +95,10 @@ describe("ToastRenderer", () => {
       const max = renderer.maxToasts;
       const toasts = [];
       for (let i = 0; i < max + 1; i++) {
-        const el = renderer.render({ title: `Title ${i}`, message: `Msg ${i}` });
+        const el = renderer.render({
+          title: `Title ${i}`,
+          message: `Msg ${i}`,
+        });
         toasts.push(el);
       }
       expect(renderer.toasts.length).toBe(max);
@@ -142,7 +152,11 @@ describe("ToastRenderer", () => {
 
   describe("resetTimer", () => {
     it("should reset animation of progress bar", () => {
-      const el = renderer.render({ title: "Test", message: "Msg", duration: 2000 });
+      const el = renderer.render({
+        title: "Test",
+        message: "Msg",
+        duration: 2000,
+      });
       const progress = el.querySelector(".progress-bar");
       expect(progress).toBeTruthy();
 
@@ -154,7 +168,9 @@ describe("ToastRenderer", () => {
 
     it("should do nothing if progress bar is missing", () => {
       const el = document.createElement("div");
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
       renderer.resetTimer(el);
       expect(consoleWarnSpy).not.toHaveBeenCalled();
       consoleWarnSpy.mockRestore();
@@ -177,10 +193,10 @@ describe("ToastRenderer", () => {
         const el = renderer.createElement({ title: "Test" });
         document.body.appendChild(el);
         el.dataset.duration = "invalid_duration_string";
-        
+
         renderer.resetTimer(el);
         const progress = el.querySelector(".progress-bar");
-        
+
         expect(progress.style.animation).toContain("3000ms");
       });
     });
@@ -194,7 +210,7 @@ describe("ToastRenderer", () => {
 
       it("should clean up element completely after 300ms timeout", () => {
         const el = renderer.render({ title: "Test" });
-        
+
         renderer.remove(el);
         expect(el.classList.contains("toast-exit")).toBe(true);
 
@@ -206,7 +222,7 @@ describe("ToastRenderer", () => {
 
       it("should not throw if parentNode is removed before timeout resolves", () => {
         const el = renderer.render({ title: "Test" });
-        
+
         renderer.remove(el);
         if (el.parentNode) {
           el.parentNode.removeChild(el);
@@ -218,7 +234,10 @@ describe("ToastRenderer", () => {
 
     describe("createElement()", () => {
       it("should fallback to info icon if type is unrecognized", () => {
-        const el = renderer.createElement({ title: "Test", type: "unrecognized" });
+        const el = renderer.createElement({
+          title: "Test",
+          type: "unrecognized",
+        });
         const iconElement = el.querySelector(".icon");
         expect(iconElement.className).toContain("ph-info");
       });

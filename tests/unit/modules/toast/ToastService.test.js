@@ -17,7 +17,11 @@ describe("ToastService", () => {
 
   describe("show", () => {
     it("should show a toast and set timer", () => {
-      const el = toastService.show({ title: "Test", message: "Msg", duration: 1000 });
+      const el = toastService.show({
+        title: "Test",
+        message: "Msg",
+        duration: 1000,
+      });
       expect(el._timer).toBeDefined();
       vi.advanceTimersByTime(1300);
       expect(el.parentNode).toBeNull();
@@ -32,7 +36,11 @@ describe("ToastService", () => {
     });
 
     it("should pause timer on mouseenter and resume on mouseleave", () => {
-      const el = toastService.show({ title: "Test", message: "Msg", duration: 2000 });
+      const el = toastService.show({
+        title: "Test",
+        message: "Msg",
+        duration: 2000,
+      });
       const progress = el.querySelector(".progress-bar");
       expect(progress.style.animationPlayState).toBe("");
 
@@ -44,7 +52,11 @@ describe("ToastService", () => {
     });
 
     it("should set a new timer on mouseleave and remove after duration", () => {
-      const el = toastService.show({ title: "Test", message: "Msg", duration: 1000 });
+      const el = toastService.show({
+        title: "Test",
+        message: "Msg",
+        duration: 1000,
+      });
       const removeSpy = vi.spyOn(toastService.renderer, "remove");
 
       el.dispatchEvent(new Event("mouseleave"));
@@ -80,19 +92,26 @@ describe("ToastService", () => {
     it("should remove all toasts", () => {
       toastService.info("A", "1");
       toastService.info("B", "2");
-      expect(document.getElementById("toast-container").children.length).toBe(2);
+      expect(document.getElementById("toast-container").children.length).toBe(
+        2,
+      );
       toastService.clear();
       vi.runAllTimers();
-      expect(document.getElementById("toast-container").children.length).toBe(0);
+      expect(document.getElementById("toast-container").children.length).toBe(
+        0,
+      );
     });
   });
 
   describe("duplicate prevention", () => {
     it("should not create duplicate toasts", () => {
       toastService.info("Duplicate", "Same");
-      const firstCount = document.getElementById("toast-container").children.length;
+      const firstCount =
+        document.getElementById("toast-container").children.length;
       toastService.info("Duplicate", "Same");
-      expect(document.getElementById("toast-container").children.length).toBe(firstCount);
+      expect(document.getElementById("toast-container").children.length).toBe(
+        firstCount,
+      );
     });
   });
 
