@@ -3,6 +3,10 @@ import { CartRenderer } from "./CartRenderer.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
 
+// LƯU Ý: Giỏ hàng vẫn dùng localStorage ở bước này. Backend có sẵn API
+// /api/cart nhưng route đó bắt buộc đăng nhập (authMiddleware trong app.ts),
+// còn frontend hiện chưa có module Auth. Xem README-API-INTEGRATION.md để
+// biết kế hoạch nối Cart/Checkout với backend sau khi có Auth.
 export class CartController {
   constructor() {
     this.service = new CartService();
@@ -24,7 +28,9 @@ export class CartController {
       const target = e.target.closest("[data-id]");
       if (!target) return;
 
-      const id = Number(target.dataset.id);
+      // product.id giờ là UUID string (khớp với ProductsRepository nối API
+      // thật), không được ép Number() nữa.
+      const id = target.dataset.id;
       const action = target.dataset.action;
 
       if (action === "remove") {
