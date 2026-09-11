@@ -153,7 +153,9 @@ export async function bootstrap() {
     container.register("eventBus", new EventBus());
     container.register("storage", new StorageService());
 
-    const productsRepository = new ProductsRepository(container.get("storage"));
+    // ProductsRepository giờ gọi API thật (xem shared/services/api.service.js),
+    // không còn cần Storage/localStorage nữa.
+    const productsRepository = new ProductsRepository();
     const productsService = new ProductsService(
       productsRepository,
       container.get("eventBus"),
@@ -164,6 +166,9 @@ export async function bootstrap() {
       productsRenderer,
       container.get("eventBus"),
     );
+    // Tải trang sản phẩm đầu tiên từ backend TRƯỚC khi phần còn lại của app
+    // (giỏ hàng, modal...) sẵn sàng, để tránh trạng thái "chưa có sản phẩm nào".
+    await productsController.init();
 
     container.register("productsRepository", productsRepository);
     container.register("productsService", productsService);
