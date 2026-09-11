@@ -49,8 +49,22 @@ describe("NotificationRenderer", () => {
     it("should sort unread notifications first", () => {
       const now = new Date().toISOString();
       const notifications = [
-        { id: 1, title: "Read", message: "R", type: "info", read: true, createdAt: now },
-        { id: 2, title: "Unread", message: "U", type: "info", read: false, createdAt: now },
+        {
+          id: 1,
+          title: "Read",
+          message: "R",
+          type: "info",
+          read: true,
+          createdAt: now,
+        },
+        {
+          id: 2,
+          title: "Unread",
+          message: "U",
+          type: "info",
+          read: false,
+          createdAt: now,
+        },
       ];
       renderer.renderList(notifications);
       const container = document.getElementById("notification-list");
@@ -168,9 +182,14 @@ describe("NotificationRenderer", () => {
     it("should not throw when dropdown missing on show", () => {
       document.getElementById("notification-dropdown")?.remove();
       const renderer2 = new NotificationRenderer();
-      const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarn = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
       renderer2.showDropdown();
-      expect(consoleWarn).toHaveBeenCalledWith("[WARN]", "Notification dropdown not found");
+      expect(consoleWarn).toHaveBeenCalledWith(
+        "[WARN]",
+        "Notification dropdown not found",
+      );
       consoleWarn.mockRestore();
     });
 
@@ -229,11 +248,21 @@ describe("NotificationRenderer", () => {
 
       renderer._ensureElements();
 
-      expect(renderer.container).toBe(document.getElementById("notification-list"));
-      expect(renderer.badge).toBe(document.getElementById("notification-badge"));
-      expect(renderer.mobileBadge).toBe(document.getElementById("mobile-notification-badge"));
-      expect(renderer.dropdown).toBe(document.getElementById("notification-dropdown"));
-      expect(renderer.overlay).toBe(document.getElementById("notification-overlay"));
+      expect(renderer.container).toBe(
+        document.getElementById("notification-list"),
+      );
+      expect(renderer.badge).toBe(
+        document.getElementById("notification-badge"),
+      );
+      expect(renderer.mobileBadge).toBe(
+        document.getElementById("mobile-notification-badge"),
+      );
+      expect(renderer.dropdown).toBe(
+        document.getElementById("notification-dropdown"),
+      );
+      expect(renderer.overlay).toBe(
+        document.getElementById("notification-overlay"),
+      );
     });
   });
 });
