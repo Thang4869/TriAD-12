@@ -35,7 +35,7 @@ describe("BlogController", () => {
       expect(Logger.debug).toHaveBeenCalledWith("Blog Controller initialized");
       expect(document.addEventListener).toHaveBeenCalledWith(
         "click",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
   });
