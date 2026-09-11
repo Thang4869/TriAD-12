@@ -60,7 +60,9 @@ describe("HeaderService", () => {
   describe("initHeaderScroll", () => {
     it("should warn and return if header not found", () => {
       document.body.innerHTML = "";
-      const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarn = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
       initHeaderScroll();
       expect(consoleWarn).toHaveBeenCalledWith("[WARN]", "Header not found!");
       consoleWarn.mockRestore();
