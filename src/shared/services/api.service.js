@@ -1,48 +1,30 @@
 import { APP_CONFIG } from "../../config/settings.config.js";
+import { getCsrfToken } from "../utils/csrf.js";
 
-/**
- * Lỗi chuẩn hoá cho mọi lời gọi API, để các Controller/Service phía trên
- * bắt lỗi bằng try/catch thông thường thay vì phải tự kiểm tra response.ok.
- */
 export class ApiError extends Error {
   constructor(message, status, payload = null) {
     super(message);
     this.name = "ApiError";
-    this.status = status; // 0 = lỗi mạng (không tới được server)
-    this.payload = payload; // body JSON gốc trả về từ backend (nếu có)
+    this.status = status;
+    this.payload = payload;
   }
 }
 
 /**
  * ApiService - lớp giao tiếp HTTP duy nhất với backend DNEK.
  *
- * Quy ước của backend (xem src/shared/middlewares/error-handler.middleware.ts
- * và các controller phía backend):
- *   - Thành công:  { success: true, data: ... }
- *   - Thất bại:    { success: false, message: "..." }  (kèm HTTP status lỗi)
+ * Auth: backend dùng JWT lưu trong cookie httpOnly (accessToken, refreshToken),
+ * KHÔNG trả token qua JSON để JS đọc (đúng chuẩn bảo mật, tránh XSS đánh cắp
+ * token). Vì vậy request luôn gửi credentials: 'include' để trình duyệt tự
+ * đính kèm cookie — không cần và không thể tự set header Authorization từ JS.
  *
- * ApiService tự "bóc" field `data` ra, nên phía repository chỉ cần
- * `const product = await api.get('/products/123')` là nhận thẳng object product,
- * không phải object { success, data }.
- *
- * Auth: backend dùng JWT access token (Authorization header) + refresh token
- * qua httpOnly cookie, nên mọi request đều gửi kèm credentials: 'include'.
- * Khi frontend có module Auth (đăng nhập), gọi apiService.setAuthTokenProvider(fn)
- * để đính kèm access token vào header — hiện tại chưa có module Auth nên provider
- * mặc định trả về null (request đi như một guest/public request).
+ * Các request POST/PUT/PATCH/DELETE tự động đính kèm header "x-csrf-token"
+ * (đọc từ cookie không-httpOnly "csrfToken") để qua được csrfProtection
+ * middleware của các route như /auth/refresh, /auth/logout.
  */
 export class ApiService {
   constructor(baseURL = APP_CONFIG.API_BASE_URL) {
     this.baseURL = baseURL;
-    this._getAuthToken = () => null;
-  }
-
-  /**
-   * Cho phép module Auth (khi được xây dựng) cắm vào cách lấy access token
-   * hiện tại, ví dụ: apiService.setAuthTokenProvider(() => tokenStorage.getAccessToken())
-   */
-  setAuthTokenProvider(fn) {
-    this._getAuthToken = typeof fn === "function" ? fn : () => null;
   }
 
   _buildUrl(endpoint, params) {
@@ -64,9 +46,9 @@ export class ApiService {
     const url = this._buildUrl(endpoint, params);
     const finalHeaders = { "Content-Type": "application/json", ...headers };
 
-    const token = this._getAuthToken();
-    if (token) {
-      finalHeaders["Authorization"] = `Bearer ${token}`;
+    if (!["GET", "HEAD"].includes(method)) {
+      const csrfToken = getCsrfToken();
+      if (csrfToken) finalHeaders["x-csrf-token"] = csrfToken;
     }
 
     let response;
@@ -105,24 +87,18 @@ export class ApiService {
   get(endpoint, params) {
     return this._request("GET", endpoint, { params });
   }
-
-  post(endpoint, body) {
-    return this._request("POST", endpoint, { body });
+  post(endpoint, body, headers) {
+    return this._request("POST", endpoint, { body, headers });
   }
-
   put(endpoint, body) {
     return this._request("PUT", endpoint, { body });
   }
-
   patch(endpoint, body) {
     return this._request("PATCH", endpoint, { body });
   }
-
   delete(endpoint) {
     return this._request("DELETE", endpoint);
   }
 }
 
-// Instance dùng chung toàn app (singleton) - đủ dùng cho một SPA nhỏ.
-// Các repository có thể inject instance khác (ví dụ mock trong test) qua constructor.
 export const apiService = new ApiService();
