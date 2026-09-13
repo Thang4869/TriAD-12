@@ -73,6 +73,10 @@ function getComponentsForPage(page) {
       elementId: "success-modal-container",
       filePath: `${root}pages/success-modal.html`,
     },
+    {
+      elementId: "auth-modal-container",
+      filePath: `${root}pages/auth-modal.html`,
+    },
   ];
 
   const pageComponents = {

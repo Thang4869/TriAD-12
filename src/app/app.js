@@ -4,6 +4,7 @@ import "../modules/notification/NotificationService.js";
 import { eventBus } from "../core/services/EventBus.js";
 import { EVENTS } from "../shared/constants/Events.js";
 import { Logger } from "../core/services/Logger.js";
+import { AuthController } from "../modules/auth/AuthController.js";
 
 export class App {
   constructor({
@@ -26,6 +27,7 @@ export class App {
     Logger.info("Initializing TriAD Application...");
 
     try {
+      this.authController = new AuthController();
       this.cartController = this.container.get("cartController");
       this.productsController = this.container.get("productsController");
       this.modalController = this.container.get("modalController");
@@ -52,6 +54,7 @@ export class App {
   }
 
   _setupGlobalReferences() {
+    window.authController = this.authController;
     window.cartController = this.cartController;
     window.productsController = this.productsController;
     window.modalController = this.modalController;
