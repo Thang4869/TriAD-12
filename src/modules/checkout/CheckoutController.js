@@ -1,9 +1,11 @@
 import { CheckoutService } from "./CheckoutService.js";
 import { CheckoutValidator } from "./CheckoutValidator.js";
 import { CheckoutRenderer } from "./CheckoutRenderer.js";
-import { formatPrice } from "../../shared/utils/helpers.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
+import { ApiError } from "../../shared/services/api.service.js";
+
+const PAYMENT_METHOD_MAP = { cod: "COD", card: "CARD", banking: "BANKING" };
 
 export class CheckoutController {
   constructor() {
@@ -11,67 +13,56 @@ export class CheckoutController {
     this.validator = new CheckoutValidator();
     this.renderer = new CheckoutRenderer();
     this.items = [];
+    this.isSubmitting = false;
     this.setupEventListeners();
   }
 
   setupEventListeners() {
     document.getElementById("checkout-btn")?.addEventListener("click", () => {
-      this.openCheckout();
+      // Backend bắt buộc đăng nhập để checkout -> chặn ở đây trước khi mở modal.
+      window.authController?.requireAuth(() => this.openCheckout());
     });
 
     document
       .getElementById("close-checkout-btn")
-      ?.addEventListener("click", () => {
-        this.closeCheckout();
-      });
+      ?.addEventListener("click", () => this.closeCheckout());
 
     document
       .getElementById("checkout-form")
-      ?.addEventListener("submit", (e) => {
-        this.handleSubmit(e);
-      });
+      ?.addEventListener("submit", (e) => this.handleSubmit(e));
 
     document.querySelectorAll('input[name="payment"]').forEach((radio) => {
-      radio.addEventListener("change", () => {
-        this.toggleCardDetails();
-      });
+      radio.addEventListener("change", () => this.toggleCardDetails());
     });
 
     document
       .getElementById("success-close-btn")
-      ?.addEventListener("click", () => {
-        this.closeSuccess();
-      });
+      ?.addEventListener("click", () => this.closeSuccess());
   }
 
   openCheckout() {
     const cartItems = window.cartController?.getItems() || [];
     if (cartItems.length === 0) {
-      if (window.toast) {
-        window.toast.warning(
-          "Empty Cart",
-          "Please add items to your cart first.",
-        );
-      }
+      window.toast?.warning(
+        "Giỏ hàng trống",
+        "Vui lòng thêm sản phẩm trước khi thanh toán.",
+      );
       return;
     }
 
     this.renderer.renderSummary(cartItems);
-
     this.items = cartItems;
 
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
-
     document.getElementById("checkout-form").reset();
-    document.getElementById("card-details").classList.add("hidden");
+    document.getElementById("card-details")?.classList.add("hidden");
 
     modal.classList.remove("hidden");
     requestAnimationFrame(() => {
       modal.classList.remove("opacity-0");
       content.classList.remove("scale-95");
     });
-
     document.body.style.overflow = "hidden";
     eventBus.emit(EVENTS.CHECKOUT_STARTED);
   }
@@ -79,139 +70,100 @@ export class CheckoutController {
   closeCheckout() {
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
-
     modal.classList.add("opacity-0");
     content.classList.add("scale-95");
-
-    setTimeout(() => {
-      modal.classList.add("hidden");
-    }, 300);
-
+    setTimeout(() => modal.classList.add("hidden"), 300);
     document.body.style.overflow = "";
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
+    if (this.isSubmitting) return;
 
+    // Backend chỉ cần 4 field này (paymentMethod, address, phone, notes) -
+    // tên/email khách hàng đã có sẵn từ tài khoản đăng nhập, không cần gửi lại.
+    const paymentRaw =
+      document.querySelector('input[name="payment"]:checked')?.value || "cod";
     const data = {
-      firstName: document.getElementById("first-name").value.trim(),
-      lastName: document.getElementById("last-name").value.trim(),
-      email: document.getElementById("email").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
       address: document.getElementById("address").value.trim(),
-      paymentMethod:
-        document.querySelector('input[name="payment"]:checked')?.value || "cod",
-      cardNumber: document.getElementById("card-number")?.value.trim(),
-      cardExpiry: document.getElementById("card-expiry")?.value.trim(),
-      cardCvv: document.getElementById("card-cvv")?.value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      notes: document.getElementById("notes")?.value.trim() || undefined,
+      paymentMethod: PAYMENT_METHOD_MAP[paymentRaw] || "COD",
     };
 
     const result = this.validator.validate(data);
     if (!result.isValid) {
-      if (window.toast) {
-        window.toast.error("Validation Error", result.errors.join(", "));
-      }
+      window.toast?.error("Thông tin chưa hợp lệ", result.errors.join(", "));
       return;
     }
 
-    if (window.toast) {
-      window.toast.info(
-        "Processing",
-        "Please wait while we process your order...",
+    this.isSubmitting = true;
+    const submitBtn = document.querySelector(
+      "#checkout-form button[type=submit]",
+    );
+    if (submitBtn) submitBtn.disabled = true;
+    window.toast?.info("Đang xử lý", "Vui lòng chờ trong giây lát...");
+
+    try {
+      const order = await this.service.checkout(data);
+
+      await window.cartController?.clear();
+      window.cartController?.closeDrawer();
+      this.closeCheckout();
+      this.showSuccess(order.orderNumber || order.id);
+
+      window.notifications?.add(
+        "Đặt hàng thành công!",
+        `Đơn ${order.orderNumber} đã được xác nhận. Cảm ơn bạn!`,
+        "success",
       );
+      window.toast?.success(
+        "Đặt hàng thành công!",
+        `Đơn ${order.orderNumber}.`,
+      );
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể xử lý đơn hàng. Vui lòng thử lại.";
+      window.toast?.error("Lỗi", message);
+      window.notifications?.add("Đặt hàng thất bại", message, "warning");
+    } finally {
+      this.isSubmitting = false;
+      if (submitBtn) submitBtn.disabled = false;
     }
-
-    setTimeout(() => {
-      try {
-        const order = this.service.processCheckout(data, this.items);
-
-        if (window.cartController) {
-          window.cartController.clear();
-        }
-
-        this.closeCheckout();
-        if (window.cartController) {
-          window.cartController.closeDrawer();
-        }
-
-        this.showSuccess(order.id);
-
-        if (window.notifications) {
-          const totalItems = this.items.reduce(
-            (sum, item) => sum + item.quantity,
-            0,
-          );
-          window.notifications.add(
-            "Order Placed!",
-            `Order #${order.id} confirmed with ${totalItems} item(s). Thank you!`,
-            "success",
-          );
-        }
-
-        if (window.toast) {
-          window.toast.success(
-            "Order Placed!",
-            `Order #${order.id} confirmed.`,
-          );
-        }
-      } catch (error) {
-        console.error("Checkout error:", error);
-        if (window.toast) {
-          window.toast.error(
-            "Error",
-            "Failed to process order. Please try again.",
-          );
-        }
-        if (window.notifications) {
-          window.notifications.add(
-            "Order Failed",
-            "There was an error processing your order. Please try again.",
-            "warning",
-          );
-        }
-      }
-    }, 1500);
   }
 
-  showSuccess(orderId) {
+  showSuccess(orderNumber) {
     const modal = document.getElementById("success-modal");
     const content = modal.querySelector(".bg-white");
+    const orderIdEl = document.getElementById("success-order-id");
+    if (orderIdEl) orderIdEl.textContent = orderNumber;
 
     modal.classList.remove("hidden");
     requestAnimationFrame(() => {
       modal.classList.remove("opacity-0");
       content.classList.remove("scale-95");
     });
-
     document.body.style.overflow = "hidden";
   }
 
   closeSuccess() {
     const modal = document.getElementById("success-modal");
     const content = modal.querySelector(".bg-white");
-
     modal.classList.add("opacity-0");
     content.classList.add("scale-95");
-
-    setTimeout(() => {
-      modal.classList.add("hidden");
-    }, 300);
-
+    setTimeout(() => modal.classList.add("hidden"), 300);
     document.body.style.overflow = "";
-
-    if (window.productsController) {
-      window.productsController.resetFilters();
-    }
+    window.productsController?.resetFilters();
   }
 
   toggleCardDetails() {
     const selected = document.querySelector('input[name="payment"]:checked');
     const cardDetails = document.getElementById("card-details");
-
-    if (selected && selected.value === "card") {
+    if (!cardDetails) return;
+    if (selected && selected.value === "card")
       cardDetails.classList.remove("hidden");
-    } else {
-      cardDetails.classList.add("hidden");
-    }
+    else cardDetails.classList.add("hidden");
   }
 }
