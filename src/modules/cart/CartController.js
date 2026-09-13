@@ -2,11 +2,8 @@ import { CartService } from "./CartService.js";
 import { CartRenderer } from "./CartRenderer.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
+import { authService } from "../auth/AuthService.js";
 
-// LƯU Ý: Giỏ hàng vẫn dùng localStorage ở bước này. Backend có sẵn API
-// /api/cart nhưng route đó bắt buộc đăng nhập (authMiddleware trong app.ts),
-// còn frontend hiện chưa có module Auth. Xem README-API-INTEGRATION.md để
-// biết kế hoạch nối Cart/Checkout với backend sau khi có Auth.
 export class CartController {
   constructor() {
     this.service = new CartService();
@@ -14,7 +11,15 @@ export class CartController {
     this.isDrawerOpen = false;
 
     this.setupEventListeners();
-    this.service.load();
+
+    // Chỉ tải giỏ hàng thật nếu đã đăng nhập, tránh gọi API và nhận 401 vô ích
+    // ngay khi tải trang cho khách chưa đăng nhập.
+    if (authService.isAuthenticated) {
+      this.service.load();
+    }
+
+    eventBus.on(EVENTS.AUTH_LOGIN, () => this.service.load());
+    eventBus.on(EVENTS.AUTH_LOGOUT, () => this.service.clear());
   }
 
   setupEventListeners() {
@@ -28,66 +33,70 @@ export class CartController {
       const target = e.target.closest("[data-id]");
       if (!target) return;
 
-      // product.id giờ là UUID string (khớp với ProductsRepository nối API
-      // thật), không được ép Number() nữa.
-      const id = target.dataset.id;
+      const id = target.dataset.id; // productId (UUID string)
       const action = target.dataset.action;
 
-      if (action === "remove") {
-        this.removeItem(id);
-      } else if (action === "increase") {
-        this.increaseItem(id);
-      } else if (action === "decrease") {
-        this.decreaseItem(id);
+      if (action === "remove") this.removeItem(id);
+      else if (action === "increase") this.increaseItem(id);
+      else if (action === "decrease") this.decreaseItem(id);
+    });
+  }
+
+  /** Yêu cầu đăng nhập trước khi thêm giỏ hàng thật (backend bắt buộc). */
+  addToCart(product, quantity = 1, flyElement = null) {
+    window.authController?.requireAuth(async () => {
+      try {
+        await this.service.add(product.id, quantity);
+        if (flyElement && window.flyToCart) window.flyToCart.fly(flyElement);
+        window.toast?.success("Đã thêm vào giỏ", product.name);
+      } catch (error) {
+        window.toast?.error("Không thể thêm vào giỏ", error.message);
       }
     });
   }
 
-  addToCart(product, quantity = 1, flyElement = null) {
-    console.log("Adding to cart:", product);
-    const result = this.service.add(product, quantity);
-
-    if (flyElement && window.flyToCart) {
-      window.flyToCart.fly(flyElement);
+  async removeItem(id) {
+    try {
+      await this.service.remove(id);
+    } catch (error) {
+      window.toast?.error("Lỗi", error.message);
     }
-
-    return result;
   }
 
-  removeItem(id) {
-    return this.service.remove(id);
+  async increaseItem(id) {
+    try {
+      await this.service.increase(id);
+    } catch (error) {
+      window.toast?.error("Lỗi", error.message);
+    }
   }
 
-  increaseItem(id) {
-    return this.service.increase(id);
+  async decreaseItem(id) {
+    try {
+      await this.service.decrease(id);
+    } catch (error) {
+      window.toast?.error("Lỗi", error.message);
+    }
   }
 
-  decreaseItem(id) {
-    return this.service.decrease(id);
-  }
-
-  clear() {
+  async clear() {
     return this.service.clear();
   }
 
   getItems() {
     return this.service.items;
   }
-
   getTotal() {
     return this.service.total;
   }
-
   getCount() {
     return this.service.count;
   }
 
   openDrawer() {
     if (this.isDrawerOpen) return;
-
     const overlay = document.getElementById("cart-overlay");
     const drawer = document.getElementById("cart-drawer");
-
     if (!overlay || !drawer) return;
 
     overlay.classList.remove("hidden");
@@ -95,7 +104,6 @@ export class CartController {
       overlay.classList.remove("opacity-0");
       drawer.classList.remove("translate-x-full");
     });
-
     this.isDrawerOpen = true;
     document.body.style.overflow = "hidden";
     eventBus.emit(EVENTS.DRAWER_OPENED);
@@ -103,19 +111,13 @@ export class CartController {
 
   closeDrawer() {
     if (!this.isDrawerOpen) return;
-
     const overlay = document.getElementById("cart-overlay");
     const drawer = document.getElementById("cart-drawer");
-
     if (!overlay || !drawer) return;
 
     overlay.classList.add("opacity-0");
     drawer.classList.add("translate-x-full");
-
-    setTimeout(() => {
-      overlay.classList.add("hidden");
-    }, 300);
-
+    setTimeout(() => overlay.classList.add("hidden"), 300);
     this.isDrawerOpen = false;
     document.body.style.overflow = "";
     eventBus.emit(EVENTS.DRAWER_CLOSED);

@@ -43,6 +43,12 @@ export class AuthController {
     document.getElementById("auth-form")?.addEventListener("submit", (e) => {
       this.handleSubmit(e);
     });
+
+    document
+      .getElementById("mobile-account-btn")
+      ?.addEventListener("click", () => {
+        document.getElementById("account-btn")?.click();
+      });
   }
 
   /** Mở modal. `onSuccess` (tuỳ chọn) được gọi lại ngay sau khi đăng nhập xong. */
@@ -108,8 +114,12 @@ export class AuthController {
 
     try {
       if (this.mode === "register") {
-        const firstName = document.getElementById("auth-first-name")?.value.trim();
-        const lastName = document.getElementById("auth-last-name")?.value.trim();
+        const firstName = document
+          .getElementById("auth-first-name")
+          ?.value.trim();
+        const lastName = document
+          .getElementById("auth-last-name")
+          ?.value.trim();
         const phone = document.getElementById("auth-phone")?.value.trim();
 
         const result = await authService.register({
@@ -119,7 +129,10 @@ export class AuthController {
           lastName,
           phone,
         });
-        this._showInfo(result.message || "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.");
+        this._showInfo(
+          result.message ||
+            "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.",
+        );
         setTimeout(() => this.setMode("login"), 1500);
         return;
       }
@@ -127,11 +140,16 @@ export class AuthController {
       const result = await authService.login(email, password);
 
       if (result.requires2FA) {
-        this._showInfo("Tài khoản của bạn bật 2FA — tính năng này chưa được hỗ trợ trên giao diện, vui lòng dùng ứng dụng khác.");
+        this._showInfo(
+          "Tài khoản của bạn bật 2FA — tính năng này chưa được hỗ trợ trên giao diện, vui lòng dùng ứng dụng khác.",
+        );
         return;
       }
 
-      window.toast?.success("Đăng nhập thành công", `Chào mừng ${result.user.firstName || result.user.email}!`);
+      window.toast?.success(
+        "Đăng nhập thành công",
+        `Chào mừng ${result.user.firstName || result.user.email}!`,
+      );
       this.close();
 
       const pending = this._pendingAction;
@@ -139,7 +157,9 @@ export class AuthController {
       if (typeof pending === "function") pending();
     } catch (error) {
       const message =
-        error instanceof ApiError ? error.message : "Có lỗi xảy ra, vui lòng thử lại.";
+        error instanceof ApiError
+          ? error.message
+          : "Có lỗi xảy ra, vui lòng thử lại.";
       this._showError(message);
     } finally {
       if (submitBtn) submitBtn.disabled = false;
@@ -157,7 +177,7 @@ export class AuthController {
     if (!btn) return;
     const user = authService.getCurrentUser();
     if (label) {
-      label.textContent = user ? (user.firstName || user.email) : "Đăng nhập";
+      label.textContent = user ? user.firstName || user.email : "Đăng nhập";
     }
     btn.title = user ? "Đăng xuất" : "Đăng nhập";
   }

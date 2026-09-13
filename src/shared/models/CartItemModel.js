@@ -44,4 +44,12 @@ export class CartItemModel extends ProductModel {
     const product = ProductModel.fromJSON(data);
     return new CartItemModel(product, data.quantity || 1);
   }
+
+  /** Dựng từ 1 item trả về bởi GET /api/cart: {id, productId, quantity, product:{...}} */
+  static fromApiItem(apiItem) {
+    return new CartItemModel(
+      ProductModel.fromJSON(apiItem.product),
+      apiItem.quantity,
+    );
+  }
 }

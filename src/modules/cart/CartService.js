@@ -1,74 +1,61 @@
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
-import { CartItem } from "../../shared/models/index.js";
 import { CartRepository } from "./CartRepository.js";
 
 export class CartService {
-  constructor() {
-    this.repository = new CartRepository();
+  constructor(repository = new CartRepository()) {
+    this.repository = repository;
     this.items = [];
-    this.load();
   }
 
-  load() {
-    this.items = this.repository.findAll();
+  async load() {
+    try {
+      this.items = await this.repository.getCart();
+    } catch (error) {
+      // Chưa đăng nhập (401) -> coi như giỏ trống, không phải lỗi cần báo cho user.
+      this.items = [];
+    }
     this.notify();
     return this.items;
   }
 
-  add(product, quantity = 1) {
-    const existing = this.items.find((item) => item.id === product.id);
-
-    if (existing) {
-      const index = this.items.indexOf(existing);
-      this.items[index] = existing.increment(quantity);
-    } else {
-      this.items.push(new CartItem(product, quantity));
-    }
-
-    this.save();
-    eventBus.emit(EVENTS.CART_ITEM_ADDED, { product, quantity });
-
+  async add(productId, quantity = 1) {
+    this.items = await this.repository.addItem(productId, quantity);
+    this.notify();
+    eventBus.emit(EVENTS.CART_ITEM_ADDED, { productId, quantity });
     return this.items;
   }
 
-  remove(id) {
-    const initialLength = this.items.length;
-    this.items = this.items.filter((item) => item.id !== id);
-    if (this.items.length !== initialLength) {
-      this.save();
-      eventBus.emit(EVENTS.CART_ITEM_REMOVED, { id });
-    }
+  async remove(productId) {
+    this.items = await this.repository.removeItem(productId);
+    this.notify();
+    eventBus.emit(EVENTS.CART_ITEM_REMOVED, { productId });
     return this.items;
   }
 
-  increase(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index === -1) return this.items;
-
-    this.items[index] = this.items[index].increment();
-    this.save();
+  async increase(productId) {
+    const current = this.items.find((i) => i.id === productId);
+    const newQuantity = (current?.quantity || 0) + 1;
+    this.items = await this.repository.updateItem(productId, newQuantity);
+    this.notify();
     return this.items;
   }
 
-  decrease(id) {
-    const index = this.items.findIndex((item) => item.id === id);
-    if (index === -1) return this.items;
-
-    const newItem = this.items[index].decrement();
-    if (newItem.quantity === 1 && this.items[index].quantity === 1) {
-      this.items.splice(index, 1);
-    } else {
-      this.items[index] = newItem;
-    }
-
-    this.save();
+  async decrease(productId) {
+    const current = this.items.find((i) => i.id === productId);
+    if (!current) return this.items;
+    const newQuantity = current.quantity - 1;
+    this.items =
+      newQuantity <= 0
+        ? await this.repository.removeItem(productId)
+        : await this.repository.updateItem(productId, newQuantity);
+    this.notify();
     return this.items;
   }
 
-  clear() {
+  async clear() {
+    await this.repository.clear();
     this.items = [];
-    this.repository.clear();
     this.notify();
     eventBus.emit(EVENTS.CART_CLEARED);
     return this.items;
@@ -77,18 +64,11 @@ export class CartService {
   get total() {
     return this.items.reduce((sum, item) => sum + item.subtotal, 0);
   }
-
   get count() {
     return this.items.reduce((sum, item) => sum + item.quantity, 0);
   }
-
   get isEmpty() {
     return this.items.length === 0;
-  }
-
-  save() {
-    this.repository.save(this.items);
-    this.notify();
   }
 
   notify() {
