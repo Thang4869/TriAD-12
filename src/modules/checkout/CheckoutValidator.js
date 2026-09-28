@@ -2,15 +2,8 @@ export class CheckoutValidator {
   validate(data) {
     const errors = [];
 
-    if (!data.firstName?.trim()) errors.push("First name is required");
-    if (!data.lastName?.trim()) errors.push("Last name is required");
-    if (!data.email?.trim()) errors.push("Email is required");
     if (!data.phone?.trim()) errors.push("Phone is required");
     if (!data.address?.trim()) errors.push("Address is required");
-
-    if (data.email && !this.isValidEmail(data.email)) {
-      errors.push("Invalid email format");
-    }
 
     if (data.phone && !this.isValidPhone(data.phone)) {
       errors.push("Invalid phone number (10-12 digits)");
@@ -30,10 +23,6 @@ export class CheckoutValidator {
       isValid: errors.length === 0,
       errors,
     };
-  }
-
-  isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   isValidPhone(phone) {
