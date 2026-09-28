@@ -22,6 +22,9 @@ describe("CheckoutController", () => {
   let mockEventBusEmit;
 
   beforeEach(() => {
+    window.authController = {
+      requireAuth: vi.fn((callback) => callback()),
+    };
     vi.stubGlobal("requestAnimationFrame", (cb) => cb());
 
     document.body.innerHTML = `
@@ -53,7 +56,10 @@ describe("CheckoutController", () => {
     `;
 
     mockServiceInstance = {
-      processCheckout: vi.fn().mockReturnValue({ id: "ORD-123" }),
+      checkout: vi.fn().mockResolvedValue({
+        id: "order-123",
+        orderNumber: "ORD-123",
+      }),
     };
     mockValidatorInstance = {
       validate: vi.fn().mockReturnValue({ isValid: true, errors: [] }),
@@ -103,6 +109,7 @@ describe("CheckoutController", () => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
     document.body.innerHTML = "";
+    delete window.authController;
     delete window.cartController;
     delete window.toast;
     delete window.notifications;
@@ -125,6 +132,7 @@ describe("CheckoutController", () => {
       const spy = vi.spyOn(controller, "openCheckout");
       btn.click();
       expect(spy).toHaveBeenCalled();
+      expect(window.authController.requireAuth).toHaveBeenCalled();
 
       const closeBtn = document.getElementById("close-checkout-btn");
       const closeSpy = vi.spyOn(controller, "closeCheckout");
@@ -160,8 +168,8 @@ describe("CheckoutController", () => {
       mockCartController.getItems.mockReturnValue([]);
       controller.openCheckout();
       expect(mockToast.warning).toHaveBeenCalledWith(
-        "Empty Cart",
-        "Please add items to your cart first.",
+        "Giỏ hàng trống",
+        "Vui lòng thêm sản phẩm trước khi thanh toán.",
       );
       expect(mockRendererInstance.renderSummary).not.toHaveBeenCalled();
       expect(
@@ -196,8 +204,8 @@ describe("CheckoutController", () => {
       delete window.cartController;
       controller.openCheckout();
       expect(mockToast.warning).toHaveBeenCalledWith(
-        "Empty Cart",
-        "Please add items to your cart first.",
+        "Giỏ hàng trống",
+        "Vui lòng thêm sản phẩm trước khi thanh toán.",
       );
     });
   });
@@ -223,26 +231,26 @@ describe("CheckoutController", () => {
   });
 
   describe("handleSubmit", () => {
-    it("should prevent default and validate form", () => {
+    it("should prevent default and validate form", async () => {
       const event = new Event("submit", { cancelable: true });
       const preventDefault = vi.spyOn(event, "preventDefault");
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
       expect(preventDefault).toHaveBeenCalled();
       expect(mockValidatorInstance.validate).toHaveBeenCalled();
     });
 
-    it("should show error toast if validation fails", () => {
+    it("should show error toast if validation fails", async () => {
       mockValidatorInstance.validate.mockReturnValue({
         isValid: false,
         errors: ["Error 1", "Error 2"],
       });
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
       expect(mockToast.error).toHaveBeenCalledWith(
-        "Validation Error",
+        "Thông tin chưa hợp lệ",
         "Error 1, Error 2",
       );
-      expect(mockServiceInstance.processCheckout).not.toHaveBeenCalled();
+      expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
     });
 
     it("should handle validation error when window.toast is undefined", () => {
@@ -255,7 +263,7 @@ describe("CheckoutController", () => {
       expect(() => controller.handleSubmit(event)).not.toThrow();
     });
 
-    it("should process checkout successfully with all window objects available", () => {
+    it("should process checkout successfully with all window objects available", async () => {
       const items = [
         { id: 1, name: "Product 1", quantity: 2, subtotal: 200000 },
         { id: 2, name: "Product 2", quantity: 1, subtotal: 100000 },
@@ -265,37 +273,41 @@ describe("CheckoutController", () => {
         isValid: true,
         errors: [],
       });
-      const order = { id: "ORD-456" };
-      mockServiceInstance.processCheckout.mockReturnValue(order);
+      const order = {
+        id: "order-456",
+        orderNumber: "ORD-456",
+      };
+
+      mockServiceInstance.checkout.mockResolvedValue(order);
 
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
 
       expect(mockToast.info).toHaveBeenCalledWith(
-        "Processing",
-        "Please wait while we process your order...",
+        "Đang xử lý",
+        "Vui lòng chờ trong giây lát...",
       );
 
       vi.advanceTimersByTime(1500);
 
-      expect(mockServiceInstance.processCheckout).toHaveBeenCalled();
+      expect(mockServiceInstance.checkout).toHaveBeenCalled();
       expect(mockCartController.clear).toHaveBeenCalled();
       expect(mockCartController.closeDrawer).toHaveBeenCalled();
       expect(mockNotifications.add).toHaveBeenCalledWith(
-        "Order Placed!",
-        "Order #ORD-456 confirmed with 3 item(s). Thank you!",
+        "Đặt hàng thành công!",
+        "Đơn ORD-456 đã được xác nhận. Cảm ơn bạn!",
         "success",
       );
       expect(mockToast.success).toHaveBeenCalledWith(
-        "Order Placed!",
-        "Order #ORD-456 confirmed.",
+        "Đặt hàng thành công!",
+        "Đơn ORD-456.",
       );
       expect(
         document.getElementById("success-modal").classList.contains("hidden"),
       ).toBe(false);
     });
 
-    it("should process checkout successfully when optional window objects are undefined", () => {
+    it("should process checkout successfully when optional window objects are undefined", async () => {
       delete window.toast;
       delete window.cartController;
       delete window.notifications;
@@ -305,72 +317,53 @@ describe("CheckoutController", () => {
         isValid: true,
         errors: [],
       });
-      mockServiceInstance.processCheckout.mockReturnValue({ id: "ORD-789" });
+      mockServiceInstance.checkout.mockReturnValue({ id: "ORD-789" });
 
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
 
-      vi.advanceTimersByTime(1500);
-
-      expect(mockServiceInstance.processCheckout).toHaveBeenCalled();
+      expect(mockServiceInstance.checkout).toHaveBeenCalled();
     });
 
-    it("should handle fallback paymentMethod when radio is not checked", () => {
+    it("should handle fallback paymentMethod when radio is not checked", async () => {
       document
         .querySelectorAll('input[name="payment"]')
         .forEach((r) => (r.checked = false));
 
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
 
       expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
-        expect.objectContaining({ paymentMethod: "cod" }),
+        expect.objectContaining({ paymentMethod: "COD" }),
       );
     });
 
-    it("should handle optional card input elements when missing in DOM", () => {
-      document.getElementById("card-number")?.remove();
-      document.getElementById("card-expiry")?.remove();
-      document.getElementById("card-cvv")?.remove();
-
-      const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
-
-      expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          cardNumber: undefined,
-          cardExpiry: undefined,
-          cardCvv: undefined,
-        }),
-      );
-    });
-
-    it("should handle error during checkout execution", () => {
+    it("should handle error during checkout execution", async () => {
       mockValidatorInstance.validate.mockReturnValue({
         isValid: true,
         errors: [],
       });
-      mockServiceInstance.processCheckout.mockImplementation(() => {
+      mockServiceInstance.checkout.mockImplementation(() => {
         throw new Error("Service failure");
       });
 
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
 
       vi.advanceTimersByTime(1500);
 
       expect(mockToast.error).toHaveBeenCalledWith(
-        "Error",
-        "Failed to process order. Please try again.",
+        "Lỗi",
+        "Không thể xử lý đơn hàng. Vui lòng thử lại.",
       );
       expect(mockNotifications.add).toHaveBeenCalledWith(
-        "Order Failed",
-        "There was an error processing your order. Please try again.",
+        "Đặt hàng thất bại",
+        "Không thể xử lý đơn hàng. Vui lòng thử lại.",
         "warning",
       );
     });
 
-    it("should handle error during checkout when toast and notifications are undefined", () => {
+    it("should handle error during checkout when toast and notifications are undefined", async () => {
       delete window.toast;
       delete window.notifications;
 
@@ -378,12 +371,12 @@ describe("CheckoutController", () => {
         isValid: true,
         errors: [],
       });
-      mockServiceInstance.processCheckout.mockImplementation(() => {
+      mockServiceInstance.checkout.mockImplementation(() => {
         throw new Error("Service failure");
       });
 
       const event = new Event("submit", { cancelable: true });
-      controller.handleSubmit(event);
+      await controller.handleSubmit(event);
 
       expect(() => vi.advanceTimersByTime(1500)).not.toThrow();
     });

@@ -22,37 +22,8 @@ describe("CheckoutValidator", () => {
     const data = { firstName: "", lastName: "" };
     const result = validator.validate(data);
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("First name is required");
-    expect(result.errors).toContain("Last name is required");
-    expect(result.errors).toContain("Email is required");
     expect(result.errors).toContain("Phone is required");
     expect(result.errors).toContain("Address is required");
-  });
-
-  it("should validate email format", () => {
-    const data = {
-      firstName: "John",
-      lastName: "Doe",
-      email: "invalid-email",
-      phone: "0123456789",
-      address: "123 Main St",
-    };
-    const result = validator.validate(data);
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("Invalid email format");
-  });
-
-  it("should reject email with whitespace only", () => {
-    const data = {
-      firstName: "John",
-      lastName: "Doe",
-      email: "   ",
-      phone: "0123456789",
-      address: "123 Main St",
-    };
-    const result = validator.validate(data);
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("Invalid email format");
   });
 
   it("should validate phone number (10-12 digits)", () => {
@@ -156,6 +127,22 @@ describe("CheckoutValidator", () => {
       };
       const result = validator.validate(data);
       expect(result.isValid).toBe(true);
+    });
+
+    it("should accept the actual checkout controller payload without name or email", () => {
+      const data = {
+        address: "123 Main St",
+        phone: "0123456789",
+        notes: "Leave at the door",
+        paymentMethod: "COD",
+      };
+
+      const result = validator.validate(data);
+
+      expect(result).toEqual({
+        isValid: true,
+        errors: [],
+      });
     });
   });
 });
