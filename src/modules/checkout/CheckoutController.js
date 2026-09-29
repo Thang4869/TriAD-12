@@ -5,8 +5,6 @@ import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
 import { ApiError } from "../../shared/services/api.service.js";
 
-const PAYMENT_METHOD_MAP = { cod: "COD", card: "CARD", banking: "BANKING" };
-
 export class CheckoutController {
   constructor() {
     this.service = new CheckoutService();
@@ -31,10 +29,6 @@ export class CheckoutController {
       .getElementById("checkout-form")
       ?.addEventListener("submit", (e) => this.handleSubmit(e));
 
-    document.querySelectorAll('input[name="payment"]').forEach((radio) => {
-      radio.addEventListener("change", () => this.toggleCardDetails());
-    });
-
     document
       .getElementById("success-close-btn")
       ?.addEventListener("click", () => this.closeSuccess());
@@ -56,7 +50,6 @@ export class CheckoutController {
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
     document.getElementById("checkout-form").reset();
-    document.getElementById("card-details")?.classList.add("hidden");
 
     modal.classList.remove("hidden");
     requestAnimationFrame(() => {
@@ -82,13 +75,11 @@ export class CheckoutController {
 
     // Backend chỉ cần 4 field này (paymentMethod, address, phone, notes) -
     // tên/email khách hàng đã có sẵn từ tài khoản đăng nhập, không cần gửi lại.
-    const paymentRaw =
-      document.querySelector('input[name="payment"]:checked')?.value || "cod";
     const data = {
       address: document.getElementById("address").value.trim(),
       phone: document.getElementById("phone").value.trim(),
       notes: document.getElementById("notes")?.value.trim() || undefined,
-      paymentMethod: PAYMENT_METHOD_MAP[paymentRaw] || "COD",
+      paymentMethod: "COD",
     };
 
     const result = this.validator.validate(data);
@@ -156,14 +147,5 @@ export class CheckoutController {
     setTimeout(() => modal.classList.add("hidden"), 300);
     document.body.style.overflow = "";
     window.productsController?.resetFilters();
-  }
-
-  toggleCardDetails() {
-    const selected = document.querySelector('input[name="payment"]:checked');
-    const cardDetails = document.getElementById("card-details");
-    if (!cardDetails) return;
-    if (selected && selected.value === "card")
-      cardDetails.classList.remove("hidden");
-    else cardDetails.classList.add("hidden");
   }
 }

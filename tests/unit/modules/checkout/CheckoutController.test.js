@@ -36,12 +36,7 @@ describe("CheckoutController", () => {
         <input id="email" value="john@example.com">
         <input id="phone" value="0123456789">
         <input id="address" value="123 Main St">
-        <div id="card-details" class="hidden"></div>
         <input type="radio" name="payment" value="cod" checked>
-        <input type="radio" name="payment" value="card">
-        <input id="card-number" value="1234567890123456">
-        <input id="card-expiry" value="12/25">
-        <input id="card-cvv" value="123">
         <button type="submit">Place Order</button>
       </form>
       <div id="checkout-modal" class="hidden opacity-0">
@@ -143,13 +138,6 @@ describe("CheckoutController", () => {
       const submitSpy = vi.spyOn(controller, "handleSubmit");
       form.dispatchEvent(new Event("submit", { cancelable: true }));
       expect(submitSpy).toHaveBeenCalled();
-
-      const radios = document.querySelectorAll('input[name="payment"]');
-      const toggleSpy = vi.spyOn(controller, "toggleCardDetails");
-      radios.forEach((radio) => {
-        radio.dispatchEvent(new Event("change"));
-      });
-      expect(toggleSpy).toHaveBeenCalled();
 
       const successClose = document.getElementById("success-close-btn");
       const successSpy = vi.spyOn(controller, "closeSuccess");
@@ -421,38 +409,6 @@ describe("CheckoutController", () => {
       expect(
         document.getElementById("success-modal").classList.contains("hidden"),
       ).toBe(true);
-    });
-  });
-
-  describe("toggleCardDetails", () => {
-    it("should show card details when payment method is card", () => {
-      const cardDetails = document.getElementById("card-details");
-      cardDetails.classList.add("hidden");
-
-      document.querySelector('input[value="card"]').checked = true;
-      controller.toggleCardDetails();
-      expect(cardDetails.classList.contains("hidden")).toBe(false);
-    });
-
-    it("should hide card details when payment method is not card", () => {
-      const cardDetails = document.getElementById("card-details");
-      cardDetails.classList.remove("hidden");
-
-      document.querySelector('input[name="payment"][value="cod"]').checked =
-        true;
-      controller.toggleCardDetails();
-
-      expect(cardDetails.classList.contains("hidden")).toBe(true);
-    });
-
-    it("should handle toggleCardDetails when no radio is checked", () => {
-      const cardDetails = document.getElementById("card-details");
-      document
-        .querySelectorAll('input[name="payment"]')
-        .forEach((r) => (r.checked = false));
-
-      controller.toggleCardDetails();
-      expect(cardDetails.classList.contains("hidden")).toBe(true);
     });
   });
 });
