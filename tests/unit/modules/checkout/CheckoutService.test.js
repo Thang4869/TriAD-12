@@ -1,16 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckoutService } from "../../../../src/modules/checkout/CheckoutService.js";
-import { Order } from "../../../../src/shared/models/index.js";
-import { storage } from "../../../../src/core/services/Storage.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
 import { EVENTS } from "../../../../src/shared/constants/Events.js";
-
-vi.mock("../../../../src/core/services/Storage.js", () => ({
-  storage: {
-    get: vi.fn(),
-    set: vi.fn(),
-  },
-}));
 
 vi.mock("../../../../src/core/services/EventBus.js", () => ({
   eventBus: {
@@ -19,142 +10,141 @@ vi.mock("../../../../src/core/services/EventBus.js", () => ({
 }));
 
 describe("CheckoutService", () => {
+  let api;
   let service;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    storage.get.mockReturnValue([]);
-    service = new CheckoutService();
+
+    api = {
+      post: vi.fn(),
+      get: vi.fn(),
+    };
+
+    service = new CheckoutService(api);
   });
 
-  describe("Initialization and Loading", () => {
-    it("should initialize and load empty orders successfully", () => {
-      expect(service.getOrders()).toEqual([]);
-      expect(storage.get).toHaveBeenCalledWith("orders", []);
-    });
-
-    it("should load existing orders from storage and instantiate Order models", () => {
-      const mockOrders = [
-        { id: "ORD-1", items: [], customer: {}, total: 100000 },
-        { id: "ORD-2", items: [], customer: {}, total: 200000 },
-      ];
-      storage.get.mockReturnValue(mockOrders);
-
-      const orders = service.loadOrders();
-      expect(orders.length).toBe(2);
-      expect(orders[0]).toBeInstanceOf(Order);
-      expect(orders[1]).toBeInstanceOf(Order);
-    });
-  });
-
-  describe("Order Management", () => {
-    it("should return a copied array of orders via getOrders", () => {
-      const orderData = {
-        items: [],
-        customer: { name: "Test" },
-        total: 100000,
-      };
-      service.createOrder(orderData);
-
-      const orders1 = service.getOrders();
-      const orders2 = service.getOrders();
-      expect(orders1).toEqual(orders2);
-      expect(orders1).not.toBe(orders2);
-    });
-
-    it("should create order, save to storage, and emit completion event", () => {
-      const orderData = {
-        items: [],
-        customer: { name: "John Doe" },
-        total: 150000,
+  describe("checkout", () => {
+    it("sends the provided idempotency key to the checkout API", async () => {
+      const order = {
+        id: "order-1",
+        orderNumber: "ORD-1",
       };
 
-      const order = service.createOrder(orderData);
-      expect(order).toBeInstanceOf(Order);
-      expect(service.getOrders().length).toBe(1);
-      expect(storage.set).toHaveBeenCalled();
+      api.post.mockResolvedValue({ order });
+
+      const data = {
+        paymentMethod: "COD",
+        address: "123 Test Street",
+        phone: "0123456789",
+        notes: "Test note",
+        discountCode: undefined,
+      };
+
+      const result = await service.checkout(data, "checkout-attempt-123");
+
+      expect(api.post).toHaveBeenCalledWith("/checkout", data, {
+        "Idempotency-Key": "checkout-attempt-123",
+      });
+
+      expect(result).toEqual(order);
+    });
+
+    it("does not generate or replace the provided idempotency key", async () => {
+      api.post.mockResolvedValue({
+        order: {
+          id: "order-1",
+          orderNumber: "ORD-1",
+        },
+      });
+
+      const randomUUID = vi.spyOn(crypto, "randomUUID");
+
+      await service.checkout(
+        {
+          paymentMethod: "COD",
+          address: "123 Test Street",
+          phone: "0123456789",
+        },
+        "same-checkout-key",
+      );
+
+      expect(randomUUID).not.toHaveBeenCalled();
+
+      randomUUID.mockRestore();
+    });
+
+    it("emits CHECKOUT_COMPLETED after a successful checkout", async () => {
+      const order = {
+        id: "order-1",
+        orderNumber: "ORD-1",
+      };
+
+      api.post.mockResolvedValue({ order });
+
+      await service.checkout(
+        {
+          paymentMethod: "COD",
+          address: "123 Test Street",
+          phone: "0123456789",
+        },
+        "checkout-key",
+      );
+
       expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CHECKOUT_COMPLETED, {
         order,
       });
     });
 
-    it("should find order by id or return null if not found", () => {
-      const orderData = {
-        items: [],
-        customer: { name: "John" },
-        total: 100000,
-      };
-      const order = service.createOrder(orderData);
+    it("does not emit CHECKOUT_COMPLETED when checkout fails", async () => {
+      api.post.mockRejectedValue(new Error("network failure"));
 
-      const found = service.getOrderById(order.id);
-      expect(found).toBe(order);
+      await expect(
+        service.checkout(
+          {
+            paymentMethod: "COD",
+            address: "123 Test Street",
+            phone: "0123456789",
+          },
+          "checkout-key",
+        ),
+      ).rejects.toThrow("network failure");
 
-      const notFoundNonEmpty = service.getOrderById("non-existent-id");
-      expect(notFoundNonEmpty).toBeNull();
-
-      service.orders = [];
-      const notFoundEmpty = service.getOrderById(order.id);
-      expect(notFoundEmpty).toBeNull();
+      expect(eventBus.emit).not.toHaveBeenCalled();
     });
   });
 
-  describe("Checkout Processing", () => {
-    it("should process checkout with shipping fee when total is below threshold", () => {
-      const formData = {
-        firstName: "Jane",
-        lastName: "Doe",
-        email: "jane@example.com",
-        phone: "0987654321",
-        address: "456 Side St",
-        paymentMethod: "cod",
+  describe("getOrders", () => {
+    it("loads paginated checkout orders", async () => {
+      const response = {
+        orders: [],
+        page: 2,
+        limit: 5,
       };
 
-      const cartItems = [
-        {
-          id: 1,
-          name: "Item",
-          price: 200000,
-          quantity: 1,
-          subtotal: 200000,
-          image: "img.jpg",
-          color: "Black",
-          filter: "",
-        },
-      ];
+      api.get.mockResolvedValue(response);
 
-      const order = service.processCheckout(formData, cartItems);
-      expect(order).toBeInstanceOf(Order);
-      expect(order.total).toBe(200000);
-      expect(storage.set).toHaveBeenCalled();
+      await expect(service.getOrders(2, 5)).resolves.toEqual(response);
+
+      expect(api.get).toHaveBeenCalledWith("/checkout/orders", {
+        page: 2,
+        limit: 5,
+      });
     });
+  });
 
-    it("should process checkout without shipping fee when total meets or exceeds threshold", () => {
-      const formData = {
-        firstName: "Jane",
-        lastName: "Doe",
-        email: "jane@example.com",
-        phone: "0987654321",
-        address: "456 Side St",
-        paymentMethod: "cod",
+  describe("getOrder", () => {
+    it("loads an order by id", async () => {
+      const order = {
+        id: "order-1",
+        orderNumber: "ORD-1",
       };
 
-      const cartItems = [
-        {
-          id: 1,
-          name: "Item",
-          price: 600000,
-          quantity: 1,
-          subtotal: 600000,
-          image: "img.jpg",
-          color: "Black",
-          filter: "",
-        },
-      ];
+      api.get.mockResolvedValue(order);
 
-      const order = service.processCheckout(formData, cartItems);
-      expect(order).toBeInstanceOf(Order);
-      expect(order.total).toBe(600000);
-      expect(storage.set).toHaveBeenCalled();
+      await expect(service.getOrder("order-1")).resolves.toEqual(order);
+
+      expect(api.get).toHaveBeenCalledWith("/checkout/orders/order-1");
     });
   });
 });

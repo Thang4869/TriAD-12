@@ -3,8 +3,7 @@ import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
 
 /**
- * Gọi POST /api/checkout kèm header "Idempotency-Key" (UUID sinh mới mỗi lần
- * mở form) để chống double-submit khi mạng chậm/user bấm nhiều lần - khớp
+ * Gọi POST /api/checkout kèm header "Idempotency-Key" (UUID được giữ nguyên trong cùng một checkout attempt) để chống double-submit khi mạng chậm/user bấm nhiều lần - khớp
  * idempotency.middleware.ts bên backend.
  */
 export class CheckoutService {
@@ -12,8 +11,10 @@ export class CheckoutService {
     this.api = api;
   }
 
-  async checkout({ paymentMethod, address, phone, notes, discountCode }) {
-    const idempotencyKey = crypto.randomUUID();
+  async checkout(
+    { paymentMethod, address, phone, notes, discountCode },
+    idempotencyKey,
+  ) {
     const result = await this.api.post(
       "/checkout",
       { paymentMethod, address, phone, notes, discountCode },

@@ -326,6 +326,38 @@ describe("CheckoutController", () => {
       );
     });
 
+    it("should reuse the same idempotency key when checkout is retried", async () => {
+      controller.idempotencyKey = "checkout-attempt-123";
+
+      mockValidatorInstance.validate.mockReturnValue({
+        isValid: true,
+        errors: [],
+      });
+
+      mockServiceInstance.checkout
+        .mockRejectedValueOnce(new Error("Network failure"))
+        .mockResolvedValueOnce({
+          id: "order-123",
+          orderNumber: "ORD-123",
+        });
+
+      const firstEvent = new Event("submit", { cancelable: true });
+      await controller.handleSubmit(firstEvent);
+
+      const secondEvent = new Event("submit", { cancelable: true });
+      await controller.handleSubmit(secondEvent);
+
+      expect(mockServiceInstance.checkout).toHaveBeenCalledTimes(2);
+
+      expect(mockServiceInstance.checkout.mock.calls[0][1]).toBe(
+        "checkout-attempt-123",
+      );
+
+      expect(mockServiceInstance.checkout.mock.calls[1][1]).toBe(
+        "checkout-attempt-123",
+      );
+    });
+
     it("should handle error during checkout execution", async () => {
       mockValidatorInstance.validate.mockReturnValue({
         isValid: true,
