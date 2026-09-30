@@ -32,9 +32,9 @@ import { toast } from "../../../src/modules/toast/ToastService.js";
 import { Logger } from "../../../src/core/services/Logger.js";
 
 vi.mock("../../../src/modules/auth/AuthController.js", () => ({
-  AuthController: vi.fn().mockImplementation(() => ({
-    init: vi.fn(),
-  })),
+  AuthController: vi.fn().mockImplementation(function () {
+    this.init = vi.fn();
+  }),
 }));
 
 describe("App", () => {

@@ -415,7 +415,9 @@ describe("ProductsController", () => {
         observe: vi.fn(),
       };
 
-      global.IntersectionObserver = vi.fn(() => observer);
+      global.IntersectionObserver = vi.fn(function () {
+        return observer;
+      });
 
       controller.setupLoadMore();
 
@@ -429,12 +431,9 @@ describe("ProductsController", () => {
 
       let observerCallback;
 
-      global.IntersectionObserver = vi.fn((callback) => {
+      global.IntersectionObserver = vi.fn(function (callback) {
         observerCallback = callback;
-
-        return {
-          observe: vi.fn(),
-        };
+        this.observe = vi.fn();
       });
 
       const loadMoreSpy = vi
@@ -455,12 +454,9 @@ describe("ProductsController", () => {
 
       let observerCallback;
 
-      global.IntersectionObserver = vi.fn((callback) => {
+      global.IntersectionObserver = vi.fn(function (callback) {
         observerCallback = callback;
-
-        return {
-          observe: vi.fn(),
-        };
+        this.observe = vi.fn();
       });
 
       const loadMoreSpy = vi

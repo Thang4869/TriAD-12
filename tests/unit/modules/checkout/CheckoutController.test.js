@@ -22,9 +22,12 @@ describe("CheckoutController", () => {
   let mockEventBusEmit;
 
   beforeEach(() => {
+    vi.useFakeTimers();
+
     window.authController = {
       requireAuth: vi.fn((callback) => callback()),
     };
+
     vi.stubGlobal("requestAnimationFrame", (cb) => cb());
 
     document.body.innerHTML = `
@@ -63,9 +66,17 @@ describe("CheckoutController", () => {
       renderSummary: vi.fn(),
     };
 
-    CheckoutService.mockImplementation(() => mockServiceInstance);
-    CheckoutValidator.mockImplementation(() => mockValidatorInstance);
-    CheckoutRenderer.mockImplementation(() => mockRendererInstance);
+    CheckoutService.mockImplementation(function () {
+      return mockServiceInstance;
+    });
+
+    CheckoutValidator.mockImplementation(function () {
+      return mockValidatorInstance;
+    });
+
+    CheckoutRenderer.mockImplementation(function () {
+      return mockRendererInstance;
+    });
 
     mockCartController = {
       getItems: vi.fn().mockReturnValue([]),
@@ -93,10 +104,7 @@ describe("CheckoutController", () => {
     window.productsController = mockProductsController;
 
     mockEventBusEmit = vi.spyOn(eventBus, "emit");
-
     controller = new CheckoutController();
-
-    vi.useFakeTimers();
   });
 
   afterEach(() => {

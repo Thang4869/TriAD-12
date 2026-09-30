@@ -35,10 +35,10 @@ vi.mock("../../../src/modules/notification/index.js", () => ({
 }));
 
 vi.mock("../../../src/core/di/container.js", () => ({
-  Container: vi.fn().mockImplementation(() => ({
-    register: vi.fn(),
-    get: vi.fn(() => ({})),
-  })),
+  Container: vi.fn().mockImplementation(function () {
+    this.register = vi.fn();
+    this.get = vi.fn(() => ({}));
+  }),
 }));
 
 vi.mock("../../../src/core/services/EventBus.js", () => ({
@@ -56,9 +56,9 @@ vi.mock("../../../src/modules/cart/CartController.js", () => ({
 vi.mock(
   "../../../src/modules/products/controllers/ProductsController.js",
   () => ({
-    ProductsController: vi.fn().mockImplementation(() => ({
-      init: vi.fn().mockResolvedValue(undefined),
-    })),
+    ProductsController: vi.fn().mockImplementation(function () {
+      this.init = vi.fn().mockResolvedValue(undefined);
+    }),
   }),
 );
 vi.mock("../../../src/modules/modal/ModalController.js", () => ({
@@ -91,10 +91,10 @@ vi.mock("../../../src/modules/fly-to-cart/FlyToCartService.js", () => ({
 }));
 
 vi.mock("../../../src/app/services/RouterService.js", () => ({
-  RouterService: vi.fn().mockImplementation(() => ({
-    fixHeaderLinks: vi.fn(),
-    fixContentLinks: vi.fn(),
-  })),
+  RouterService: vi.fn().mockImplementation(function () {
+    this.fixHeaderLinks = vi.fn();
+    this.fixContentLinks = vi.fn();
+  }),
 }));
 
 vi.mock("../../../src/app/services/UIService.js", () => ({
