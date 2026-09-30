@@ -48,8 +48,13 @@ describe("CartController", () => {
       setCheckoutEnabled: vi.fn(),
     };
 
-    CartService.mockImplementation(() => service);
-    CartRenderer.mockImplementation(() => renderer);
+    CartService.mockImplementation(function () {
+      return service;
+    });
+
+    CartRenderer.mockImplementation(function () {
+      return renderer;
+    });
 
     authService.isAuthenticated = false;
 

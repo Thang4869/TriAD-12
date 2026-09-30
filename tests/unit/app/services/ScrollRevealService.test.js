@@ -9,18 +9,18 @@ describe("ScrollRevealService", () => {
     originalIntersectionObserver = global.IntersectionObserver;
     originalMutationObserver = global.MutationObserver;
 
-    global.IntersectionObserver = vi.fn().mockImplementation((callback) => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-      _callback: callback,
-    }));
+    global.IntersectionObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
 
-    global.MutationObserver = vi.fn().mockImplementation((callback) => ({
-      observe: vi.fn(),
-      disconnect: vi.fn(),
-      _callback: callback,
-    }));
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
 
     document.body.innerHTML = "";
     vi.useFakeTimers();
@@ -242,16 +242,16 @@ describe("ScrollRevealService - additional branches", () => {
       <section id="home"></section>
       <div id="product-grid"></div>
     `;
-    global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }));
-    global.MutationObserver = vi.fn().mockImplementation((callback) => ({
-      observe: vi.fn(),
-      disconnect: vi.fn(),
-      _callback: callback,
-    }));
+    global.IntersectionObserver = vi.fn(function () {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+    });
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
     vi.useFakeTimers();
   });
 
@@ -308,18 +308,18 @@ describe("ScrollRevealService - additional coverage", () => {
     originalIntersectionObserver = global.IntersectionObserver;
     originalMutationObserver = global.MutationObserver;
 
-    global.IntersectionObserver = vi.fn().mockImplementation((callback) => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-      _callback: callback,
-    }));
+    global.IntersectionObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
 
-    global.MutationObserver = vi.fn().mockImplementation((callback) => ({
-      observe: vi.fn(),
-      disconnect: vi.fn(),
-      _callback: callback,
-    }));
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
 
     document.body.innerHTML = "";
     vi.useFakeTimers();
