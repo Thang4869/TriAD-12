@@ -12,6 +12,7 @@ export class CheckoutController {
     this.renderer = new CheckoutRenderer();
     this.items = [];
     this.isSubmitting = false;
+    this.idempotencyKey = null;
     this.setupEventListeners();
   }
 
@@ -46,6 +47,7 @@ export class CheckoutController {
 
     this.renderer.renderSummary(cartItems);
     this.items = cartItems;
+    this.idempotencyKey = crypto.randomUUID();
 
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
@@ -96,7 +98,7 @@ export class CheckoutController {
     window.toast?.info("Đang xử lý", "Vui lòng chờ trong giây lát...");
 
     try {
-      const order = await this.service.checkout(data);
+      const order = await this.service.checkout(data, this.idempotencyKey);
 
       await window.cartController?.clear();
       window.cartController?.closeDrawer();
