@@ -2,6 +2,8 @@
  * Main CSS - Import all partials
  */
 
+@import "tailwindcss";
+
 /* Base */
 @import "./base/variables.css";
 @import "./base/reset.css";
@@ -23,6 +25,25 @@
 
 /* Animations - đã di dời từ css/animations/ */
 @import "./animations/fly-to-cart.css";
+
+/* Tailwind Sources */
+@source "../../index.html";
+@source "../../components/**/*.html";
+@source "../../pages/**/*.html";
+@source "../**/*.js";
+
+/* Tailwind Theme */
+@theme {
+  --font-sans: "Jost", sans-serif;
+
+  --color-brand-light: #f9f6f0;
+  --color-brand-accent: #4a90e2;
+  --color-brand-dark: #1a1a1a;
+  --color-brand-gray: #737373;
+  --color-brand-border: #e5e5e5;
+  --color-brand-orange: #ff6b35;
+  --color-brand-success: #22c55e;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -85,6 +106,7 @@
     opacity: 0;
     transform: scale(0.95) translateY(-10px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -103,15 +125,19 @@
   0% {
     transform: rotate(0);
   }
+
   25% {
     transform: rotate(15deg);
   }
+
   50% {
     transform: rotate(-15deg);
   }
+
   75% {
     transform: rotate(8deg);
   }
+
   100% {
     transform: rotate(0);
   }

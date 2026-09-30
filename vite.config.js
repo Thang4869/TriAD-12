@@ -1,13 +1,25 @@
 import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
 
 export default defineConfig({
+  plugins: [tailwindcss()],
+
   build: {
     outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
+        about: resolve(__dirname, "pages/about.html"),
+        blog: resolve(__dirname, "pages/blog.html"),
+        blogDetail: resolve(__dirname, "pages/blog-detail.html"),
+        contact: resolve(__dirname, "pages/contact.html"),
+        location: resolve(__dirname, "pages/location.html"),
+        privacyPolicy: resolve(__dirname, "pages/privacy-policy.html"),
+        products: resolve(__dirname, "pages/products.html"),
+        reviews: resolve(__dirname, "pages/reviews.html"),
+        termsOfService: resolve(__dirname, "pages/terms-of-service.html"),
       },
     },
   },
