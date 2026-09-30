@@ -22,6 +22,7 @@ import { ReviewsController } from "../modules/reviews/ReviewsController.js";
 import { ProductsRepository } from "../modules/products/repositories/ProductsRepository.js";
 import { ProductsService } from "../modules/products/services/ProductsService.js";
 import { ProductsRenderer } from "../modules/products/renderers/ProductsRenderer.js";
+import { authService } from "../modules/auth/AuthService.js";
 
 function getCurrentPage() {
   const pathname = window.location.pathname;
@@ -145,6 +146,7 @@ function getComponentsForPage(page) {
 export async function bootstrap() {
   Logger.info("Bootstrapping TriAD Application...");
   try {
+    await authService.restoreCsrfToken();
     const currentPage = getCurrentPage();
     const components = getComponentsForPage(currentPage);
     const results = await loadComponents(components);

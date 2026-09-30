@@ -3,13 +3,17 @@ import {
   ApiError,
   ApiService,
 } from "../../../../src/shared/services/api.service.js";
+import {
+  clearCsrfToken,
+  setCsrfToken,
+} from "../../../../src/shared/utils/csrf.js";
 
 describe("ApiService", () => {
   let service;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    document.cookie = "csrfToken=; Max-Age=0; path=/";
+    clearCsrfToken();
 
     service = new ApiService("http://localhost:5000/api");
 
@@ -64,7 +68,7 @@ describe("ApiService", () => {
   });
 
   it("should attach CSRF token to write requests", async () => {
-    document.cookie = "csrfToken=test-csrf-token; path=/";
+    setCsrfToken("test-csrf-token");
 
     fetch.mockResolvedValue({
       ok: true,
@@ -91,7 +95,7 @@ describe("ApiService", () => {
     );
   });
 
-  it("should not attach CSRF header when cookie is missing", async () => {
+  it("should not attach CSRF header when token is missing", async () => {
     fetch.mockResolvedValue({
       ok: true,
       headers: new Headers({

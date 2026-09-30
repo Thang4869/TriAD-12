@@ -1,40 +1,47 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { getCsrfToken } from "../../../../src/shared/utils/csrf.js";
+import {
+  clearCsrfToken,
+  getCsrfToken,
+  setCsrfToken,
+} from "../../../../src/shared/utils/csrf.js";
 
-describe("getCsrfToken", () => {
+describe("CSRF token store", () => {
   beforeEach(() => {
-    document.cookie = "csrfToken=; Max-Age=0; path=/";
+    clearCsrfToken();
   });
 
-  it("should return CSRF token from cookie", () => {
-    document.cookie = "csrfToken=test-token; path=/";
+  it("should return null when token is not set", () => {
+    expect(getCsrfToken()).toBeNull();
+  });
+
+  it("should store and return CSRF token", () => {
+    setCsrfToken("test-token");
 
     expect(getCsrfToken()).toBe("test-token");
   });
 
-  it("should decode encoded CSRF token", () => {
-    document.cookie = `csrfToken=${encodeURIComponent("token=value&test")}; path=/`;
+  it("should replace existing CSRF token", () => {
+    setCsrfToken("old-token");
+    setCsrfToken("new-token");
 
-    expect(getCsrfToken()).toBe("token=value&test");
+    expect(getCsrfToken()).toBe("new-token");
   });
 
-  it("should find CSRF token among multiple cookies", () => {
-    document.cookie = "session=test-session; path=/";
-    document.cookie = "csrfToken=csrf-123; path=/";
-    document.cookie = "theme=dark; path=/";
-
-    expect(getCsrfToken()).toBe("csrf-123");
-  });
-
-  it("should return null when CSRF cookie is missing", () => {
-    document.cookie = "otherCookie=value; path=/";
+  it("should clear CSRF token", () => {
+    setCsrfToken("test-token");
+    clearCsrfToken();
 
     expect(getCsrfToken()).toBeNull();
   });
 
-  it("should return empty string when CSRF cookie exists but is empty", () => {
-    document.cookie = "csrfToken=; path=/";
+  it("should reject empty or non-string token values", () => {
+    setCsrfToken("");
+    expect(getCsrfToken()).toBeNull();
 
-    expect(getCsrfToken()).toBe("");
+    setCsrfToken(null);
+    expect(getCsrfToken()).toBeNull();
+
+    setCsrfToken(123);
+    expect(getCsrfToken()).toBeNull();
   });
 });
