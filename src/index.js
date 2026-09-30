@@ -1,3 +1,4 @@
+import "./styles/main.css";
 import "./config/products.config.js";
 import "./config/settings.config.js";
 

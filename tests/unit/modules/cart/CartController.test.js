@@ -1,406 +1,455 @@
-import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CartController } from "../../../../src/modules/cart/CartController.js";
 import { CartService } from "../../../../src/modules/cart/CartService.js";
 import { CartRenderer } from "../../../../src/modules/cart/CartRenderer.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
+import { authService } from "../../../../src/modules/auth/AuthService.js";
 import { EVENTS } from "../../../../src/shared/constants/Events.js";
 
 vi.mock("../../../../src/modules/cart/CartService.js");
 vi.mock("../../../../src/modules/cart/CartRenderer.js");
+
 vi.mock("../../../../src/core/services/EventBus.js", () => ({
   eventBus: {
     on: vi.fn(),
     emit: vi.fn(),
   },
 }));
-vi.mock("../../../../src/shared/constants/Events.js", () => ({
-  EVENTS: {
-    CART_UPDATED: "cart:updated",
-    CART_ITEM_ADDED: "cart:item:added",
-    CART_ITEM_REMOVED: "cart:item:removed",
-    CART_CLEARED: "cart:cleared",
-    DRAWER_OPENED: "drawer:opened",
-    DRAWER_CLOSED: "drawer:closed",
+
+vi.mock("../../../../src/modules/auth/AuthService.js", () => ({
+  authService: {
+    isAuthenticated: false,
   },
 }));
 
 describe("CartController", () => {
   let controller;
-  let mockService;
-  let mockRenderer;
-  let mockEventBus;
+  let service;
+  let renderer;
 
   beforeEach(() => {
-    mockService = {
-      load: vi.fn(),
-      add: vi.fn(),
-      remove: vi.fn(),
-      increase: vi.fn(),
-      decrease: vi.fn(),
-      clear: vi.fn(),
-      get items() {
-        return [{ id: 1, name: "Product A" }];
-      },
-      get total() {
-        return 100;
-      },
-      get count() {
-        return 3;
-      },
-    };
-    CartService.mockImplementation(() => mockService);
+    vi.clearAllMocks();
 
-    mockRenderer = {
+    service = {
+      load: vi.fn().mockResolvedValue([]),
+      add: vi.fn().mockResolvedValue([]),
+      remove: vi.fn().mockResolvedValue([]),
+      increase: vi.fn().mockResolvedValue([]),
+      decrease: vi.fn().mockResolvedValue([]),
+      clear: vi.fn().mockResolvedValue([]),
+      items: [{ id: "product-1", name: "Product A" }],
+      total: 100,
+      count: 3,
+    };
+
+    renderer = {
       render: vi.fn(),
       updateBadge: vi.fn(),
       setCheckoutEnabled: vi.fn(),
     };
-    CartRenderer.mockImplementation(() => mockRenderer);
 
-    mockEventBus = {
-      on: vi.fn(),
-      emit: vi.fn(),
+    CartService.mockImplementation(() => service);
+    CartRenderer.mockImplementation(() => renderer);
+
+    authService.isAuthenticated = false;
+
+    window.authController = {
+      requireAuth: vi.fn((callback) => callback()),
     };
-    eventBus.on = mockEventBus.on;
-    eventBus.emit = mockEventBus.emit;
+
+    window.toast = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    window.flyToCart = undefined;
 
     document.body.innerHTML = `
-      <div id="cart-overlay"></div>
-      <div id="cart-drawer"></div>
-      <div class="cart-scroll"></div>
-      <div id="cart-total"></div>
-      <button id="checkout-btn"></button>
+      <div id="cart-overlay" class="hidden opacity-0"></div>
+      <div id="cart-drawer" class="translate-x-full"></div>
     `;
 
     controller = new CartController();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.useRealTimers();
+    delete window.authController;
+    delete window.toast;
+    delete window.flyToCart;
     document.body.innerHTML = "";
   });
 
   describe("constructor", () => {
-    test("should initialize service, renderer and load cart", () => {
+    it("creates service and renderer", () => {
       expect(CartService).toHaveBeenCalledTimes(1);
       expect(CartRenderer).toHaveBeenCalledTimes(1);
-      expect(mockService.load).toHaveBeenCalled();
       expect(controller.isDrawerOpen).toBe(false);
     });
 
-    test("should set up event listeners", () => {
-      expect(mockEventBus.on).toHaveBeenCalledWith(
+    it("does not load cart when user is not authenticated", () => {
+      expect(service.load).not.toHaveBeenCalled();
+    });
+
+    it("loads cart when user is authenticated", () => {
+      authService.isAuthenticated = true;
+
+      new CartController();
+
+      expect(service.load).toHaveBeenCalledTimes(1);
+    });
+
+    it("registers cart and authentication event listeners", () => {
+      expect(eventBus.on).toHaveBeenCalledWith(
         EVENTS.CART_UPDATED,
         expect.any(Function),
       );
+
+      expect(eventBus.on).toHaveBeenCalledWith(
+        EVENTS.AUTH_LOGIN,
+        expect.any(Function),
+      );
+
+      expect(eventBus.on).toHaveBeenCalledWith(
+        EVENTS.AUTH_LOGOUT,
+        expect.any(Function),
+      );
+    });
+
+    it("loads cart after login event", () => {
+      const callback = eventBus.on.mock.calls.find(
+        ([event]) => event === EVENTS.AUTH_LOGIN,
+      )[1];
+
+      callback();
+
+      expect(service.load).toHaveBeenCalledTimes(1);
+    });
+
+    it("clears cart after logout event", () => {
+      const logoutRegistrations = eventBus.on.mock.calls.filter(
+        ([event]) => event === EVENTS.AUTH_LOGOUT,
+      );
+
+      const callback = logoutRegistrations.at(-1)[1];
+
+      callback();
+
+      expect(service.clear).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("CART_UPDATED", () => {
+    it("renders current cart state", () => {
+      const callback = eventBus.on.mock.calls.find(
+        ([event]) => event === EVENTS.CART_UPDATED,
+      )[1];
+
+      const data = {
+        items: [{ id: "product-1" }],
+        count: 2,
+        isEmpty: false,
+      };
+
+      callback(data);
+
+      expect(renderer.render).toHaveBeenCalledWith(data.items);
+      expect(renderer.updateBadge).toHaveBeenCalledWith(2);
+      expect(renderer.setCheckoutEnabled).toHaveBeenCalledWith(true);
+    });
+
+    it("disables checkout when cart is empty", () => {
+      const callback = eventBus.on.mock.calls.find(
+        ([event]) => event === EVENTS.CART_UPDATED,
+      )[1];
+
+      callback({
+        items: [],
+        count: 0,
+        isEmpty: true,
+      });
+
+      expect(renderer.setCheckoutEnabled).toHaveBeenCalledWith(false);
     });
   });
 
   describe("addToCart", () => {
-    const product = { id: 2, name: "Product B" };
+    const product = {
+      id: "product-2",
+      name: "Product B",
+    };
 
-    test("should add product with default quantity 1", () => {
+    it("requires authentication before adding", async () => {
       controller.addToCart(product);
-      expect(mockService.add).toHaveBeenCalledWith(product, 1);
+
+      expect(window.authController.requireAuth).toHaveBeenCalledWith(
+        expect.any(Function),
+      );
+
+      await vi.waitFor(() => {
+        expect(service.add).toHaveBeenCalledWith("product-2", 1);
+      });
     });
 
-    test("should add product with custom quantity", () => {
+    it("adds product id with custom quantity", async () => {
       controller.addToCart(product, 3);
-      expect(mockService.add).toHaveBeenCalledWith(product, 3);
+
+      await vi.waitFor(() => {
+        expect(service.add).toHaveBeenCalledWith("product-2", 3);
+      });
     });
 
-    test("should call flyToCart if flyElement provided and window.flyToCart exists", () => {
-      const flyMock = vi.fn();
-      window.flyToCart = { fly: flyMock };
+    it("shows success toast after adding", async () => {
+      controller.addToCart(product);
+
+      await vi.waitFor(() => {
+        expect(window.toast.success).toHaveBeenCalledWith(
+          "Đã thêm vào giỏ",
+          "Product B",
+        );
+      });
+    });
+
+    it("runs fly-to-cart animation after successful add", async () => {
       const flyElement = document.createElement("div");
+      const fly = vi.fn();
+
+      window.flyToCart = { fly };
+
       controller.addToCart(product, 1, flyElement);
-      expect(flyMock).toHaveBeenCalledWith(flyElement);
-      delete window.flyToCart;
+
+      await vi.waitFor(() => {
+        expect(fly).toHaveBeenCalledWith(flyElement);
+      });
     });
 
-    test("should not fail if flyElement provided but window.flyToCart is undefined", () => {
-      const originalFly = window.flyToCart;
-      window.flyToCart = undefined;
-      const flyElement = document.createElement("div");
-      expect(() => controller.addToCart(product, 1, flyElement)).not.toThrow();
-      window.flyToCart = originalFly;
-    });
-  });
+    it("does not require fly-to-cart animation", async () => {
+      controller.addToCart(product);
 
-  describe("removeItem", () => {
-    test("should call service.remove with id", () => {
-      controller.removeItem(5);
-      expect(mockService.remove).toHaveBeenCalledWith(5);
+      await vi.waitFor(() => {
+        expect(window.toast.success).toHaveBeenCalledWith(
+          "Đã thêm vào giỏ",
+          "Product B",
+        );
+      });
     });
-  });
 
-  describe("increaseItem", () => {
-    test("should call service.increase with id and return items", () => {
-      mockService.increase.mockReturnValue(mockService.items);
-      const result = controller.increaseItem(5);
-      expect(mockService.increase).toHaveBeenCalledWith(5);
-      expect(result).toStrictEqual(mockService.items);
-    });
-  });
+    it("shows error toast when add fails", async () => {
+      service.add.mockRejectedValue(new Error("Add failed"));
 
-  describe("decreaseItem", () => {
-    test("should call service.decrease with id", () => {
-      mockService.decrease.mockReturnValue(mockService.items);
-      const result = controller.decreaseItem(5);
-      expect(mockService.decrease).toHaveBeenCalledWith(5);
-      expect(result).toStrictEqual(mockService.items);
+      controller.addToCart(product);
+
+      await vi.waitFor(() => {
+        expect(window.toast.error).toHaveBeenCalledWith(
+          "Không thể thêm vào giỏ",
+          "Add failed",
+        );
+      });
     });
   });
 
-  describe("clear", () => {
-    test("should call service.clear", () => {
-      controller.clear();
-      expect(mockService.clear).toHaveBeenCalled();
+  describe("cart mutations", () => {
+    it("removes item", async () => {
+      await controller.removeItem("product-1");
+
+      expect(service.remove).toHaveBeenCalledWith("product-1");
+    });
+
+    it("increases item", async () => {
+      await controller.increaseItem("product-1");
+
+      expect(service.increase).toHaveBeenCalledWith("product-1");
+    });
+
+    it("decreases item", async () => {
+      await controller.decreaseItem("product-1");
+
+      expect(service.decrease).toHaveBeenCalledWith("product-1");
+    });
+
+    it("clears cart", async () => {
+      await controller.clear();
+
+      expect(service.clear).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ["removeItem", "remove"],
+      ["increaseItem", "increase"],
+      ["decreaseItem", "decrease"],
+    ])("shows toast when %s fails", async (controllerMethod, serviceMethod) => {
+      service[serviceMethod].mockRejectedValue(new Error("Mutation failed"));
+
+      await controller[controllerMethod]("product-1");
+
+      expect(window.toast.error).toHaveBeenCalledWith("Lỗi", "Mutation failed");
     });
   });
 
   describe("getters", () => {
-    test("getItems returns service.items", () => {
-      expect(controller.getItems()).toStrictEqual(mockService.items);
+    it("returns service items", () => {
+      expect(controller.getItems()).toBe(service.items);
     });
 
-    test("getTotal returns service.total", () => {
+    it("returns service total", () => {
       expect(controller.getTotal()).toBe(100);
     });
 
-    test("getCount returns service.count", () => {
+    it("returns service count", () => {
       expect(controller.getCount()).toBe(3);
     });
   });
 
+  describe("DOM cart actions", () => {
+    it.each([
+      ["remove", "product-1", "remove"],
+      ["increase", "product-2", "increase"],
+      ["decrease", "product-3", "decrease"],
+    ])(
+      "handles %s using string product id",
+      async (action, id, serviceMethod) => {
+        const button = document.createElement("button");
+        button.dataset.id = id;
+        button.dataset.action = action;
+        document.body.appendChild(button);
+
+        button.click();
+
+        await vi.waitFor(() => {
+          expect(service[serviceMethod]).toHaveBeenCalledWith(id);
+        });
+      },
+    );
+
+    it("supports clicking a child inside the action element", async () => {
+      const button = document.createElement("button");
+      button.dataset.id = "product-1";
+      button.dataset.action = "remove";
+
+      const child = document.createElement("span");
+      button.appendChild(child);
+      document.body.appendChild(button);
+
+      child.click();
+
+      await vi.waitFor(() => {
+        expect(service.remove).toHaveBeenCalledWith("product-1");
+      });
+    });
+
+    it("ignores elements without data-id", () => {
+      const element = document.createElement("button");
+      element.dataset.action = "remove";
+      document.body.appendChild(element);
+
+      element.click();
+
+      expect(service.remove).not.toHaveBeenCalled();
+    });
+
+    it("ignores unknown actions", () => {
+      const element = document.createElement("button");
+      element.dataset.id = "product-1";
+      element.dataset.action = "unknown";
+      document.body.appendChild(element);
+
+      element.click();
+
+      expect(service.remove).not.toHaveBeenCalled();
+      expect(service.increase).not.toHaveBeenCalled();
+      expect(service.decrease).not.toHaveBeenCalled();
+    });
+  });
+
   describe("openDrawer", () => {
-    beforeEach(() => {
-      document.body.innerHTML = `
-        <div id="cart-overlay" class="hidden"></div>
-        <div id="cart-drawer" class="translate-x-full"></div>
-      `;
-      controller = new CartController();
-      vi.clearAllMocks();
-    });
-
-    test("should not open if already open", () => {
-      controller.isDrawerOpen = true;
-      const overlay = document.getElementById("cart-overlay");
-      overlay.classList.remove("hidden");
-      controller.openDrawer();
-      expect(overlay.classList.contains("hidden")).toBe(false);
-      expect(document.body.style.overflow).not.toBe("hidden");
-      expect(mockEventBus.emit).not.toHaveBeenCalled();
-    });
-
-    test("should return early if overlay or drawer missing", () => {
-      document.body.innerHTML = "";
-      controller = new CartController();
-      vi.clearAllMocks();
-      expect(() => controller.openDrawer()).not.toThrow();
-      expect(document.body.style.overflow).not.toBe("hidden");
-      expect(mockEventBus.emit).not.toHaveBeenCalled();
-    });
-
-    test("should open drawer and set body overflow hidden", () => {
-      const overlay = document.getElementById("cart-overlay");
-      const drawer = document.getElementById("cart-drawer");
-      expect(overlay.classList.contains("hidden")).toBe(true);
-      expect(drawer.classList.contains("translate-x-full")).toBe(true);
-
+    it("opens drawer", () => {
       const raf = vi
         .spyOn(window, "requestAnimationFrame")
-        .mockImplementation((cb) => cb());
+        .mockImplementation((callback) => {
+          callback();
+          return 1;
+        });
 
       controller.openDrawer();
+
+      const overlay = document.getElementById("cart-overlay");
+      const drawer = document.getElementById("cart-drawer");
 
       expect(overlay.classList.contains("hidden")).toBe(false);
       expect(overlay.classList.contains("opacity-0")).toBe(false);
       expect(drawer.classList.contains("translate-x-full")).toBe(false);
+      expect(controller.isDrawerOpen).toBe(true);
       expect(document.body.style.overflow).toBe("hidden");
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_OPENED);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_OPENED);
+
       raf.mockRestore();
     });
 
-    test("should emit DRAWER_OPENED event", () => {
-      const raf = vi
-        .spyOn(window, "requestAnimationFrame")
-        .mockImplementation((cb) => cb());
+    it("does nothing when already open", () => {
+      controller.isDrawerOpen = true;
+
       controller.openDrawer();
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_OPENED);
-      raf.mockRestore();
+
+      expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.DRAWER_OPENED);
+    });
+
+    it("does nothing when required DOM elements are missing", () => {
+      document.body.innerHTML = "";
+
+      controller.openDrawer();
+
+      expect(controller.isDrawerOpen).toBe(false);
+      expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.DRAWER_OPENED);
     });
   });
 
   describe("closeDrawer", () => {
     beforeEach(() => {
-      document.body.innerHTML = `
-        <div id="cart-overlay" class="opacity-0 hidden"></div>
-        <div id="cart-drawer" class="translate-x-full"></div>
-      `;
-      controller = new CartController();
       controller.isDrawerOpen = true;
-      vi.clearAllMocks();
+
+      document.getElementById("cart-overlay").classList.remove("hidden");
+      document.getElementById("cart-overlay").classList.remove("opacity-0");
+      document
+        .getElementById("cart-drawer")
+        .classList.remove("translate-x-full");
+
+      document.body.style.overflow = "hidden";
     });
 
-    test("should not close if already closed", () => {
-      controller.isDrawerOpen = false;
-      const overlay = document.getElementById("cart-overlay");
-      const drawer = document.getElementById("cart-drawer");
-      overlay.classList.remove("hidden");
-      drawer.classList.remove("translate-x-full");
-      controller.closeDrawer();
-      expect(overlay.classList.contains("hidden")).toBe(false);
-      expect(drawer.classList.contains("translate-x-full")).toBe(false);
-      expect(document.body.style.overflow).not.toBe("");
-      expect(mockEventBus.emit).not.toHaveBeenCalled();
-    });
-
-    test("should return early if overlay or drawer missing", () => {
-      document.body.innerHTML = "";
-      controller = new CartController();
-      controller.isDrawerOpen = true;
-      expect(() => controller.closeDrawer()).not.toThrow();
-    });
-
-    test("should close drawer and restore body overflow", () => {
-      const overlay = document.getElementById("cart-overlay");
-      const drawer = document.getElementById("cart-drawer");
-      overlay.classList.remove("hidden");
-      drawer.classList.remove("translate-x-full");
-
-      const raf = vi
-        .spyOn(window, "requestAnimationFrame")
-        .mockImplementation((cb) => cb());
-
+    it("closes drawer", () => {
       vi.useFakeTimers();
+
       controller.closeDrawer();
+
+      const overlay = document.getElementById("cart-overlay");
+      const drawer = document.getElementById("cart-drawer");
 
       expect(overlay.classList.contains("opacity-0")).toBe(true);
       expect(drawer.classList.contains("translate-x-full")).toBe(true);
-
-      vi.advanceTimersByTime(300);
-      expect(overlay.classList.contains("hidden")).toBe(true);
+      expect(controller.isDrawerOpen).toBe(false);
       expect(document.body.style.overflow).toBe("");
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_CLOSED);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_CLOSED);
 
-      raf.mockRestore();
-      vi.useRealTimers();
-    });
-
-    test("should emit DRAWER_CLOSED event", () => {
-      const raf = vi
-        .spyOn(window, "requestAnimationFrame")
-        .mockImplementation((cb) => cb());
-      vi.useFakeTimers();
-      controller.closeDrawer();
       vi.advanceTimersByTime(300);
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.DRAWER_CLOSED);
-      raf.mockRestore();
-      vi.useRealTimers();
-    });
-  });
 
-  describe("DOM event listeners", () => {
-    beforeEach(() => {
-      document.body.innerHTML = `
-        <div class="cart-scroll">
-          <div data-id="1" data-action="remove">Remove</div>
-          <div data-id="2" data-action="increase">+</div>
-          <div data-id="3" data-action="decrease">-</div>
-        </div>
-      `;
-      controller = new CartController();
-      mockService.remove = vi.fn();
-      mockService.increase = vi.fn();
-      mockService.decrease = vi.fn();
+      expect(overlay.classList.contains("hidden")).toBe(true);
     });
 
-    test("should handle remove action on click", () => {
-      const removeBtn = document.querySelector('[data-action="remove"]');
-      removeBtn.click();
-      expect(mockService.remove).toHaveBeenCalledWith(1);
+    it("does nothing when already closed", () => {
+      controller.isDrawerOpen = false;
+
+      controller.closeDrawer();
+
+      expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.DRAWER_CLOSED);
     });
 
-    test("should handle increase action on click", () => {
-      const incBtn = document.querySelector('[data-action="increase"]');
-      incBtn.click();
-      expect(mockService.increase).toHaveBeenCalledWith(2);
-    });
+    it("does nothing when required DOM elements are missing", () => {
+      document.body.innerHTML = "";
 
-    test("should handle decrease action on click", () => {
-      const decBtn = document.querySelector('[data-action="decrease"]');
-      decBtn.click();
-      expect(mockService.decrease).toHaveBeenCalledWith(3);
-    });
+      controller.closeDrawer();
 
-    test("should ignore click without data-id", () => {
-      const noId = document.createElement("div");
-      noId.setAttribute("data-action", "remove");
-      document.body.appendChild(noId);
-      noId.click();
-      expect(mockService.remove).not.toHaveBeenCalled();
-    });
-
-    test("should ignore click with unknown action", () => {
-      const unknown = document.createElement("div");
-      unknown.setAttribute("data-id", "5");
-      unknown.setAttribute("data-action", "unknown");
-      document.body.appendChild(unknown);
-      unknown.click();
-      expect(mockService.remove).not.toHaveBeenCalled();
-      expect(mockService.increase).not.toHaveBeenCalled();
-      expect(mockService.decrease).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("CART_UPDATED event handler", () => {
-    test("should render items, update badge and set checkout enabled", () => {
-      const callback = mockEventBus.on.mock.calls.find(
-        (call) => call[0] === EVENTS.CART_UPDATED,
-      )[1];
-
-      const data = {
-        items: [{ id: 1 }],
-        count: 5,
-        isEmpty: false,
-      };
-      callback(data);
-
-      expect(mockRenderer.render).toHaveBeenCalledWith(data.items);
-      expect(mockRenderer.updateBadge).toHaveBeenCalledWith(5);
-      expect(mockRenderer.setCheckoutEnabled).toHaveBeenCalledWith(true);
-    });
-
-    test("should disable checkout when cart is empty", () => {
-      const callback = mockEventBus.on.mock.calls.find(
-        (call) => call[0] === EVENTS.CART_UPDATED,
-      )[1];
-
-      const data = {
-        items: [],
-        count: 0,
-        isEmpty: true,
-      };
-      callback(data);
-
-      expect(mockRenderer.setCheckoutEnabled).toHaveBeenCalledWith(false);
-    });
-  });
-
-  describe("Edge cases - ID not found", () => {
-    test("increaseItem should return items unchanged if id not found", () => {
-      mockService.increase.mockReturnValue(mockService.items);
-      const result = controller.increaseItem(999);
-      expect(mockService.increase).toHaveBeenCalledWith(999);
-      expect(result).toStrictEqual(mockService.items);
-    });
-
-    test("decreaseItem should return items unchanged if id not found", () => {
-      mockService.decrease.mockReturnValue(mockService.items);
-      const result = controller.decreaseItem(999);
-      expect(mockService.decrease).toHaveBeenCalledWith(999);
-      expect(result).toStrictEqual(mockService.items);
+      expect(controller.isDrawerOpen).toBe(true);
+      expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.DRAWER_CLOSED);
     });
   });
 });

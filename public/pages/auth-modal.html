@@ -1,0 +1,77 @@
+<!-- pages/auth-modal.html -->
+<div
+  id="auth-modal"
+  class="fixed inset-0 bg-black/50 z-[70] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+>
+  <div
+    class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-300"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <h2 id="auth-modal-title" class="text-2xl font-bold">Đăng nhập</h2>
+      <button id="close-auth-btn" class="text-gray-400 hover:text-black">
+        <i class="ph ph-x text-2xl"></i>
+      </button>
+    </div>
+
+    <p id="auth-error" class="hidden text-sm text-red-600 mb-4"></p>
+
+    <form id="auth-form" class="space-y-4">
+      <div id="auth-register-fields" class="hidden space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <input
+            id="auth-first-name"
+            type="text"
+            placeholder="Họ"
+            class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
+          />
+          <input
+            id="auth-last-name"
+            type="text"
+            placeholder="Tên"
+            class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
+          />
+        </div>
+        <input
+          id="auth-phone"
+          type="tel"
+          placeholder="Số điện thoại"
+          class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
+        />
+      </div>
+
+      <input
+        id="auth-email"
+        type="email"
+        required
+        placeholder="Email"
+        class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
+      />
+      <input
+        id="auth-password"
+        type="password"
+        required
+        minlength="6"
+        placeholder="Mật khẩu"
+        class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
+      />
+
+      <button
+        id="auth-submit-btn"
+        type="submit"
+        class="w-full bg-black text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition-all disabled:opacity-50"
+      >
+        Đăng nhập
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      <span id="auth-switch-text">Chưa có tài khoản?</span>
+      <a
+        href="#"
+        id="auth-switch-mode"
+        class="text-brand-accent hover:underline font-medium"
+        >Đăng ký ngay</a
+      >
+    </p>
+  </div>
+</div>

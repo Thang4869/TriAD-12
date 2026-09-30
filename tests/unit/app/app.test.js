@@ -31,6 +31,12 @@ vi.mock("../../../src/core/services/EventBus.js", () => ({
 import { toast } from "../../../src/modules/toast/ToastService.js";
 import { Logger } from "../../../src/core/services/Logger.js";
 
+vi.mock("../../../src/modules/auth/AuthController.js", () => ({
+  AuthController: vi.fn().mockImplementation(() => ({
+    init: vi.fn(),
+  })),
+}));
+
 describe("App", () => {
   let app;
   let mockContainer;
@@ -73,6 +79,7 @@ describe("App", () => {
     vi.advanceTimersByTime(1000);
 
     expect(app._initialized).toBe(true);
+    expect(app.authController).toBeDefined();
     expect(app.cartController).toBeDefined();
     expect(app.productsController).toBeDefined();
     expect(app.modalController).toBeDefined();
@@ -114,6 +121,7 @@ describe("App", () => {
 
   it("should set up global references correctly", () => {
     app._setupGlobalReferences();
+    expect(window.authController).toBe(app.authController);
     expect(window.cartController).toBe(app.cartController);
     expect(window.productsController).toBe(app.productsController);
     expect(window.modalController).toBe(app.modalController);

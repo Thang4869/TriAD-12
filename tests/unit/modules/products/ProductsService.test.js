@@ -1,231 +1,311 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProductsService } from "../../../../src/modules/products/services/ProductsService.js";
-import { Product } from "../../../../src/shared/models/index.js";
 import { EVENTS } from "../../../../src/shared/constants/Events.js";
 
 describe("ProductsService", () => {
-  let mockRepo;
-  let mockEventBus;
+  let repository;
+  let eventBus;
+  let service;
 
-  beforeEach(() => {
-    mockRepo = {
-      findAll: vi
-        .fn()
-        .mockReturnValue([
-          new Product({ id: 1, name: "Glass Container", price: 150000 }),
-          new Product({ id: 2, name: "Thermo Mug", price: 120000 }),
-          new Product({ id: 3, name: "Airtight Jar", price: 80000 }),
-        ]),
-      findById: vi.fn(),
-    };
-    mockEventBus = { emit: vi.fn() };
+  const products = [
+    { id: 1, name: "Glass Container", price: 150000 },
+    { id: 2, name: "Thermo Mug", price: 120000 },
+    { id: 3, name: "Airtight Jar", price: 80000 },
+  ];
+
+  const pageResult = (overrides = {}) => ({
+    products,
+    page: 1,
+    totalPages: 1,
+    total: products.length,
+    ...overrides,
   });
 
-  describe("load and filtering", () => {
-    it("should load products and set filteredProducts", () => {
-      const service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
-      expect(service.products).toHaveLength(3);
-      expect(service.filteredProducts).toHaveLength(3);
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_LOADED, {
+  beforeEach(() => {
+    repository = {
+      findPage: vi.fn().mockResolvedValue(pageResult()),
+    };
+
+    eventBus = {
+      emit: vi.fn(),
+    };
+
+    service = new ProductsService(repository, eventBus);
+  });
+
+  describe("defaults", () => {
+    it("initializes default state", () => {
+      expect(service.products).toEqual([]);
+      expect(service.page).toBe(1);
+      expect(service.totalPages).toBe(1);
+      expect(service.total).toBe(0);
+      expect(service.pageSize).toBe(12);
+      expect(service.filters).toEqual({
+        keyword: "",
+        minPrice: 0,
+        maxPrice: 350000,
+        sort: "default",
+      });
+    });
+  });
+
+  describe("load", () => {
+    it("loads first page from repository", async () => {
+      const result = await service.load();
+
+      expect(repository.findPage).toHaveBeenCalledWith({
+        page: 1,
+        limit: 12,
+        keyword: undefined,
+        minPrice: undefined,
+        maxPrice: 350000,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+
+      expect(result).toEqual(products);
+      expect(service.products).toEqual(products);
+      expect(service.page).toBe(1);
+      expect(service.totalPages).toBe(1);
+      expect(service.total).toBe(3);
+    });
+
+    it("emits loading, loaded and filtered events", async () => {
+      await service.load();
+
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_LOADING, {
+        loading: true,
+      });
+
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_LOADED, {
         count: 3,
+      });
+
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_FILTERED, {
+        total: 3,
+        filters: service.filters,
+      });
+
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_LOADING, {
+        loading: false,
       });
     });
 
-    it("should filter by keyword", () => {
-      const service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
-      service.updateFilters({ keyword: "glass" });
-      expect(service.filteredProducts).toHaveLength(1);
-      expect(service.filteredProducts[0].id).toBe(1);
-    });
+    it("always stops loading when repository fails", async () => {
+      repository.findPage.mockRejectedValue(new Error("API failure"));
 
-    it("should filter by price range", () => {
-      const service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
-      service.updateFilters({ maxPrice: 100000 });
-      expect(service.filteredProducts).toHaveLength(1);
-      expect(service.filteredProducts[0].id).toBe(3);
+      await expect(service.load()).rejects.toThrow("API failure");
+
+      expect(eventBus.emit).toHaveBeenLastCalledWith(EVENTS.PRODUCTS_LOADING, {
+        loading: false,
+      });
     });
   });
 
-  describe("sorting", () => {
-    let service;
-    beforeEach(() => {
-      service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
+  describe("sorting query", () => {
+    it.each([
+      ["price-asc", "price", "asc"],
+      ["price-desc", "price", "desc"],
+      ["name-asc", "name", "asc"],
+      ["name-desc", "name", "desc"],
+      ["default", "createdAt", "desc"],
+    ])(
+      "maps %s to backend sort parameters",
+      async (sort, sortBy, sortOrder) => {
+        await service.updateFilters({ sort });
+
+        expect(repository.findPage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            page: 1,
+            sortBy,
+            sortOrder,
+          }),
+        );
+      },
+    );
+  });
+
+  describe("filters", () => {
+    it("sends filters to backend", async () => {
+      await service.updateFilters({
+        keyword: "glass",
+        minPrice: 50000,
+        maxPrice: 200000,
+      });
+
+      expect(repository.findPage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          keyword: "glass",
+          minPrice: 50000,
+          maxPrice: 200000,
+        }),
+      );
+
+      expect(service.filters).toEqual(
+        expect.objectContaining({
+          keyword: "glass",
+          minPrice: 50000,
+          maxPrice: 200000,
+        }),
+      );
     });
 
-    it("should sort by price ascending", () => {
-      service.updateFilters({ sort: "price-asc" });
-      expect(service.filteredProducts.map((p) => p.price)).toEqual([
-        80000, 120000, 150000,
-      ]);
+    it("merges new filters with existing filters", async () => {
+      await service.updateFilters({ keyword: "mug" });
+      await service.updateFilters({ minPrice: 100000 });
+
+      expect(service.filters).toEqual({
+        keyword: "mug",
+        minPrice: 100000,
+        maxPrice: 350000,
+        sort: "default",
+      });
     });
 
-    it("should sort by price descending", () => {
-      service.updateFilters({ sort: "price-desc" });
-      expect(service.filteredProducts.map((p) => p.price)).toEqual([
-        150000, 120000, 80000,
-      ]);
-    });
+    it("resets filters and reloads page one", async () => {
+      await service.updateFilters({
+        keyword: "glass",
+        minPrice: 50000,
+        sort: "price-asc",
+      });
 
-    it("should sort by name ascending", () => {
-      service.updateFilters({ sort: "name-asc" });
-      expect(service.filteredProducts.map((p) => p.name)).toEqual([
-        "Airtight Jar",
-        "Glass Container",
-        "Thermo Mug",
-      ]);
-    });
+      repository.findPage.mockClear();
 
-    it("should sort by name descending", () => {
-      service.updateFilters({ sort: "name-desc" });
-      expect(service.filteredProducts.map((p) => p.name)).toEqual([
-        "Thermo Mug",
-        "Glass Container",
-        "Airtight Jar",
-      ]);
-    });
+      await service.resetFilters();
 
-    it("should apply default sort (no change)", () => {
-      const originalIds = service.products.map((p) => p.id);
-      service.updateFilters({ sort: "default" });
-      expect(service.filteredProducts.map((p) => p.id)).toEqual(originalIds);
+      expect(service.filters).toEqual(service.getDefaultFilters());
+
+      expect(repository.findPage).toHaveBeenCalledWith({
+        page: 1,
+        limit: 12,
+        keyword: undefined,
+        minPrice: undefined,
+        maxPrice: 350000,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
     });
   });
 
-  describe("pagination and loadMore", () => {
-    let service;
-    beforeEach(() => {
-      service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
+  describe("pagination", () => {
+    it("returns currently loaded products", async () => {
+      await service.load();
+
+      expect(service.getCurrentPage()).toBe(service.products);
+      expect(service.getCurrentPage()).toEqual(products);
     });
 
-    it("should get current page with default pageSize", () => {
-      expect(service.getCurrentPage()).toHaveLength(3);
-    });
+    it("reports hasMore when another page exists", async () => {
+      repository.findPage.mockResolvedValue(
+        pageResult({
+          page: 1,
+          totalPages: 2,
+          total: 4,
+        }),
+      );
 
-    it("should return hasMore true when more products", () => {
-      service.pageSize = 1;
-      service.applyFilters();
+      await service.load();
+
       expect(service.hasMore).toBe(true);
     });
 
-    it("should return hasMore false when no more products", () => {
-      service.pageSize = 10;
-      service.applyFilters();
+    it("reports hasMore false on last page", async () => {
+      repository.findPage.mockResolvedValue(
+        pageResult({
+          page: 2,
+          totalPages: 2,
+        }),
+      );
+
+      await service.load();
+
       expect(service.hasMore).toBe(false);
     });
 
-    it("should load more and increment page (trả về số lượng tăng dần)", () => {
-      service.pageSize = 1;
-      service.applyFilters();
-      const first = service.getCurrentPage();
-      expect(first).toHaveLength(1);
-      expect(service.page).toBe(1);
+    it("loads next page and appends new products", async () => {
+      const firstPage = products.slice(0, 2);
+      const secondPage = [{ id: 3, name: "Airtight Jar", price: 80000 }];
 
-      const second = service.loadMore();
+      repository.findPage
+        .mockResolvedValueOnce(
+          pageResult({
+            products: firstPage,
+            page: 1,
+            totalPages: 2,
+            total: 3,
+          }),
+        )
+        .mockResolvedValueOnce(
+          pageResult({
+            products: secondPage,
+            page: 2,
+            totalPages: 2,
+            total: 3,
+          }),
+        );
+
+      await service.load();
+      const result = await service.loadMore();
+
+      expect(repository.findPage).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          page: 2,
+        }),
+      );
+
+      expect(result).toEqual(secondPage);
+      expect(service.products).toEqual([...firstPage, ...secondPage]);
       expect(service.page).toBe(2);
-      expect(second).toHaveLength(2);
-      expect(second[0].id).toBe(1);
-      expect(second[1].id).toBe(2);
+      expect(service.hasMore).toBe(false);
     });
 
-    it("should return current page when hasMore is false", () => {
-      service.pageSize = 10;
-      service.applyFilters();
-      expect(service.hasMore).toBe(false);
-      const current = service.getCurrentPage();
-      expect(service.loadMore()).toEqual(current);
-      expect(service.page).toBe(1);
+    it("does not call repository when there are no more pages", async () => {
+      await service.load();
+      repository.findPage.mockClear();
+
+      const result = await service.loadMore();
+
+      expect(result).toEqual([]);
+      expect(repository.findPage).not.toHaveBeenCalled();
     });
   });
 
   describe("totalCount", () => {
-    it("should return correct total count of filtered products", () => {
-      const service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
-      expect(service.totalCount).toBe(3);
+    it("returns backend total", async () => {
+      repository.findPage.mockResolvedValue(
+        pageResult({
+          total: 25,
+          totalPages: 3,
+        }),
+      );
 
-      service.updateFilters({ keyword: "glass" });
-      expect(service.totalCount).toBe(1);
-    });
-  });
+      await service.load();
 
-  describe("filters and reset", () => {
-    let service;
-    beforeEach(() => {
-      service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
-    });
-
-    it("should update filters and emit event", () => {
-      service.updateFilters({ keyword: "mug" });
-      expect(service.filters.keyword).toBe("mug");
-      expect(service.filteredProducts).toHaveLength(1);
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_FILTERED, {
-        total: 1,
-        filters: expect.objectContaining({ keyword: "mug" }),
-      });
-    });
-
-    it("should merge multiple filters", () => {
-      service.updateFilters({ keyword: "Mug" });
-      service.updateFilters({ maxPrice: 120000 });
-      expect(service.filters.keyword).toBe("Mug");
-      expect(service.filters.maxPrice).toBe(120000);
-      expect(service.filteredProducts).toHaveLength(1);
-    });
-
-    it("should reset filters to default", () => {
-      service.updateFilters({
-        keyword: "glass",
-        maxPrice: 100000,
-        sort: "price-asc",
-      });
-      expect(service.filters.keyword).toBe("glass");
-      expect(service.filters.maxPrice).toBe(100000);
-      expect(service.filters.sort).toBe("price-asc");
-
-      service.resetFilters();
-      expect(service.filters).toEqual(service.getDefaultFilters());
-      expect(service.filteredProducts).toHaveLength(3);
+      expect(service.totalCount).toBe(25);
     });
   });
 
   describe("getProductById", () => {
-    it("should call repository.findById with id", () => {
-      const service = new ProductsService(mockRepo, mockEventBus);
-      const product = { id: 1 };
-      mockRepo.findById.mockReturnValue(product);
-      const result = service.getProductById(1);
-      expect(mockRepo.findById).toHaveBeenCalledWith(1);
-      expect(result).toBe(product);
-    });
-  });
+    it("finds product from already loaded products", async () => {
+      await service.load();
 
-  describe("updateFilters return value", () => {
-    let service;
-    beforeEach(() => {
-      service = new ProductsService(mockRepo, mockEventBus);
-      service.load();
+      expect(service.getProductById(2)).toEqual(products[1]);
     });
 
-    it("should return filteredProducts from updateFilters", () => {
-      const result = service.updateFilters({ keyword: "jar" });
-      expect(result).toBe(service.filteredProducts);
-      expect(result).toHaveLength(1);
+    it("returns null when product is not loaded", async () => {
+      await service.load();
+
+      expect(service.getProductById(999)).toBeNull();
     });
 
-    it("should apply filters and emit event on applyFilters", () => {
-      service.filters.keyword = "mug";
-      const filtered = service.applyFilters();
-      expect(filtered).toHaveLength(1);
-      expect(mockEventBus.emit).toHaveBeenCalledWith(EVENTS.PRODUCTS_FILTERED, {
-        total: 1,
-        filters: expect.objectContaining({ keyword: "mug" }),
-      });
+    it("does not make another repository request", async () => {
+      await service.load();
+      repository.findPage.mockClear();
+
+      service.getProductById(1);
+
+      expect(repository.findPage).not.toHaveBeenCalled();
     });
   });
 });

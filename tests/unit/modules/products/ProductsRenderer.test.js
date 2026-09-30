@@ -197,7 +197,7 @@ describe("ProductsRenderer", () => {
       const container = document.getElementById("load-more-container");
 
       expect(container.classList.contains("hidden")).toBe(true);
-      expect(renderer.countElement.textContent).toBe("2 products");
+      expect(renderer.countElement.textContent).toBe("0 products");
     });
   });
 
@@ -516,7 +516,7 @@ describe("ProductsRenderer", () => {
 
       firstSuggestion.click();
 
-      expect(onSuggestionClick).toHaveBeenCalledWith(1);
+      expect(onSuggestionClick).toHaveBeenCalledWith("1");
     });
 
     it("should hide suggestions when keyword empty", () => {
@@ -564,7 +564,7 @@ describe("ProductsRenderer", () => {
 
       firstItem.click();
 
-      expect(onSuggestionClick).toHaveBeenCalledWith(1);
+      expect(onSuggestionClick).toHaveBeenCalledWith("1");
     });
 
     it("should handle missing onSuggestionClick gracefully", () => {
