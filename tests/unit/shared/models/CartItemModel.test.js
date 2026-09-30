@@ -85,11 +85,23 @@ describe("CartItemModel", () => {
   });
 
   describe("serialization", () => {
-    it("should serialize to JSON including product fields, quantity and subtotal", () => {
+    it("should serialize to JSON using backend product contract with quantity and subtotal", () => {
       const item = new CartItemModel(productData, 2);
-      const json = item.toJSON();
-      expect(json).toEqual({
-        ...productData,
+
+      expect(item.toJSON()).toEqual({
+        id: 1,
+        name: "Test Product",
+        description: "",
+        price: 100000,
+        stock: 0,
+        category: "",
+        images: ["test.jpg"],
+        slug: "",
+        isActive: true,
+        avgRating: 0,
+        reviewCount: 0,
+        createdAt: null,
+        updatedAt: null,
         quantity: 2,
         subtotal: 200000,
       });
