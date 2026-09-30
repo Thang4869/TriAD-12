@@ -1,12 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartService } from "../../../../src/modules/cart/CartService.js";
-import { ProductModel } from "../../../../src/shared/models/ProductModel.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
-import { CartRepository } from "../../../../src/modules/cart/CartRepository.js";
-
-vi.mock("../../../../src/modules/cart/CartRepository.js", () => ({
-  CartRepository: vi.fn(),
-}));
+import { EVENTS } from "../../../../src/shared/constants/Events.js";
 
 vi.mock("../../../../src/core/services/EventBus.js", () => ({
   eventBus: {
@@ -16,298 +11,209 @@ vi.mock("../../../../src/core/services/EventBus.js", () => ({
 
 describe("CartService", () => {
   let service;
-  let mockRepo;
-  let mockProduct;
+  let repository;
 
-  const createMockProduct = (id, name = "Product", price = 100000) =>
-    new ProductModel({
-      id,
-      name,
-      color: "White",
-      price,
-      image: "a.jpg",
-    });
+  const item = (overrides = {}) => ({
+    id: 1,
+    productId: 1,
+    name: "Product A",
+    price: 100000,
+    quantity: 1,
+    subtotal: 100000,
+    ...overrides,
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockRepo = {
-      findAll: vi.fn().mockReturnValue([]),
-      save: vi.fn(),
-      clear: vi.fn(),
+    repository = {
+      getCart: vi.fn().mockResolvedValue([]),
+      addItem: vi.fn().mockResolvedValue([]),
+      removeItem: vi.fn().mockResolvedValue([]),
+      updateItem: vi.fn().mockResolvedValue([]),
+      clear: vi.fn().mockResolvedValue(undefined),
     };
 
-    const MockCartRepository = vi.mocked(CartRepository);
-    MockCartRepository.mockImplementation(() => mockRepo);
-
-    service = new CartService();
-    mockProduct = createMockProduct(1, "Product A", 100000);
+    service = new CartService(repository);
   });
 
-  describe("constructor & load", () => {
-    it("should load items from repository and notify on construction", () => {
-      expect(mockRepo.findAll).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        expect.stringContaining("cart:updated"),
-        expect.objectContaining({
-          items: [],
-          total: 0,
-          count: 0,
-          isEmpty: true,
-        }),
-      );
+  describe("load", () => {
+    it("loads cart from repository and notifies", async () => {
+      const items = [item()];
+      repository.getCart.mockResolvedValue(items);
+
+      const result = await service.load();
+
+      expect(repository.getCart).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(items);
+      expect(service.items).toEqual(items);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_UPDATED, {
+        items,
+        total: 100000,
+        count: 1,
+        isEmpty: false,
+      });
     });
 
-    it("should load existing items from repository", () => {
-      const existingItems = [
-        {
-          id: 1,
-          name: "A",
-          price: 100,
-          quantity: 2,
-          subtotal: 200,
-          image: "",
-          color: "White",
-        },
-      ];
-      mockRepo.findAll.mockReturnValueOnce(existingItems);
+    it("uses an empty cart when repository load fails", async () => {
+      repository.getCart.mockRejectedValue(new Error("Unauthorized"));
 
-      service = new CartService();
+      const result = await service.load();
 
-      expect(service.items).toHaveLength(1);
-      expect(service.items[0].id).toBe(1);
-      expect(service.count).toBe(2);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        expect.stringContaining("cart:updated"),
-        expect.objectContaining({
-          items: expect.arrayContaining([
-            expect.objectContaining({ id: 1, quantity: 2 }),
-          ]),
-          total: 200,
-          count: 2,
-          isEmpty: false,
-        }),
-      );
+      expect(result).toEqual([]);
+      expect(service.items).toEqual([]);
+      expect(service.isEmpty).toBe(true);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_UPDATED, {
+        items: [],
+        total: 0,
+        count: 0,
+        isEmpty: true,
+      });
     });
   });
 
   describe("add", () => {
-    it("should add a new product to cart", () => {
-      const result = service.add(mockProduct, 2);
+    it("adds an item through repository", async () => {
+      const items = [item({ quantity: 2, subtotal: 200000 })];
+      repository.addItem.mockResolvedValue(items);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(1);
-      expect(result[0].quantity).toBe(2);
-      expect(service.count).toBe(2);
-      expect(service.total).toBe(200000);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:added", {
-        product: mockProduct,
+      const result = await service.add(1, 2);
+
+      expect(repository.addItem).toHaveBeenCalledWith(1, 2);
+      expect(result).toEqual(items);
+      expect(service.items).toEqual(items);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_ITEM_ADDED, {
+        productId: 1,
         quantity: 2,
       });
     });
 
-    it("should increment quantity if product already exists", () => {
-      service.add(mockProduct, 1);
-      mockRepo.save.mockClear();
-      eventBus.emit.mockClear();
+    it("uses quantity 1 by default", async () => {
+      repository.addItem.mockResolvedValue([item()]);
 
-      service.add(mockProduct, 3);
+      await service.add(1);
 
-      expect(service.items).toHaveLength(1);
-      expect(service.items[0].quantity).toBe(4);
-      expect(service.count).toBe(4);
-      expect(service.total).toBe(400000);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:added", {
-        product: mockProduct,
-        quantity: 3,
-      });
-    });
-
-    it("should default quantity to 1 if not provided", () => {
-      service.add(mockProduct);
-      expect(service.items[0].quantity).toBe(1);
-      expect(service.count).toBe(1);
-      expect(mockRepo.save).toHaveBeenCalled();
+      expect(repository.addItem).toHaveBeenCalledWith(1, 1);
     });
   });
 
   describe("remove", () => {
-    it("should remove an existing item by id", () => {
-      service.add(mockProduct, 1);
-      mockRepo.save.mockClear();
-      eventBus.emit.mockClear();
+    it("removes an item through repository", async () => {
+      service.items = [item()];
+      repository.removeItem.mockResolvedValue([]);
 
-      service.remove(1);
+      const result = await service.remove(1);
 
-      expect(service.items).toHaveLength(0);
-      expect(service.count).toBe(0);
-      expect(service.isEmpty).toBe(true);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
-      expect(eventBus.emit).toHaveBeenCalledWith("cart:item:removed", {
-        id: 1,
+      expect(repository.removeItem).toHaveBeenCalledWith(1);
+      expect(result).toEqual([]);
+      expect(service.items).toEqual([]);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_ITEM_REMOVED, {
+        productId: 1,
       });
-    });
-
-    it("should do nothing if id not found", () => {
-      service.add(mockProduct, 1);
-      const prevItems = [...service.items];
-      mockRepo.save.mockClear();
-      eventBus.emit.mockClear();
-
-      service.remove(999);
-
-      expect(service.items).toEqual(prevItems);
-      expect(mockRepo.save).not.toHaveBeenCalled();
-      expect(eventBus.emit).not.toHaveBeenCalledWith(
-        "cart:item:removed",
-        expect.anything(),
-      );
     });
   });
 
   describe("increase", () => {
-    it("should increase quantity of an existing item", () => {
-      service.add(mockProduct, 1);
-      mockRepo.save.mockClear();
+    it("increments the current quantity", async () => {
+      service.items = [item({ quantity: 2, subtotal: 200000 })];
+      const updated = [item({ quantity: 3, subtotal: 300000 })];
+      repository.updateItem.mockResolvedValue(updated);
 
-      service.increase(1);
+      const result = await service.increase(1);
 
-      expect(service.items[0].quantity).toBe(2);
-      expect(service.count).toBe(2);
-      expect(service.total).toBe(200000);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
+      expect(repository.updateItem).toHaveBeenCalledWith(1, 3);
+      expect(result).toEqual(updated);
+      expect(service.count).toBe(3);
     });
 
-    it("should return items unchanged if id not found", () => {
-      service.add(mockProduct, 1);
-      const originalItems = service.items;
-      mockRepo.save.mockClear();
+    it("uses quantity 1 when item is not currently loaded", async () => {
+      repository.updateItem.mockResolvedValue([item()]);
 
-      const result = service.increase(999);
+      await service.increase(99);
 
-      expect(result).toBe(service.items);
-      expect(service.items).toEqual(originalItems);
-      expect(mockRepo.save).not.toHaveBeenCalled();
+      expect(repository.updateItem).toHaveBeenCalledWith(99, 1);
     });
   });
 
   describe("decrease", () => {
-    it("should decrease quantity when quantity > 1", () => {
-      service.add(mockProduct, 3);
-      mockRepo.save.mockClear();
+    it("decrements quantity when quantity is greater than 1", async () => {
+      service.items = [item({ quantity: 3, subtotal: 300000 })];
+      const updated = [item({ quantity: 2, subtotal: 200000 })];
+      repository.updateItem.mockResolvedValue(updated);
 
-      service.decrease(1);
+      const result = await service.decrease(1);
 
-      expect(service.items[0].quantity).toBe(2);
-      expect(service.count).toBe(2);
-      expect(service.total).toBe(200000);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
+      expect(repository.updateItem).toHaveBeenCalledWith(1, 2);
+      expect(repository.removeItem).not.toHaveBeenCalled();
+      expect(result).toEqual(updated);
     });
 
-    it("should remove item when quantity is 1", () => {
-      service.add(mockProduct, 1);
-      mockRepo.save.mockClear();
+    it("removes item when quantity reaches zero", async () => {
+      service.items = [item({ quantity: 1 })];
+      repository.removeItem.mockResolvedValue([]);
 
-      service.decrease(1);
+      const result = await service.decrease(1);
 
-      expect(service.items).toHaveLength(0);
-      expect(service.count).toBe(0);
-      expect(service.total).toBe(0);
-      expect(mockRepo.save).toHaveBeenCalledTimes(1);
+      expect(repository.removeItem).toHaveBeenCalledWith(1);
+      expect(repository.updateItem).not.toHaveBeenCalled();
+      expect(result).toEqual([]);
     });
 
-    it("should return items unchanged if id not found", () => {
-      service.add(mockProduct, 1);
-      const originalItems = service.items;
-      mockRepo.save.mockClear();
+    it("does nothing when item does not exist", async () => {
+      service.items = [item()];
 
-      const result = service.decrease(999);
+      const result = await service.decrease(999);
 
       expect(result).toBe(service.items);
-      expect(service.items).toEqual(originalItems);
-      expect(mockRepo.save).not.toHaveBeenCalled();
+      expect(repository.removeItem).not.toHaveBeenCalled();
+      expect(repository.updateItem).not.toHaveBeenCalled();
     });
   });
 
   describe("clear", () => {
-    it("should remove all items and clear repository", () => {
-      service.add(mockProduct, 2);
-      mockRepo.save.mockClear();
-      eventBus.emit.mockClear();
+    it("clears repository and local cart", async () => {
+      service.items = [item()];
 
-      service.clear();
+      const result = await service.clear();
 
-      expect(service.items).toHaveLength(0);
-      expect(service.count).toBe(0);
-      expect(service.total).toBe(0);
-      expect(service.isEmpty).toBe(true);
-      expect(mockRepo.clear).toHaveBeenCalledTimes(1);
-      expect(mockRepo.save).not.toHaveBeenCalled();
-      expect(eventBus.emit).toHaveBeenCalledWith("cart:cleared");
+      expect(repository.clear).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([]);
+      expect(service.items).toEqual([]);
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_CLEARED);
     });
   });
 
-  describe("getters", () => {
-    beforeEach(() => {
-      service.add(mockProduct, 2);
-      service.add(createMockProduct(2, "Product B", 50000), 3);
-    });
+  describe("derived state", () => {
+    it("calculates total, count and isEmpty", () => {
+      service.items = [
+        item({ id: 1, quantity: 2, subtotal: 200000 }),
+        item({ id: 2, productId: 2, quantity: 3, subtotal: 150000 }),
+      ];
 
-    it("total should sum subtotals", () => {
-      expect(service.total).toBe(2 * 100000 + 3 * 50000);
-    });
-
-    it("count should sum quantities", () => {
-      expect(service.count).toBe(2 + 3);
-    });
-
-    it("isEmpty should be false when items exist", () => {
+      expect(service.total).toBe(350000);
+      expect(service.count).toBe(5);
       expect(service.isEmpty).toBe(false);
-    });
 
-    it("isEmpty should be true when items empty", () => {
-      service.clear();
+      service.items = [];
+
+      expect(service.total).toBe(0);
+      expect(service.count).toBe(0);
       expect(service.isEmpty).toBe(true);
     });
   });
 
-  describe("save and notify", () => {
-    it("save should call repository.save and notify", () => {
-      service.add(mockProduct, 1);
-      mockRepo.save.mockClear();
-      eventBus.emit.mockClear();
-
-      service.save();
-
-      expect(mockRepo.save).toHaveBeenCalledWith(service.items);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        "cart:updated",
-        expect.objectContaining({
-          items: service.items,
-          total: service.total,
-          count: service.count,
-          isEmpty: service.isEmpty,
-        }),
-      );
-    });
-
-    it("notify should emit CART_UPDATED with current state", () => {
-      service.add(mockProduct, 1);
-      eventBus.emit.mockClear();
+  describe("notify", () => {
+    it("emits current cart state", () => {
+      service.items = [item({ quantity: 2, subtotal: 200000 })];
 
       service.notify();
 
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        "cart:updated",
-        expect.objectContaining({
-          items: service.items,
-          total: service.total,
-          count: service.count,
-          isEmpty: service.isEmpty,
-        }),
-      );
+      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_UPDATED, {
+        items: service.items,
+        total: 200000,
+        count: 2,
+        isEmpty: false,
+      });
     });
   });
 });
