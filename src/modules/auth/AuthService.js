@@ -1,5 +1,5 @@
 import { apiService } from "../../shared/services/api.service.js";
-import { getCsrfToken } from "../../shared/utils/csrf.js";
+import { setCsrfToken, clearCsrfToken } from "../../shared/utils/csrf.js";
 import { eventBus } from "../../core/services/EventBus.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 
@@ -61,11 +61,17 @@ export class AuthService {
     const result = await this.api.post("/auth/login", { email, password });
 
     if (result?.requires2FA) {
-      return { requires2FA: true, userId: result.userId };
+      return {
+        requires2FA: true,
+        preAuthToken: result.preAuthToken,
+        message: result.message,
+      };
     }
 
+    setCsrfToken(result.csrfToken);
     this._persistUser(result.user);
     eventBus.emit(EVENTS.AUTH_LOGIN, { user: result.user });
+
     return { user: result.user };
   }
 
@@ -73,26 +79,33 @@ export class AuthService {
     try {
       await this.api.post("/auth/logout", {});
     } finally {
-      // Dọn state phía client dù request logout có lỗi hay không, để UI
-      // luôn phản ánh đúng "đã đăng xuất" trên máy người dùng.
+      clearCsrfToken();
       this._persistUser(null);
       eventBus.emit(EVENTS.AUTH_LOGOUT);
     }
   }
 
-  /**
-   * Gọi khi accessToken (15 phút) hết hạn nhưng refreshToken (7 ngày) còn
-   * hiệu lực. csrfProtection yêu cầu header x-csrf-token khi dựa vào cookie.
-   */
   async refresh() {
-    const csrfToken = getCsrfToken();
-    const result = await this.api.post(
-      "/auth/refresh",
-      {},
-      csrfToken ? { "x-csrf-token": csrfToken } : {},
-    );
+    const result = await this.api.post("/auth/refresh", {});
+
+    setCsrfToken(result.csrfToken);
     this._persistUser(result.user);
+
     return result.user;
+  }
+
+  async restoreCsrfToken() {
+    if (!this.isAuthenticated) {
+      clearCsrfToken();
+      return;
+    }
+
+    try {
+      const result = await this.api.get("/auth/csrf");
+      setCsrfToken(result.csrfToken);
+    } catch {
+      clearCsrfToken();
+    }
   }
 
   getCurrentUser() {

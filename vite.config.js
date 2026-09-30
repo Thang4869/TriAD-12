@@ -16,10 +16,16 @@ export default defineConfig({
         blogDetail: resolve(import.meta.dirname, "pages/blog-detail.html"),
         contact: resolve(import.meta.dirname, "pages/contact.html"),
         location: resolve(import.meta.dirname, "pages/location.html"),
-        privacyPolicy: resolve(import.meta.dirname, "pages/privacy-policy.html"),
+        privacyPolicy: resolve(
+          import.meta.dirname,
+          "pages/privacy-policy.html",
+        ),
         products: resolve(import.meta.dirname, "pages/products.html"),
         reviews: resolve(import.meta.dirname, "pages/reviews.html"),
-        termsOfService: resolve(import.meta.dirname, "pages/terms-of-service.html"),
+        termsOfService: resolve(
+          import.meta.dirname,
+          "pages/terms-of-service.html",
+        ),
       },
     },
   },
