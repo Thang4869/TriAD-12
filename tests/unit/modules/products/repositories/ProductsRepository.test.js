@@ -1,81 +1,139 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProductsRepository } from "../../../../../src/modules/products/repositories/ProductsRepository.js";
 import { Product } from "../../../../../src/shared/models/index.js";
-import { products as PRODUCTS_DATA } from "../../../../../src/config/products.config.js";
-
-vi.mock("../../../../../src/config/products.config.js", () => ({
-  products: [
-    { id: 1, name: "Product 1", color: "White", price: 100, image: "img1.jpg" },
-    { id: 2, name: "Product 2", color: "Black", price: 200, image: "img2.jpg" },
-  ],
-}));
 
 describe("ProductsRepository", () => {
-  let mockStorage;
+  let api;
   let repository;
 
+  const productData = {
+    id: "product-1",
+    name: "Premium Lunch Box",
+    description: "Test product",
+    price: 100000,
+    stock: 10,
+    category: "Lunch Box",
+    images: ["product.jpg"],
+    slug: "premium-lunch-box",
+    isActive: true,
+    avgRating: 4.5,
+    reviewCount: 10,
+    createdAt: "2026-09-01T00:00:00.000Z",
+    updatedAt: "2026-09-02T00:00:00.000Z",
+  };
+
   beforeEach(() => {
-    mockStorage = {
+    api = {
       get: vi.fn(),
-      set: vi.fn(),
-      remove: vi.fn(),
     };
-    repository = new ProductsRepository(mockStorage);
+
+    repository = new ProductsRepository(api);
   });
 
-  it("should findAll and seed if storage empty", () => {
-    mockStorage.get.mockReturnValue(null);
-    const result = repository.findAll();
-    expect(result.length).toBe(2);
-    expect(result[0]).toBeInstanceOf(Product);
-    expect(mockStorage.set).toHaveBeenCalledWith("products", expect.any(Array));
-  });
+  describe("findPage", () => {
+    it("should request products from backend with query params", async () => {
+      api.get.mockResolvedValue({
+        products: [productData],
+        total: 1,
+        page: 2,
+        limit: 12,
+        totalPages: 3,
+      });
 
-  it("should findAll from storage if data exists", () => {
-    const storedData = [
-      {
-        id: 3,
-        name: "Stored Product",
-        color: "Red",
-        price: 300,
-        image: "img3.jpg",
-      },
-    ];
-    mockStorage.get.mockReturnValue(storedData);
-    const result = repository.findAll();
-    expect(result.length).toBe(1);
-    expect(result[0].id).toBe(3);
-    expect(mockStorage.set).not.toHaveBeenCalled();
-  });
+      await repository.findPage({
+        page: 2,
+        limit: 12,
+        keyword: "lunch",
+        minPrice: 50000,
+        maxPrice: 200000,
+        sortBy: "price",
+        sortOrder: "asc",
+      });
 
-  it("should findByIds", () => {
-    const storedData = [
-      { id: 1, name: "A", color: "White", price: 100, image: "a.jpg" },
-      { id: 2, name: "B", color: "Black", price: 200, image: "b.jpg" },
-      { id: 3, name: "C", color: "Blue", price: 300, image: "c.jpg" },
-    ];
-    mockStorage.get.mockReturnValue(storedData);
-    const result = repository.findByIds([1, 3]);
-    expect(result.length).toBe(2);
-    expect(result.map((p) => p.id)).toEqual([1, 3]);
-  });
+      expect(api.get).toHaveBeenCalledWith("/products", {
+        page: 2,
+        limit: 12,
+        keyword: "lunch",
+        minPrice: 50000,
+        maxPrice: 200000,
+        sortBy: "price",
+        sortOrder: "asc",
+      });
+    });
 
-  it("should save items (inherited from BaseRepository)", () => {
-    const items = [
-      new Product({
-        id: 10,
-        name: "New",
-        color: "Green",
-        price: 500,
-        image: "new.jpg",
-      }),
-    ];
-    repository.save(items);
-    expect(mockStorage.set).toHaveBeenCalledWith("products", expect.any(Array));
-  });
+    it("should map backend products to Product instances", async () => {
+      api.get.mockResolvedValue({
+        products: [productData],
+        total: 1,
+        page: 1,
+        limit: 12,
+        totalPages: 1,
+      });
 
-  it("should clear (inherited)", () => {
-    repository.clear();
-    expect(mockStorage.remove).toHaveBeenCalledWith("products");
+      const result = await repository.findPage({
+        page: 1,
+        limit: 12,
+      });
+
+      expect(result.products).toHaveLength(1);
+      expect(result.products[0]).toBeInstanceOf(Product);
+      expect(result.products[0].id).toBe("product-1");
+      expect(result.products[0].name).toBe("Premium Lunch Box");
+      expect(result.products[0].category).toBe("Lunch Box");
+      expect(result.products[0].images).toEqual(["product.jpg"]);
+    });
+
+    it("should return pagination metadata from backend", async () => {
+      api.get.mockResolvedValue({
+        products: [productData],
+        total: 25,
+        page: 2,
+        limit: 12,
+        totalPages: 3,
+      });
+
+      const result = await repository.findPage({
+        page: 2,
+        limit: 12,
+      });
+
+      expect(result.total).toBe(25);
+      expect(result.page).toBe(2);
+      expect(result.limit).toBe(12);
+      expect(result.totalPages).toBe(3);
+    });
+
+    it("should handle an empty products page", async () => {
+      api.get.mockResolvedValue({
+        products: [],
+        total: 0,
+        page: 1,
+        limit: 12,
+        totalPages: 0,
+      });
+
+      const result = await repository.findPage({
+        page: 1,
+        limit: 12,
+      });
+
+      expect(result.products).toEqual([]);
+      expect(result.total).toBe(0);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(12);
+      expect(result.totalPages).toBe(0);
+    });
+
+    it("should propagate API errors", async () => {
+      const error = new Error("Products API unavailable");
+      api.get.mockRejectedValue(error);
+
+      await expect(
+        repository.findPage({
+          page: 1,
+          limit: 12,
+        }),
+      ).rejects.toBe(error);
+    });
   });
 });
