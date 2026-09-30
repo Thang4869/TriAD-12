@@ -56,7 +56,9 @@ vi.mock("../../../src/modules/cart/CartController.js", () => ({
 vi.mock(
   "../../../src/modules/products/controllers/ProductsController.js",
   () => ({
-    ProductsController: vi.fn(),
+    ProductsController: vi.fn().mockImplementation(() => ({
+      init: vi.fn().mockResolvedValue(undefined),
+    })),
   }),
 );
 vi.mock("../../../src/modules/modal/ModalController.js", () => ({
