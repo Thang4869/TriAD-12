@@ -7,7 +7,6 @@ import { EVENTS } from "../../../../src/shared/constants/Events.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
 
 vi.mock("../../../../src/modules/checkout/CheckoutService.js");
-vi.mock("../../../../src/modules/checkout/CheckoutValidator.js");
 vi.mock("../../../../src/modules/checkout/CheckoutRenderer.js");
 
 describe("CheckoutController", () => {
@@ -17,7 +16,6 @@ describe("CheckoutController", () => {
   let mockNotifications;
   let mockProductsController;
   let mockServiceInstance;
-  let mockValidatorInstance;
   let mockRendererInstance;
   let mockEventBusEmit;
 
@@ -34,11 +32,10 @@ describe("CheckoutController", () => {
       <button id="checkout-btn"></button>
       <button id="close-checkout-btn"></button>
       <form id="checkout-form">
-        <input id="first-name" value="John">
-        <input id="last-name" value="Doe">
-        <input id="email" value="john@example.com">
         <input id="phone" value="0123456789">
         <input id="address" value="123 Main St">
+        <textarea id="notes"></textarea>
+        <input id="discount-code">
         <input type="radio" name="payment" value="cod" checked>
         <button type="submit">Place Order</button>
       </form>
@@ -59,9 +56,6 @@ describe("CheckoutController", () => {
         orderNumber: "ORD-123",
       }),
     };
-    mockValidatorInstance = {
-      validate: vi.fn().mockReturnValue({ isValid: true, errors: [] }),
-    };
     mockRendererInstance = {
       renderSummary: vi.fn(),
       renderSuccessPricing: vi.fn(),
@@ -69,10 +63,6 @@ describe("CheckoutController", () => {
 
     CheckoutService.mockImplementation(function () {
       return mockServiceInstance;
-    });
-
-    CheckoutValidator.mockImplementation(function () {
-      return mockValidatorInstance;
     });
 
     CheckoutRenderer.mockImplementation(function () {
@@ -124,7 +114,7 @@ describe("CheckoutController", () => {
   describe("constructor", () => {
     it("should initialize services and setup event listeners", () => {
       expect(controller.service).toBe(mockServiceInstance);
-      expect(controller.validator).toBe(mockValidatorInstance);
+      expect(controller.validator).toBeInstanceOf(CheckoutValidator);
       expect(controller.renderer).toBe(mockRendererInstance);
       expect(controller.items).toEqual([]);
     });
@@ -233,29 +223,32 @@ describe("CheckoutController", () => {
       const preventDefault = vi.spyOn(event, "preventDefault");
       await controller.handleSubmit(event);
       expect(preventDefault).toHaveBeenCalled();
-      expect(mockValidatorInstance.validate).toHaveBeenCalled();
+      expect(mockServiceInstance.checkout).toHaveBeenCalledWith(
+        {
+          address: "123 Main St",
+          phone: "0123456789",
+          notes: undefined,
+          discountCode: undefined,
+          paymentMethod: "COD",
+        },
+        null,
+      );
     });
 
     it("should show error toast if validation fails", async () => {
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: false,
-        errors: ["Error 1", "Error 2"],
-      });
+      document.getElementById("phone").value = "123";
       const event = new Event("submit", { cancelable: true });
       await controller.handleSubmit(event);
       expect(mockToast.error).toHaveBeenCalledWith(
         "Thông tin chưa hợp lệ",
-        "Error 1, Error 2",
+        "Invalid phone number (10-12 digits)",
       );
       expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
     });
 
     it("should handle validation error when window.toast is undefined", () => {
       delete window.toast;
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: false,
-        errors: ["Error 1"],
-      });
+      document.getElementById("phone").value = "123";
       const event = new Event("submit", { cancelable: true });
       expect(() => controller.handleSubmit(event)).not.toThrow();
     });
@@ -266,10 +259,6 @@ describe("CheckoutController", () => {
         { id: 2, name: "Product 2", quantity: 1, subtotal: 100000 },
       ];
       controller.items = items;
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: true,
-        errors: [],
-      });
       const order = {
         id: "order-456",
         orderNumber: "ORD-456",
@@ -317,10 +306,6 @@ describe("CheckoutController", () => {
       delete window.notifications;
 
       controller.items = [{ id: 1, name: "Item", quantity: 1, subtotal: 100 }];
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: true,
-        errors: [],
-      });
       mockServiceInstance.checkout.mockReturnValue({ id: "ORD-789" });
 
       const event = new Event("submit", { cancelable: true });
@@ -337,18 +322,44 @@ describe("CheckoutController", () => {
       const event = new Event("submit", { cancelable: true });
       await controller.handleSubmit(event);
 
-      expect(mockValidatorInstance.validate).toHaveBeenCalledWith(
+      expect(mockServiceInstance.checkout).toHaveBeenCalledWith(
         expect.objectContaining({ paymentMethod: "COD" }),
+        null,
       );
+    });
+
+    it("should normalize optional notes and discount code in the current payload", async () => {
+      document.getElementById("notes").value = "  Leave at the front desk  ";
+      document.getElementById("discount-code").value = "  SAVE10  ";
+
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+
+      expect(mockServiceInstance.checkout).toHaveBeenCalledWith(
+        {
+          address: "123 Main St",
+          phone: "0123456789",
+          notes: "Leave at the front desk",
+          discountCode: "SAVE10",
+          paymentMethod: "COD",
+        },
+        null,
+      );
+    });
+
+    it("should reject a missing address without requesting checkout", async () => {
+      document.getElementById("address").value = "   ";
+
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+
+      expect(mockToast.error).toHaveBeenCalledWith(
+        "Thông tin chưa hợp lệ",
+        "Address is required",
+      );
+      expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
     });
 
     it("should reuse the same idempotency key when checkout is retried", async () => {
       controller.idempotencyKey = "checkout-attempt-123";
-
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: true,
-        errors: [],
-      });
 
       mockServiceInstance.checkout
         .mockRejectedValueOnce(new Error("Network failure"))
@@ -375,10 +386,6 @@ describe("CheckoutController", () => {
     });
 
     it("should handle error during checkout execution", async () => {
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: true,
-        errors: [],
-      });
       mockServiceInstance.checkout.mockImplementation(() => {
         throw new Error("Service failure");
       });
@@ -402,11 +409,6 @@ describe("CheckoutController", () => {
     it("should handle error during checkout when toast and notifications are undefined", async () => {
       delete window.toast;
       delete window.notifications;
-
-      mockValidatorInstance.validate.mockReturnValue({
-        isValid: true,
-        errors: [],
-      });
       mockServiceInstance.checkout.mockImplementation(() => {
         throw new Error("Service failure");
       });
