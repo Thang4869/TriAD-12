@@ -36,4 +36,26 @@ export class CheckoutRenderer {
       this.totalElement.textContent = formatPrice(total);
     }
   }
+
+  renderSuccessPricing(order) {
+    const fields = [
+      ["success-subtotal", order.subtotal],
+      ["success-tax", order.tax],
+      ["success-shipping", order.shippingFee],
+      ["success-discount", order.discountAmount],
+      ["success-total", order.total],
+    ];
+
+    fields.forEach(([id, value]) => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = formatPrice(value);
+    });
+
+    const discountCode = document.getElementById("success-discount-code");
+    if (discountCode) {
+      discountCode.textContent = order.discountCode
+        ? `(${order.discountCode})`
+        : "";
+    }
+  }
 }

@@ -50,6 +50,45 @@ describe("CheckoutRenderer", () => {
     );
   });
 
+  it("should render final pricing from the server order", () => {
+    document.body.innerHTML += `
+      <span id="success-subtotal"></span>
+      <span id="success-tax"></span>
+      <span id="success-shipping"></span>
+      <span id="success-discount"></span>
+      <span id="success-discount-code"></span>
+      <span id="success-total"></span>
+    `;
+
+    renderer.renderSuccessPricing({
+      subtotal: 500000,
+      tax: 50000,
+      shippingFee: 0,
+      discountAmount: 25000,
+      discountCode: "SAVE5",
+      total: 525000,
+    });
+
+    expect(document.getElementById("success-subtotal").textContent).toBe(
+      "500.000 ₫",
+    );
+    expect(document.getElementById("success-tax").textContent).toBe(
+      "50.000 ₫",
+    );
+    expect(document.getElementById("success-shipping").textContent).toBe(
+      "0 ₫",
+    );
+    expect(document.getElementById("success-discount").textContent).toBe(
+      "25.000 ₫",
+    );
+    expect(document.getElementById("success-discount-code").textContent).toBe(
+      "(SAVE5)",
+    );
+    expect(document.getElementById("success-total").textContent).toBe(
+      "525.000 ₫",
+    );
+  });
+
   it("should return early if itemsContainer is missing", () => {
     document.body.innerHTML = `<span id="checkout-total">0 ₫</span>`;
     const renderer2 = new CheckoutRenderer();
