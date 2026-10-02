@@ -81,6 +81,8 @@ export class CheckoutController {
       address: document.getElementById("address").value.trim(),
       phone: document.getElementById("phone").value.trim(),
       notes: document.getElementById("notes")?.value.trim() || undefined,
+      discountCode:
+        document.getElementById("discount-code")?.value.trim() || undefined,
       paymentMethod: "COD",
     };
 
