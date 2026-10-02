@@ -28,6 +28,23 @@ describe("CheckoutRenderer", () => {
     );
   });
 
+  it("should render product names as text rather than markup", () => {
+    const maliciousName = '<img src=x onerror="window.__xss = true">';
+    const scriptName = "<script>window.__xss = true</script>";
+
+    renderer.renderSummary([
+      { name: maliciousName, quantity: 1, subtotal: 100000 },
+      { name: scriptName, quantity: 1, subtotal: 100000 },
+    ]);
+
+    const container = document.getElementById("checkout-items");
+    expect(container.textContent).toContain(`${maliciousName} x1`);
+    expect(container.textContent).toContain(`${scriptName} x1`);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("script")).toBeNull();
+    expect(container.querySelector("[onerror], [onload]")).toBeNull();
+  });
+
   it("should apply free shipping when total >= 500000", () => {
     const items = [{ name: "Product A", quantity: 1, subtotal: 600000 }];
     renderer.renderSummary(items);

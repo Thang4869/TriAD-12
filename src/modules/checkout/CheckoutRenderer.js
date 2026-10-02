@@ -9,22 +9,29 @@ export class CheckoutRenderer {
   renderSummary(items) {
     if (!this.itemsContainer) return;
     if (!items || items.length === 0) {
-      this.itemsContainer.innerHTML =
-        '<p class="text-gray-500">Your cart is empty.</p>';
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "text-gray-500";
+      emptyMessage.textContent = "Your cart is empty.";
+      this.itemsContainer.replaceChildren(emptyMessage);
       this.updateTotal(0);
       return;
     }
 
-    this.itemsContainer.innerHTML = items
-      .map(
-        (item) => `
-      <div class="item-row flex justify-between text-sm py-1">
-        <span>${item.name} x${item.quantity}</span>
-        <span>${formatPrice(item.subtotal)}</span>
-      </div>
-    `,
-      )
-      .join("");
+    const fragment = document.createDocumentFragment();
+    items.forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "item-row flex justify-between text-sm py-1";
+
+      const name = document.createElement("span");
+      name.textContent = `${item.name} x${item.quantity}`;
+
+      const subtotal = document.createElement("span");
+      subtotal.textContent = formatPrice(item.subtotal);
+
+      row.append(name, subtotal);
+      fragment.append(row);
+    });
+    this.itemsContainer.replaceChildren(fragment);
 
     const total = items.reduce((sum, item) => sum + item.subtotal, 0);
     const shipping = total >= 500000 ? 0 : 30000;
