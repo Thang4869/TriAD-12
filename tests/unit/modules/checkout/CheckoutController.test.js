@@ -64,6 +64,7 @@ describe("CheckoutController", () => {
     };
     mockRendererInstance = {
       renderSummary: vi.fn(),
+      renderSuccessPricing: vi.fn(),
     };
 
     CheckoutService.mockImplementation(function () {
@@ -272,6 +273,12 @@ describe("CheckoutController", () => {
       const order = {
         id: "order-456",
         orderNumber: "ORD-456",
+        subtotal: 300000,
+        tax: 30000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        discountCode: null,
+        total: 360000,
       };
 
       mockServiceInstance.checkout.mockResolvedValue(order);
@@ -287,6 +294,7 @@ describe("CheckoutController", () => {
       vi.advanceTimersByTime(1500);
 
       expect(mockServiceInstance.checkout).toHaveBeenCalled();
+      expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith(order);
       expect(mockCartController.clear).toHaveBeenCalled();
       expect(mockCartController.closeDrawer).toHaveBeenCalled();
       expect(mockNotifications.add).toHaveBeenCalledWith(

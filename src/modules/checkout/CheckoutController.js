@@ -103,7 +103,7 @@ export class CheckoutController {
       await window.cartController?.clear();
       window.cartController?.closeDrawer();
       this.closeCheckout();
-      this.showSuccess(order.orderNumber || order.id);
+      this.showSuccess(order);
 
       window.notifications?.add(
         "Đặt hàng thành công!",
@@ -127,11 +127,12 @@ export class CheckoutController {
     }
   }
 
-  showSuccess(orderNumber) {
+  showSuccess(order) {
     const modal = document.getElementById("success-modal");
     const content = modal.querySelector(".bg-white");
     const orderIdEl = document.getElementById("success-order-id");
-    if (orderIdEl) orderIdEl.textContent = orderNumber;
+    if (orderIdEl) orderIdEl.textContent = order.orderNumber || order.id;
+    this.renderer.renderSuccessPricing(order);
 
     modal.classList.remove("hidden");
     requestAnimationFrame(() => {
