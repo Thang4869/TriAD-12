@@ -88,7 +88,8 @@ describe("Checkout flow integration", () => {
       }
       if (url.endsWith("/checkout") && method === "POST") {
         checkoutRequests.push(JSON.parse(options.body));
-        if (failCheckout) return jsonResponse({ message: "Checkout failed" }, 500);
+        if (failCheckout)
+          return jsonResponse({ message: "Checkout failed" }, 500);
         return jsonResponse({ order: serverOrder });
       }
       throw new Error(`Unexpected request: ${method} ${url}`);
@@ -117,7 +118,9 @@ describe("Checkout flow integration", () => {
 
     checkoutController.openCheckout();
     document.getElementById("notes").value = "Leave at reception";
-    await checkoutController.handleSubmit(new Event("submit", { cancelable: true }));
+    await checkoutController.handleSubmit(
+      new Event("submit", { cancelable: true }),
+    );
 
     expect(checkoutRequests).toEqual([
       {
@@ -128,12 +131,20 @@ describe("Checkout flow integration", () => {
         paymentMethod: "COD",
       },
     ]);
-    expect(document.getElementById("success-order-id").textContent).toBe("ORD-SERVER-001");
-    expect(document.getElementById("success-total").textContent).toBe("106.000 ₫");
-    expect(document.getElementById("success-subtotal").textContent).toBe("100.000 ₫");
+    expect(document.getElementById("success-order-id").textContent).toBe(
+      "ORD-SERVER-001",
+    );
+    expect(document.getElementById("success-total").textContent).toBe(
+      "106.000 ₫",
+    );
+    expect(document.getElementById("success-subtotal").textContent).toBe(
+      "100.000 ₫",
+    );
     expect(cartController.getItems()).toHaveLength(0);
     expect(document.getElementById("cart-badge").textContent).toBe("0");
-    expect(document.querySelector(".cart-scroll").textContent).toContain("empty");
+    expect(document.querySelector(".cart-scroll").textContent).toContain(
+      "empty",
+    );
   });
 
   it("keeps the cart and hides success when checkout fails", async () => {
@@ -142,10 +153,14 @@ describe("Checkout flow integration", () => {
     failCheckout = true;
 
     checkoutController.openCheckout();
-    await checkoutController.handleSubmit(new Event("submit", { cancelable: true }));
+    await checkoutController.handleSubmit(
+      new Event("submit", { cancelable: true }),
+    );
 
     expect(cartController.getItems()).toHaveLength(1);
-    expect(document.getElementById("success-modal").classList.contains("hidden")).toBe(true);
+    expect(
+      document.getElementById("success-modal").classList.contains("hidden"),
+    ).toBe(true);
     expect(window.toast.error).toHaveBeenCalled();
   });
 });
