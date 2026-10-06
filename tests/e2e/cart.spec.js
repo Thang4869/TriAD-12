@@ -23,15 +23,47 @@ test("authenticated user can add a product and complete checkout", async ({
     const method = request.method();
 
     if (url.pathname.endsWith("/products") && method === "GET") {
-      await route.fulfill({ json: { data: { products: [product], total: 1, page: 1, limit: 12, totalPages: 1 } } });
+      await route.fulfill({
+        json: {
+          data: {
+            products: [product],
+            total: 1,
+            page: 1,
+            limit: 12,
+            totalPages: 1,
+          },
+        },
+      });
       return;
     }
     if (url.pathname.endsWith("/auth/login") && method === "POST") {
-      await route.fulfill({ json: { data: { csrfToken: "csrf-e2e", user: { id: "user-1", email: "user@example.com", firstName: "Test" } } } });
+      await route.fulfill({
+        json: {
+          data: {
+            csrfToken: "csrf-e2e",
+            user: {
+              id: "user-1",
+              email: "user@example.com",
+              firstName: "Test",
+            },
+          },
+        },
+      });
       return;
     }
     if (url.pathname.endsWith("/cart") && method === "GET") {
-      await route.fulfill({ json: { data: { items: cartItems.map((item) => ({ id: `cart-${item.productId}`, productId: item.productId, quantity: item.quantity, product })) } } });
+      await route.fulfill({
+        json: {
+          data: {
+            items: cartItems.map((item) => ({
+              id: `cart-${item.productId}`,
+              productId: item.productId,
+              quantity: item.quantity,
+              product,
+            })),
+          },
+        },
+      });
       return;
     }
     if (url.pathname.endsWith("/cart/items") && method === "POST") {
@@ -46,7 +78,22 @@ test("authenticated user can add a product and complete checkout", async ({
       return;
     }
     if (url.pathname.endsWith("/checkout") && method === "POST") {
-      await route.fulfill({ json: { data: { order: { id: "order-1", orderNumber: "ORD-E2E-001", subtotal: 100000, tax: 11000, shippingFee: 0, discountAmount: 5000, discountCode: "SAVE5", total: 106000 } } } });
+      await route.fulfill({
+        json: {
+          data: {
+            order: {
+              id: "order-1",
+              orderNumber: "ORD-E2E-001",
+              subtotal: 100000,
+              tax: 11000,
+              shippingFee: 0,
+              discountAmount: 5000,
+              discountCode: "SAVE5",
+              total: 106000,
+            },
+          },
+        },
+      });
       return;
     }
     await route.fulfill({ json: { data: {} } });
@@ -62,7 +109,11 @@ test("authenticated user can add a product and complete checkout", async ({
   await page.locator("#auth-form button[type=submit]").click();
   await expect(page.locator("#auth-modal")).toBeHidden();
 
-  await page.locator(".product-card").first().locator(".add-to-cart-btn").click();
+  await page
+    .locator(".product-card")
+    .first()
+    .locator(".add-to-cart-btn")
+    .click();
   await expect(page.locator("#cart-badge")).toHaveText("1");
   await page.locator("#cart-icon-btn").click();
   await expect(page.locator("#cart-drawer")).toBeVisible();

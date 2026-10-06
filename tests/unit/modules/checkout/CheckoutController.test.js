@@ -283,7 +283,9 @@ describe("CheckoutController", () => {
       vi.advanceTimersByTime(1500);
 
       expect(mockServiceInstance.checkout).toHaveBeenCalled();
-      expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith(order);
+      expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith(
+        order,
+      );
       expect(mockCartController.clear).toHaveBeenCalled();
       expect(mockCartController.closeDrawer).toHaveBeenCalled();
       expect(mockNotifications.add).toHaveBeenCalledWith(

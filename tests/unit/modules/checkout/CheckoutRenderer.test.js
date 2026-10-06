@@ -89,12 +89,8 @@ describe("CheckoutRenderer", () => {
     expect(document.getElementById("success-subtotal").textContent).toBe(
       "500.000 ₫",
     );
-    expect(document.getElementById("success-tax").textContent).toBe(
-      "50.000 ₫",
-    );
-    expect(document.getElementById("success-shipping").textContent).toBe(
-      "0 ₫",
-    );
+    expect(document.getElementById("success-tax").textContent).toBe("50.000 ₫");
+    expect(document.getElementById("success-shipping").textContent).toBe("0 ₫");
     expect(document.getElementById("success-discount").textContent).toBe(
       "25.000 ₫",
     );
