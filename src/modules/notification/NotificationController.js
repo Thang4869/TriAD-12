@@ -16,6 +16,8 @@ export class NotificationController {
     this._listenersAttached = false;
     this._documentEventsAttached = false;
     this._retryTimer = null;
+    this._listenerGeneration = 0;
+    this._destroyed = false;
 
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => this._init());
@@ -25,7 +27,7 @@ export class NotificationController {
   }
 
   _init() {
-    if (this._initialized) return;
+    if (this._initialized || this._destroyed) return;
     this._setupEventListeners();
     this._exposeAPI();
     this._updateUI();
@@ -34,9 +36,14 @@ export class NotificationController {
   }
 
   _setupEventListeners() {
-    if (this._listenersAttached) return;
+    if (this._listenersAttached || this._destroyed) return;
+    if (this._retryTimer) clearTimeout(this._retryTimer);
+    this._retryTimer = null;
+    const generation = ++this._listenerGeneration;
 
     const findElements = () => {
+      if (this._destroyed || generation !== this._listenerGeneration) return;
+      this._retryTimer = null;
       this.btn = document.getElementById("notification-btn");
       this.mobileBtn = document.getElementById("mobile-notification-btn");
       this.overlay = document.getElementById("notification-overlay");
@@ -129,6 +136,8 @@ export class NotificationController {
   }
 
   destroy() {
+    this._destroyed = true;
+    this._listenerGeneration++;
     if (this._retryTimer) {
       clearTimeout(this._retryTimer);
       this._retryTimer = null;
@@ -139,6 +148,7 @@ export class NotificationController {
   }
 
   reinit() {
+    this._destroyed = false;
     if (!this._listenersAttached) {
       this._setupEventListeners();
     } else {
