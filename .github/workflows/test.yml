@@ -18,7 +18,13 @@ jobs:
           node-version: 24
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Verify deployment configuration safeguards
+        run: node --test tests/scripts/deployment-env.test.cjs
+
+      - name: Build production assets
+        run: npm run build
 
       - name: Run Unit & Integration Tests with Coverage
         run: npm run test:coverage

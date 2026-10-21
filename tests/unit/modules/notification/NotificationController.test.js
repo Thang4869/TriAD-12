@@ -547,6 +547,50 @@ describe("NotificationController", () => {
   });
 
   describe("destroy and reinit", () => {
+    it("ignores an already-queued DOM retry after destroy", () => {
+      setupDOM(false);
+      const timer = vi.spyOn(global, "setTimeout");
+      controller = new NotificationController();
+      const retry = timer.mock.calls.at(-1)[0];
+      controller.destroy();
+
+      const dom = vi.spyOn(document, "getElementById");
+      dom.mockClear();
+      retry();
+      expect(dom).not.toHaveBeenCalled();
+    });
+
+    it("ignores a superseded retry when reinit starts a new search", () => {
+      setupDOM(false);
+      const timer = vi.spyOn(global, "setTimeout");
+      controller = new NotificationController();
+      const previous = timer.mock.calls.at(-1)[0];
+      controller.reinit();
+
+      const dom = vi.spyOn(document, "getElementById");
+      dom.mockClear();
+      previous();
+      expect(dom).not.toHaveBeenCalled();
+    });
+
+    it("does not restart from a delayed DOMContentLoaded after destroy", () => {
+      Object.defineProperty(document, "readyState", {
+        value: "loading",
+        configurable: true,
+      });
+      const listen = vi.spyOn(document, "addEventListener");
+      controller = new NotificationController();
+      const ready = listen.mock.calls.find(
+        ([event]) => event === "DOMContentLoaded",
+      )[1];
+      controller.destroy();
+      ready();
+      expect(controller._initialized).toBe(false);
+      Object.defineProperty(document, "readyState", {
+        value: "complete",
+        configurable: true,
+      });
+    });
     beforeEach(() => {
       controller = new NotificationController();
     });
