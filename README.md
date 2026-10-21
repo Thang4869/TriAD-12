@@ -71,7 +71,7 @@
 - [Development Workflow](#development-workflow)
 - [Build](#build)
 - [Production Build](#production-build)
-- [Deployment](#deployment-github-pages)
+- [Deployment](#deployment)
 - [Git Workflow](#git-workflow)
 - [Branch Strategy](#branch-strategy)
 - [Coding Convention](#coding-convention)
@@ -430,104 +430,107 @@ flowchart LR
 
 ## Installation
 
-The repository does not include a `package.json`, build tool, or dependency manager configuration. This is a static HTML/CSS/JavaScript project that runs directly in the browser.
-
-### Quick Start
-
-1. Clone the repository.
-2. Open the project in VS Code or any local web server.
-3. Serve the root folder through HTTP, then open `index.html` from that server.
+Use Node.js 24 and the committed npm lockfile. The frontend is a Vite
+multipage application and uses the TriAD backend for products, authentication,
+cart and checkout.
 
 ```bash
-# Example local server options
-python -m http.server 8000
-# or
-npx serve .
+npm ci
+npm run dev
 ```
 
-> [!IMPORTANT]
-> Do not open `index.html` directly with `file://`. The app loads HTML partials with `fetch()`, so a local HTTP server is required.
+Start the backend on port 5000. The Vite development server proxies `/api` to
+that backend. Do not open `index.html` with `file://` or deploy unbuilt source
+files as a substitute for the Vite output.
 
 ## Environment
 
-| Item             | Value                               |
-| ---------------- | ----------------------------------- |
-| Runtime          | Browser-native ES modules           |
-| Styling          | Tailwind CSS CDN                    |
-| Fonts            | Google Fonts (`Jost`)               |
-| Icons            | Phosphor Icons CDN                  |
-| Data persistence | `localStorage` via `StorageService` |
-| Demo hosting     | GitHub Pages                        |
+Copy `.env.example` to a local `.env` when overriding the default API URL.
 
-### Environment Notes
+| Setting                | Local development              | Vercel staging                                              |
+| ---------------------- | ------------------------------ | ----------------------------------------------------------- |
+| `VITE_API_BASE_URL`    | `/api`, through the Vite proxy | Actual HTTPS backend URL ending in `/api`                   |
+| Backend                | Local API on port 5000         | Isolated staging API with PostgreSQL and Redis              |
+| Browser authentication | Cookies and CSRF from the API  | Secure cookies, exact CORS origins and browser verification |
+| Build output           | Vite dev server                | `dist/`                                                     |
 
-- No `.env` file, API keys, or backend credentials are required for the current codebase.
-- The app reads product seed data from `src/config/products.config.js` and stores runtime state in browser storage.
-- `src/shared/services/api.service.js` exists as a scaffold for future backend work, but the current UI does not depend on a live API.
+`VITE_` variables are public browser configuration. Database passwords, SMTP
+credentials, OAuth client secrets and payment secrets belong on the backend.
+Changing a Vite environment variable requires a new build.
+
+The current staging configuration calls the API directly. Unrelated frontend
+and API domains require browser verification of cookie acceptance, CSRF,
+credentials and refresh/logout behavior. Introducing a same-origin proxy is a
+separate topology change: review forwarded client IPs, cookies and OAuth
+callback URLs together before adding it.
 
 ## Scripts
 
-There are no repository-defined npm scripts because the project does not ship a `package.json` file.
-
-| Script    | Status        | Notes                             |
-| --------- | ------------- | --------------------------------- |
-| `install` | Not available | No package manifest is present    |
-| `dev`     | Not available | Use a local static server instead |
-| `build`   | Not available | The app is served as static files |
-| `lint`    | Not available | No lint configuration was found   |
-| `test`    | Not available | No test runner is configured      |
+| Command                      | Purpose                                   |
+| ---------------------------- | ----------------------------------------- |
+| `npm run dev`                | Start the Vite development server         |
+| `npm run build`              | Build the multipage site into `dist/`     |
+| `npm run preview`            | Serve the built output locally            |
+| `npm test -- --run`          | Run Vitest unit and integration tests     |
+| `npm run test:coverage`      | Generate the configured coverage reports  |
+| `npm run test:e2e`           | Run Playwright browser tests              |
+| `npm run test:e2e:fullstack` | Run the frontend/backend checkout journey |
+| `npm run format`             | Format repository files                   |
 
 ## Development Workflow
 
-1. Edit HTML partials under `pages/` for layout and section content.
-2. Edit module logic under `src/modules/` for feature behavior.
-3. Update shared models, services, and utilities under `src/shared/` when behavior is reused.
-4. Refresh the browser through the local server to verify UI changes.
-
-### Suggested Local Flow
-
-```text
-Edit source -> Refresh browser -> Verify modal/cart/checkout flow -> Commit changes
-```
+1. Run the local backend and Vite development server.
+2. Edit modules under `src/` and the relevant HTML partials.
+3. Run affected tests, then build and inspect the generated pages.
+4. Verify login, cart and COD checkout against the intended backend before
+   accepting a deployment.
 
 ## Build
 
-No compile step is required for the current repository state.
+```bash
+npm run build
+npm run preview
+```
 
-### Production Output
-
-The production artifact is the same static file set already in the repository:
-
-- `index.html`
-- `pages/*`
-- `src/*`
-- `images/*`
-- `README.md`
+Vite builds the entry pages listed in `vite.config.js` and copies public
+assets into `dist/`. Deploy that directory. A frontend build does not prove
+backend reachability or successful authenticated checkout.
 
 ## Production Build
 
-> TODO
-> If the project later adopts a bundler, document the output directory and asset pipeline here.
+For deployed staging, configure the actual API URL in the hosting project
+before building. `vercel.json` runs `scripts/validate-deployment-env.cjs`,
+then the regular Vite build. The guard rejects a missing/relative URL, HTTP,
+loopback addresses and credential-bearing URLs instead of publishing a site
+that points to an unconfigured local API. It validates configuration syntax;
+the browser journey still has to verify the running backend.
 
-For the current version, production means:
+## Deployment
 
-1. Serving the static site over HTTPS or a local HTTP server.
-2. Ensuring relative asset paths resolve correctly.
-3. Verifying the live demo after deployment.
+### Vercel staging
 
-## Deployment (GitHub Pages)
+1. Grant the hosting connection access to the intended team and GitHub
+   repository, then create or select the staging project for `TriAD-12`.
+2. Set `VITE_API_BASE_URL` to the actual staging API URL ending in `/api` for
+   the deployment environment being used. Do not invent a hostname or include
+   a secret in this value.
+3. On the backend, set `FRONTEND_URL` and `CORS_ORIGIN` to the deployed frontend
+   URL/origin, and keep `COOKIE_DOMAIN` unset for unrelated hosting domains.
+4. Deploy a reviewed commit using the checked-in Vercel configuration. Record
+   its actual URL and SHA; verify products, password login, refresh, cart,
+   COD checkout and logout in a browser.
 
-The repository is already published at [https://thang4869.github.io/TriAD-12/](https://thang4869.github.io/TriAD-12/).
+OAuth frontend flows and PayPal are separate unfinished features. Do not mark
+those complete just because the static deployment is ready.
 
-### Recommended Deployment Flow
+### GitHub Pages
 
-1. Push the static site to the repository.
-2. Configure GitHub Pages in repository settings.
-3. Point Pages to the branch or folder that contains `index.html`.
-4. Verify that the `/pages` and `/src` relative paths resolve on the published site.
-
-> [!NOTE]
-> Because the app uses `fetch()` to load partial HTML, the published Pages base path must preserve the repository-relative asset structure.
+The existing demo link is
+[https://thang4869.github.io/TriAD-12/](https://thang4869.github.io/TriAD-12/).
+For a new Pages deployment, build Vite with the correct repository base path,
+configure the API URL at build time and publish `dist/`. Root-hosted Vercel
+staging and a repository-subpath Pages deployment have different asset paths;
+verify partial loading and navigation on the actual host.
 
 ## Git Workflow
 
