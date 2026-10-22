@@ -42,16 +42,18 @@ export class CartController {
     });
   }
 
-  /** Yêu cầu đăng nhập trước khi thêm giỏ hàng thật (backend bắt buộc). */
-  addToCart(product, quantity = 1, flyElement = null) {
+  /** Chỉ gọi onAdded sau khi API ghi và tải lại giỏ hàng thành công. */
+  addToCart(product, quantity = 1, flyElement = null, onAdded = null) {
     window.authController?.requireAuth(async () => {
       try {
         await this.service.add(product.id, quantity);
-        if (flyElement && window.flyToCart) window.flyToCart.fly(flyElement);
-        window.toast?.success("Đã thêm vào giỏ", product.name);
       } catch (error) {
         window.toast?.error("Không thể thêm vào giỏ", error.message);
+        return;
       }
+      if (flyElement && window.flyToCart) window.flyToCart.fly(flyElement);
+      window.toast?.success("Đã thêm vào giỏ", product.name);
+      onAdded?.();
     });
   }
 

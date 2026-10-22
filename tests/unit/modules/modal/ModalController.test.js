@@ -30,6 +30,7 @@ describe("ModalController", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    eventBus.clear();
     createDOM();
 
     document.body.style.overflow = "";
@@ -47,7 +48,7 @@ describe("ModalController", () => {
       getProduct: vi.fn().mockReturnValue(mockProduct),
     };
     window.cartController = {
-      addToCart: vi.fn(),
+      addToCart: vi.fn((_product, _quantity, _image, onAdded) => onAdded()),
       openDrawer: vi.fn(),
     };
     window.notifications = {
@@ -61,6 +62,7 @@ describe("ModalController", () => {
   });
 
   afterEach(() => {
+    eventBus.clear();
     vi.useRealTimers();
     vi.restoreAllMocks();
     delete window.productsController;
@@ -271,7 +273,8 @@ describe("ModalController", () => {
       expect(closeSpy).not.toHaveBeenCalled();
     });
 
-    it("should add product to cart with fly element and notifications", () => {
+    it("should open the cart only after the add completes", () => {
+      window.cartController.addToCart.mockImplementation(() => {});
       const closeSpy = vi.spyOn(modalController, "close");
       modalController.open(1);
       modalController.service.updateQuantity(1);
@@ -282,16 +285,19 @@ describe("ModalController", () => {
         mockProduct,
         2,
         modalController.image,
+        expect.any(Function),
       );
-      expect(window.notifications.add).toHaveBeenCalledWith(
-        "Added to Cart",
-        "Test Product (2 items) has been added to your cart.",
-        "success",
-      );
-      expect(closeSpy).toHaveBeenCalled();
+      expect(closeSpy).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+      expect(window.cartController.openDrawer).not.toHaveBeenCalled();
+      expect(window.notifications.add).not.toHaveBeenCalled();
 
+      window.cartController.addToCart.mock.calls[0][3]();
+      expect(closeSpy).toHaveBeenCalled();
+      expect(modalController.service.isOpen).toBe(false);
       vi.advanceTimersByTime(400);
-      expect(window.cartController.openDrawer).toHaveBeenCalled();
+      expect(window.cartController.openDrawer).toHaveBeenCalledTimes(1);
+      expect(window.notifications.add).not.toHaveBeenCalled();
     });
 
     it("should work without notifications", () => {
@@ -314,21 +320,19 @@ describe("ModalController", () => {
 
       modalController.handleAddToCart();
 
-      expect(closeSpy).toHaveBeenCalled();
+      expect(closeSpy).not.toHaveBeenCalled();
+      expect(window.notifications.add).not.toHaveBeenCalled();
     });
 
-    it("should handle quantity = 1 message correctly", () => {
+    it("leaves the product modal open when an add does not complete", () => {
+      window.cartController.addToCart.mockImplementation(() => {});
       modalController.open(1);
-      modalController.service.quantity = 1;
       modalController.handleAddToCart();
 
-      expect(window.notifications.add).toHaveBeenCalledWith(
-        "Added to Cart",
-        "Test Product has been added to your cart.",
-        "success",
-      );
-      vi.advanceTimersByTime(400);
-      expect(window.cartController.openDrawer).toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+      expect(modalController.service.isOpen).toBe(true);
+      expect(window.cartController.openDrawer).not.toHaveBeenCalled();
+      expect(window.notifications.add).not.toHaveBeenCalled();
     });
   });
 
@@ -354,7 +358,8 @@ describe("ModalController", () => {
       expect(closeSpy).not.toHaveBeenCalled();
     });
 
-    it("should add product, close, open drawer and scroll to checkout", () => {
+    it("should wait for the add before opening the cart and scrolling to checkout", () => {
+      window.cartController.addToCart.mockImplementation(() => {});
       const closeSpy = vi.spyOn(modalController, "close");
       modalController.open(1);
       modalController.service.updateQuantity(1);
@@ -365,14 +370,17 @@ describe("ModalController", () => {
         mockProduct,
         2,
         modalController.image,
+        expect.any(Function),
       );
-      expect(window.notifications.add).toHaveBeenCalledWith(
-        "Added to Cart",
-        "Test Product (2 items) has been added to your cart.",
-        "success",
-      );
-      expect(closeSpy).toHaveBeenCalled();
+      expect(closeSpy).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+      expect(window.cartController.openDrawer).not.toHaveBeenCalled();
+      expect(scrollIntoViewMock).not.toHaveBeenCalled();
+      expect(window.notifications.add).not.toHaveBeenCalled();
 
+      window.cartController.addToCart.mock.calls[0][3]();
+      expect(closeSpy).toHaveBeenCalled();
+      expect(modalController.service.isOpen).toBe(false);
       vi.advanceTimersByTime(400);
       expect(window.cartController.openDrawer).toHaveBeenCalled();
 
@@ -400,14 +408,17 @@ describe("ModalController", () => {
 
       modalController.handleBuyNow();
 
-      expect(closeSpy).toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+      expect(closeSpy).not.toHaveBeenCalled();
+      expect(scrollIntoViewMock).not.toHaveBeenCalled();
+      expect(window.notifications.add).not.toHaveBeenCalled();
     });
 
     it("should not scroll if checkout-btn missing", () => {
       document.getElementById("checkout-btn")?.remove();
       modalController.open(1);
       modalController.handleBuyNow();
-      vi.advanceTimersByTime(400);
+      vi.advanceTimersByTime(700);
       expect(scrollIntoViewMock).not.toHaveBeenCalled();
     });
   });
