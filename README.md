@@ -465,6 +465,13 @@ cookie acceptance between `vercel.app` and `onrender.com`. The proxy disables
 API response caching. Access and refresh tokens stay in HttpOnly cookies;
 the browser continues to send CSRF headers on writes.
 
+Before each write to a same-origin API, the client reads the current readable
+`csrfToken` cookie. This keeps its header in sync when another tab renews that
+cookie, rather than sending a stale in-memory value. If a valid same-origin
+cookie is unavailable, the client retains the JSON-token fallback. This cookie
+read is disabled for cross-origin APIs; those keep the existing JSON-token
+path. A rejected write is surfaced without an automatic refresh or replay.
+
 On reload, a cached display user first requests `/auth/csrf`. If access is
 rejected with HTTP 401, restoration can read only the non-HttpOnly, 64-character
 hex `csrfToken` cookie for an API on the same origin, then attempt `/auth/refresh`
@@ -508,6 +515,10 @@ missing/invalid CSRF, a rejected origin, successful logout and replay rejection
 of the revoked access/refresh tokens. It also checks removal of a stale cached
 identity when both authentication cookies are absent. Token values stay inside
 the test process; auth trace/video capture is disabled.
+The two-tab case renews CSRF through the real backend in a shared browser
+context, then verifies a protected cart write and fixture removal from the
+original page. This covers cookie/header synchronization, not cryptographic
+session binding or cross-account UI synchronization.
 
 The missing-access-cookie scenario exercises bootstrap HTTP 401, not elapsed
 JWT expiry. Backend expiry tests and deployed HTTPS/cookie acceptance remain

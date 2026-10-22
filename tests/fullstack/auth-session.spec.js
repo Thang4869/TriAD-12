@@ -129,6 +129,53 @@ test("refreshes a missing access session and enforces CSRF and logout revocation
   expect(revokedRefresh.status()).toBe(401);
 });
 
+test("keeps protected writes working after another tab renews the CSRF cookie", async ({
+  page,
+  context,
+}) => {
+  const initialCsrf = (await context.cookies()).find(
+    (cookie) => cookie.name === "csrfToken",
+  )?.value;
+  const otherTab = await context.newPage();
+  try {
+    await otherTab.goto("/pages/products.html");
+    // The second tab's API client shares the browser cookie jar. No JWT is
+    // edited, exported or printed; renewal goes through the real backend.
+    expect((await otherTab.request.get("/api/auth/csrf")).status()).toBe(200);
+    const renewedCsrf = (await context.cookies()).find(
+      (cookie) => cookie.name === "csrfToken",
+    )?.value;
+    expect(
+      Boolean(initialCsrf && renewedCsrf && initialCsrf !== renewedCsrf),
+    ).toBe(true);
+
+    const added = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === "/api/cart/items" &&
+        response.request().method() === "POST",
+    );
+    await page
+      .locator(".product-card")
+      .first()
+      .locator(".add-to-cart-btn")
+      .click();
+    expect((await added).status()).toBe(201);
+    await expect(page.locator("#cart-badge")).toHaveText("1");
+
+    await page.locator("#cart-icon-btn").click();
+    const removed = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname.startsWith("/api/cart/items/") &&
+        response.request().method() === "DELETE",
+    );
+    await page.locator(".cart-scroll .remove-btn").click();
+    expect((await removed).status()).toBe(200);
+    await expect(page.locator("#cart-badge")).toHaveText("0");
+  } finally {
+    await otherTab.close();
+  }
+});
+
 test("clears the cached identity when both authentication cookies are absent", async ({
   page,
   context,

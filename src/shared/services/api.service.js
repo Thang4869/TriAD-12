@@ -1,5 +1,5 @@
 import { APP_CONFIG } from "../../config/settings.config.js";
-import { getCsrfToken } from "../utils/csrf.js";
+import { getCsrfToken, readSameOriginCsrfCookie } from "../utils/csrf.js";
 
 export class ApiError extends Error {
   constructor(message, status, payload = null) {
@@ -19,8 +19,9 @@ export class ApiError extends Error {
  * đính kèm cookie — không cần và không thể tự set header Authorization từ JS.
  *
  * Các request POST/PUT/PATCH/DELETE tự động đính kèm header "x-csrf-token"
- * (đọc từ cookie không-httpOnly "csrfToken") để qua được csrfProtection
- * middleware của các route như /auth/refresh, /auth/logout.
+ * từ cookie không-httpOnly "csrfToken" hiện tại khi API cùng origin để tránh
+ * lệch token giữa các tab. Nếu không đọc được cookie, dùng token JSON đã nhận
+ * từ API; không đọc cookie của frontend để bổ sung header cho API khác origin.
  */
 export class ApiService {
   constructor(baseURL = APP_CONFIG.API_BASE_URL) {
@@ -47,7 +48,8 @@ export class ApiService {
     const finalHeaders = { "Content-Type": "application/json", ...headers };
 
     if (!["GET", "HEAD"].includes(method)) {
-      const csrfToken = getCsrfToken();
+      const csrfToken =
+        readSameOriginCsrfCookie(this.baseURL) ?? getCsrfToken();
       if (csrfToken) finalHeaders["x-csrf-token"] = csrfToken;
     }
 
