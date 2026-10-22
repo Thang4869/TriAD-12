@@ -447,22 +447,31 @@ files as a substitute for the Vite output.
 
 Copy `.env.example` to a local `.env` when overriding the default API URL.
 
-| Setting                | Local development              | Vercel staging                                              |
-| ---------------------- | ------------------------------ | ----------------------------------------------------------- |
-| `VITE_API_BASE_URL`    | `/api`, through the Vite proxy | Actual HTTPS backend URL ending in `/api`                   |
-| Backend                | Local API on port 5000         | Isolated staging API with PostgreSQL and Redis              |
-| Browser authentication | Cookies and CSRF from the API  | Secure cookies, exact CORS origins and browser verification |
-| Build output           | Vite dev server                | `dist/`                                                     |
+| Setting                | Local development              | Vercel staging                                            |
+| ---------------------- | ------------------------------ | --------------------------------------------------------- |
+| `VITE_API_BASE_URL`    | `/api`, through the Vite proxy | `/api`, through the checked-in Vercel HTTPS proxy         |
+| Backend                | Local API on port 5000         | Isolated staging API with PostgreSQL and Redis            |
+| Browser authentication | Cookies and CSRF from the API  | Same-origin secure cookies, CSRF and browser verification |
+| Build output           | Vite dev server                | `dist/`                                                   |
 
 `VITE_` variables are public browser configuration. Database passwords, SMTP
 credentials, OAuth client secrets and payment secrets belong on the backend.
 Changing a Vite environment variable requires a new build.
 
-The current staging configuration calls the API directly. Unrelated frontend
-and API domains require browser verification of cookie acceptance, CSRF,
-credentials and refresh/logout behavior. Introducing a same-origin proxy is a
-separate topology change: review forwarded client IPs, cookies and OAuth
-callback URLs together before adding it.
+Vercel staging uses the fixed `/api/:path*` external rewrite in `vercel.json`
+to reach `https://triad-api-staging.onrender.com/api/:path*`. Requests remain
+on the frontend origin, so authentication does not depend on cross-site
+cookie acceptance between `vercel.app` and `onrender.com`. The proxy disables
+API response caching. Access and refresh tokens stay in HttpOnly cookies;
+the browser continues to send CSRF headers on writes.
+
+The rewrite is specific to this staging backend. Review its destination before
+using this configuration with another environment. Do not increase Render's
+`TRUST_PROXY` just because Vercel adds a hop: the API is also directly reachable,
+and trusting arbitrary forwarded headers can allow client-IP spoofing. Verify
+client-IP attribution and rate-limit behavior through the deployed proxy before
+accepting it. Keep OAuth provider callbacks on their separately registered
+backend URLs; this rewrite does not complete or reconfigure those flows.
 
 ## Scripts
 
@@ -498,12 +507,13 @@ backend reachability or successful authenticated checkout.
 
 ## Production Build
 
-For deployed staging, configure the actual API URL in the hosting project
+For deployed Vercel staging, configure `VITE_API_BASE_URL=/api` in the hosting project
 before building. `vercel.json` runs `scripts/validate-deployment-env.cjs`,
-then the regular Vite build. The guard rejects a missing/relative URL, HTTP,
-loopback addresses and credential-bearing URLs instead of publishing a site
-that points to an unconfigured local API. It validates configuration syntax;
-the browser journey still has to verify the running backend.
+then the regular Vite build. The guard accepts `/api` only when a fixed HTTPS
+API rewrite is configured. It also accepts an explicit deployed HTTPS API URL
+for other hosting setups. It rejects missing values, other relative paths,
+HTTP, loopback addresses and credential-bearing URLs. It validates configuration
+syntax; the browser journey still has to verify the running backend.
 
 ## Deployment
 
@@ -511,14 +521,17 @@ the browser journey still has to verify the running backend.
 
 1. Grant the hosting connection access to the intended team and GitHub
    repository, then create or select the staging project for `TriAD-12`.
-2. Set `VITE_API_BASE_URL` to the actual staging API URL ending in `/api` for
-   the deployment environment being used. Do not invent a hostname or include
-   a secret in this value.
+2. Set `VITE_API_BASE_URL=/api` for the deployment environments being used,
+   after reviewing the matching HTTPS API rewrite in `vercel.json`. Changing
+   this setting requires rebuilding the deployment.
 3. On the backend, set `FRONTEND_URL` and `CORS_ORIGIN` to the deployed frontend
-   URL/origin, and keep `COOKIE_DOMAIN` unset for unrelated hosting domains.
+   URL/origin. Keep `COOKIE_DOMAIN` unset so proxied cookies remain host-only;
+   retain production `Secure`, HttpOnly and CSRF protections.
 4. Deploy a reviewed commit using the checked-in Vercel configuration. Record
    its actual URL and SHA; verify products, password login, refresh, cart,
-   COD checkout and logout in a browser.
+   COD checkout and logout in a browser. Confirm cookies survive a page reload,
+   failed cart writes do not report success, and forwarded client IPs and
+   rate limits behave as intended. A passing build is not this acceptance check.
 
 OAuth frontend flows and PayPal are separate unfinished features. Do not mark
 those complete just because the static deployment is ready.

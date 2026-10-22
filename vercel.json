@@ -4,7 +4,17 @@
   "installCommand": "npm ci",
   "buildCommand": "node scripts/validate-deployment-env.cjs && npm run build",
   "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://triad-api-staging.onrender.com/api/:path*"
+    },
     { "source": "/verify-email", "destination": "/verify-email.html" }
   ]
 }

@@ -1,8 +1,23 @@
 "use strict";
 
-function validateDeploymentApiUrl(value) {
+const { rewrites = [] } = require("../vercel.json");
+
+function validateDeploymentApiUrl(value, proxyRewrites = rewrites) {
   const message =
-    "Set VITE_API_BASE_URL to the deployed HTTPS API URL ending in /api, without credentials, query or fragment";
+    "Set VITE_API_BASE_URL to /api with a configured HTTPS proxy, or a deployed HTTPS API URL ending in /api, without credentials, query or fragment";
+
+  if (value === "/api") {
+    const proxy = proxyRewrites.find((route) => route.source === "/api/:path*");
+    if (
+      typeof proxy?.destination !== "string" ||
+      !proxy.destination.endsWith("/api/:path*")
+    ) {
+      throw new Error(message);
+    }
+    validateDeploymentApiUrl(proxy.destination.slice(0, -"/:path*".length), []);
+    return "/api";
+  }
+
   let url;
   try {
     url = new URL(value);
