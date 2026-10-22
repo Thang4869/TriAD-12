@@ -176,6 +176,31 @@ describe("ApiService", () => {
     });
   });
 
+  it.each(["Invalid credentials", "Please verify your email"])(
+    "should preserve backend error envelope message: %s",
+    async (message) => {
+      const payload = {
+        success: false,
+        error: message,
+        code: "APPLICATION.AUTHENTICATION",
+        correlationId: "req-auth-test",
+      };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: vi.fn().mockResolvedValue(payload),
+      });
+
+      await expect(service.post("/auth/login", {})).rejects.toMatchObject({
+        name: "ApiError",
+        message,
+        status: 401,
+        payload,
+      });
+    },
+  );
+
   it("should throw ApiError using backend error message", async () => {
     fetch.mockResolvedValue({
       ok: false,
@@ -195,23 +220,31 @@ describe("ApiService", () => {
     });
   });
 
-  it("should throw fallback ApiError when backend has no message", async () => {
-    fetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      headers: new Headers({
-        "content-type": "application/json",
-      }),
-      json: vi.fn().mockResolvedValue({}),
-    });
-
-    await expect(service.get("/failure")).rejects.toEqual(
-      expect.objectContaining({
-        name: "ApiError",
+  it.each([
+    {},
+    { error: { message: "Not a public message" } },
+    { error: "   ", message: [] },
+    { error: 500, message: false },
+  ])(
+    "should use status fallback for missing or malformed messages: %j",
+    async (payload) => {
+      fetch.mockResolvedValue({
+        ok: false,
         status: 500,
-      }),
-    );
-  });
+        headers: new Headers({
+          "content-type": "application/json",
+        }),
+        json: vi.fn().mockResolvedValue(payload),
+      });
+
+      await expect(service.get("/failure")).rejects.toMatchObject({
+        name: "ApiError",
+        message: "Yêu cầu thất bại (mã lỗi 500)",
+        status: 500,
+        payload,
+      });
+    },
+  );
 
   it("should throw network ApiError when fetch fails", async () => {
     fetch.mockRejectedValue(new Error("Network failure"));

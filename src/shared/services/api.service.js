@@ -74,7 +74,9 @@ export class ApiService {
 
     if (!response.ok) {
       const message =
-        payload?.message || `Yêu cầu thất bại (mã lỗi ${response.status})`;
+        (typeof payload?.error === "string" && payload.error.trim()) ||
+        (typeof payload?.message === "string" && payload.message.trim()) ||
+        `Yêu cầu thất bại (mã lỗi ${response.status})`;
       throw new ApiError(message, response.status, payload);
     }
 
