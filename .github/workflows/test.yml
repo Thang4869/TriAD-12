@@ -56,6 +56,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.62.1-noble
       options: --init --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 20
     permissions:
       contents: read
