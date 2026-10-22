@@ -57,6 +57,20 @@ export class AuthService {
     });
   }
 
+  async verifyEmail(token) {
+    const result = await this.api.get("/auth/verify-email", { token });
+
+    setCsrfToken(result.csrfToken);
+    this._persistUser(result.user);
+    eventBus.emit(EVENTS.AUTH_LOGIN, { user: result.user });
+
+    return { user: result.user };
+  }
+
+  async resendVerification(email) {
+    return this.api.post("/auth/resend-verification", { email });
+  }
+
   async login(email, password) {
     const result = await this.api.post("/auth/login", { email, password });
 

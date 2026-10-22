@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, "index.html"),
+        verifyEmail: resolve(import.meta.dirname, "verify-email.html"),
         about: resolve(import.meta.dirname, "pages/about.html"),
         blog: resolve(import.meta.dirname, "pages/blog.html"),
         blogDetail: resolve(import.meta.dirname, "pages/blog-detail.html"),

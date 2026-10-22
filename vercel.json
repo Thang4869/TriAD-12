@@ -3,5 +3,8 @@
   "framework": "vite",
   "installCommand": "npm ci",
   "buildCommand": "node scripts/validate-deployment-env.cjs && npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/verify-email", "destination": "/verify-email.html" }
+  ]
 }
