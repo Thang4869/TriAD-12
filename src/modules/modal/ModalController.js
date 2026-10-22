@@ -123,29 +123,13 @@ export class ModalController {
     const quantity = this.service.getQuantity();
     const product = window.productsController?.getProduct(productId);
 
-    if (!product) return;
+    const cart = window.cartController;
+    if (!product || !cart) return;
 
-    if (window.cartController) {
-      const img = this.image;
-      window.cartController.addToCart(product, quantity, img);
-    }
-
-    if (window.notifications) {
-      const qtyText = quantity > 1 ? ` (${quantity} items)` : "";
-      window.notifications.add(
-        "Added to Cart",
-        `${product.name}${qtyText} has been added to your cart.`,
-        "success",
-      );
-    }
-
-    this.close();
-
-    setTimeout(() => {
-      if (window.cartController) {
-        window.cartController.openDrawer();
-      }
-    }, 400);
+    cart.addToCart(product, quantity, this.image, () => {
+      this.close();
+      setTimeout(() => cart.openDrawer(), 400);
+    });
   }
 
   handleBuyNow() {
@@ -153,34 +137,20 @@ export class ModalController {
     const quantity = this.service.getQuantity();
     const product = window.productsController?.getProduct(productId);
 
-    if (!product) return;
+    const cart = window.cartController;
+    if (!product || !cart) return;
 
-    if (window.cartController) {
-      const img = this.image;
-      window.cartController.addToCart(product, quantity, img);
-    }
-
-    if (window.notifications) {
-      const qtyText = quantity > 1 ? ` (${quantity} items)` : "";
-      window.notifications.add(
-        "Added to Cart",
-        `${product.name}${qtyText} has been added to your cart.`,
-        "success",
-      );
-    }
-
-    this.close();
-
-    setTimeout(() => {
-      if (window.cartController) {
-        window.cartController.openDrawer();
+    cart.addToCart(product, quantity, this.image, () => {
+      this.close();
+      setTimeout(() => {
+        cart.openDrawer();
         setTimeout(() => {
           document.getElementById("checkout-btn")?.scrollIntoView({
             behavior: "smooth",
           });
         }, 300);
-      }
-    }, 400);
+      }, 400);
+    });
   }
 
   open(productId) {

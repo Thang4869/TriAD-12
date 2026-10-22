@@ -36,8 +36,8 @@ export default defineConfig({
     // Chạy backend cục bộ ở http://localhost:5000 (npm run dev trong repo DNEK).
     // Khi đó frontend chỉ cần gọi fetch("/api/...") như bình thường, Vite sẽ
     // tự forward sang backend, khỏi lo CORS lúc phát triển.
-    // Trên production (Vercel), bỏ qua proxy này - dùng VITE_API_BASE_URL
-    // trỏ thẳng tới domain backend trên Render (xem .env.example).
+    // Trên Vercel staging, dùng VITE_API_BASE_URL=/api và rewrite trong
+    // vercel.json để giữ request và cookie cùng origin với frontend.
     proxy: {
       "/api": {
         target:

@@ -114,6 +114,28 @@ describe("ApiService", () => {
     expect(options.headers).not.toHaveProperty("x-csrf-token");
   });
 
+  it("preserves cookies and CSRF when writing through the same-origin proxy", async () => {
+    service = new ApiService("/api");
+    setCsrfToken("test-csrf-token");
+    fetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockResolvedValue({ data: { id: "cart-item-1" } }),
+    });
+
+    await service.post("/cart/items", { productId: "product-1", quantity: 2 });
+
+    expect(fetch).toHaveBeenCalledWith("/api/cart/items", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": "test-csrf-token",
+      },
+      body: JSON.stringify({ productId: "product-1", quantity: 2 }),
+    });
+  });
+
   it("should send JSON body for write requests", async () => {
     fetch.mockResolvedValue({
       ok: true,

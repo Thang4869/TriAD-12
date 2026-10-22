@@ -1,6 +1,6 @@
 // API base URL:
 // - Local dev: để trống VITE_API_BASE_URL, vite.config.js sẽ proxy "/api" -> http://localhost:5000
-// - Production (Vercel): set VITE_API_BASE_URL=https://ten-backend.onrender.com/api trong Environment Variables
+// - Vercel staging: set VITE_API_BASE_URL=/api; vercel.json proxy sang HTTPS backend trên Render.
 const rawBaseUrl = import.meta.env?.VITE_API_BASE_URL || "/api";
 const API_BASE_URL = rawBaseUrl.endsWith("/")
   ? rawBaseUrl.slice(0, -1)

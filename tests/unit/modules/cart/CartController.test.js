@@ -251,6 +251,56 @@ describe("CartController", () => {
         );
       });
     });
+
+    it("runs completion only after the cart write resolves", async () => {
+      let resolveAdd;
+      service.add.mockReturnValue(
+        new Promise((resolve) => {
+          resolveAdd = resolve;
+        }),
+      );
+      const onAdded = vi.fn();
+
+      controller.addToCart(product, 2, null, onAdded);
+
+      expect(onAdded).not.toHaveBeenCalled();
+      expect(window.toast.success).not.toHaveBeenCalled();
+      resolveAdd([]);
+      await vi.waitFor(() => expect(onAdded).toHaveBeenCalledTimes(1));
+      expect(window.toast.success).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not complete or show success when the API rejects the add", async () => {
+      service.add.mockRejectedValue(new Error("No token provided"));
+      const onAdded = vi.fn();
+
+      controller.addToCart(product, 1, null, onAdded);
+
+      await vi.waitFor(() =>
+        expect(window.toast.error).toHaveBeenCalledWith(
+          "Không thể thêm vào giỏ",
+          "No token provided",
+        ),
+      );
+      expect(onAdded).not.toHaveBeenCalled();
+      expect(window.toast.success).not.toHaveBeenCalled();
+    });
+
+    it("retains completion when authentication defers the cart action", async () => {
+      let afterLogin;
+      window.authController.requireAuth.mockImplementation((action) => {
+        afterLogin = action;
+      });
+      const onAdded = vi.fn();
+
+      controller.addToCart(product, 3, null, onAdded);
+
+      expect(service.add).not.toHaveBeenCalled();
+      expect(onAdded).not.toHaveBeenCalled();
+      await afterLogin();
+      expect(service.add).toHaveBeenCalledWith("product-2", 3);
+      expect(onAdded).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("cart mutations", () => {
