@@ -23,9 +23,7 @@ describe("CheckoutRenderer", () => {
     expect(container.innerHTML).toContain("300.000 ₫");
     expect(container.innerHTML).toContain("Container 400ml x1");
     expect(container.innerHTML).toContain("110.000 ₫");
-    expect(document.getElementById("checkout-total").textContent).toBe(
-      "440.000 ₫",
-    );
+    expect(document.getElementById("checkout-total").textContent).toBe("—");
   });
 
   it("should render product names as text rather than markup", () => {
@@ -45,11 +43,32 @@ describe("CheckoutRenderer", () => {
     expect(container.querySelector("[onerror], [onload]")).toBeNull();
   });
 
-  it("should apply free shipping when total >= 500000", () => {
+  it("waits for server pricing instead of calculating shipping locally", () => {
     const items = [{ name: "Product A", quantity: 1, subtotal: 600000 }];
     renderer.renderSummary(items);
+    expect(document.getElementById("checkout-total").textContent).toBe("—");
+  });
+
+  it("renders the server quote including tax before order placement", () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<span id="checkout-subtotal"></span><span id="checkout-tax"></span><span id="checkout-shipping"></span><span id="checkout-discount"></span><p id="checkout-quote-status"></p>',
+    );
+    renderer.renderQuote({
+      subtotal: 150000,
+      tax: 15000,
+      shippingFee: 30000,
+      discountAmount: 0,
+      total: 195000,
+    });
     expect(document.getElementById("checkout-total").textContent).toBe(
-      "600.000 ₫",
+      "195.000 ₫",
+    );
+    expect(document.getElementById("checkout-tax").textContent).toBe(
+      "15.000 ₫",
+    );
+    expect(document.getElementById("checkout-shipping").textContent).toBe(
+      "30.000 ₫",
     );
   });
 

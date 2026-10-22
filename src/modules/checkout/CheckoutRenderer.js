@@ -33,15 +33,46 @@ export class CheckoutRenderer {
     });
     this.itemsContainer.replaceChildren(fragment);
 
-    const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-    const shipping = total >= 500000 ? 0 : 30000;
-    this.updateTotal(total + shipping);
+    this.updateTotal(null);
   }
 
   updateTotal(total) {
     if (this.totalElement) {
-      this.totalElement.textContent = formatPrice(total);
+      this.totalElement.textContent = total === null ? "—" : formatPrice(total);
     }
+  }
+
+  renderQuoteStatus(message) {
+    this.updateTotal(null);
+    for (const id of [
+      "checkout-subtotal",
+      "checkout-tax",
+      "checkout-shipping",
+      "checkout-discount",
+    ]) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = "—";
+    }
+    const status = document.getElementById("checkout-quote-status");
+    if (status) status.textContent = message;
+  }
+
+  renderQuote(quote) {
+    const fields = [
+      ["checkout-subtotal", quote.subtotal],
+      ["checkout-tax", quote.tax],
+      ["checkout-shipping", quote.shippingFee],
+      ["checkout-discount", quote.discountAmount],
+    ];
+    for (const [id, value] of fields) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = formatPrice(value);
+    }
+    this.updateTotal(quote.total);
+    const status = document.getElementById("checkout-quote-status");
+    if (status)
+      status.textContent =
+        "Tổng tiền đã bao gồm thuế, phí giao hàng và giảm giá áp dụng.";
   }
 
   renderSuccessPricing(order) {

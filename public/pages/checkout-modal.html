@@ -19,12 +19,32 @@
           id="checkout-items"
           class="space-y-2 max-h-40 overflow-y-auto"
         ></div>
+        <div class="space-y-1 mt-3 text-sm">
+          <div class="flex justify-between">
+            <span>Subtotal</span><span id="checkout-subtotal">—</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Tax</span><span id="checkout-tax">—</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Shipping</span><span id="checkout-shipping">—</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Discount</span><span id="checkout-discount">—</span>
+          </div>
+        </div>
         <div
           class="border-t border-gray-200 mt-3 pt-3 flex justify-between font-bold"
         >
           <span>Total:</span>
           <span id="checkout-total">0 ₫</span>
         </div>
+        <p
+          id="checkout-quote-status"
+          role="status"
+          aria-live="polite"
+          class="text-sm text-gray-600 mt-2"
+        ></p>
       </div>
 
       <div>
@@ -71,6 +91,13 @@
           id="discount-code"
           class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
+        <button
+          type="button"
+          id="apply-discount-btn"
+          class="mt-2 underline disabled:opacity-50"
+        >
+          Update total / apply discount
+        </button>
       </div>
 
       <div>
@@ -94,7 +121,8 @@
       </div>
       <button
         type="submit"
-        class="w-full bg-black text-white py-4 font-medium rounded hover:bg-gray-800 transition-colors text-lg"
+        disabled
+        class="w-full bg-black text-white py-4 font-medium rounded hover:bg-gray-800 disabled:opacity-50 transition-colors text-lg"
       >
         Place Order
       </button>

@@ -78,6 +78,7 @@ test("authenticated user can add a product and complete checkout", async ({
       return;
     }
     if (url.pathname.endsWith("/checkout") && method === "POST") {
+      expect(request.postDataJSON().expectedTotal).toBe(106000);
       await route.fulfill({
         json: {
           data: {
@@ -91,6 +92,22 @@ test("authenticated user can add a product and complete checkout", async ({
               discountCode: "SAVE5",
               total: 106000,
             },
+          },
+        },
+      });
+      return;
+    }
+    if (url.pathname.endsWith("/checkout/quote") && method === "GET") {
+      const discountAmount =
+        url.searchParams.get("discountCode") === "SAVE5" ? 5000 : 0;
+      await route.fulfill({
+        json: {
+          data: {
+            subtotal: 100000,
+            tax: 11000,
+            shippingFee: 0,
+            discountAmount,
+            total: 111000 - discountAmount,
           },
         },
       });
@@ -124,6 +141,8 @@ test("authenticated user can add a product and complete checkout", async ({
   await page.fill("#address", "123 Main St");
   await page.fill("#notes", "Leave at reception");
   await page.fill("#discount-code", "SAVE5");
+  await page.locator("#apply-discount-btn").click();
+  await expect(page.locator("#checkout-total")).toHaveText("106.000 ₫");
   await page.locator('#checkout-form button[type="submit"]').click();
 
   await expect(page.locator("#success-modal")).toBeVisible();

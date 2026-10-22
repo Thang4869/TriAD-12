@@ -5,6 +5,7 @@ import { CheckoutValidator } from "../../../../src/modules/checkout/CheckoutVali
 import { CheckoutRenderer } from "../../../../src/modules/checkout/CheckoutRenderer.js";
 import { EVENTS } from "../../../../src/shared/constants/Events.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
+import { ApiError } from "../../../../src/shared/services/api.service.js";
 
 vi.mock("../../../../src/modules/checkout/CheckoutService.js");
 vi.mock("../../../../src/modules/checkout/CheckoutRenderer.js");
@@ -51,6 +52,13 @@ describe("CheckoutController", () => {
     `;
 
     mockServiceInstance = {
+      getQuote: vi.fn().mockResolvedValue({
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 195000,
+      }),
       checkout: vi.fn().mockResolvedValue({
         id: "order-123",
         orderNumber: "ORD-123",
@@ -59,6 +67,8 @@ describe("CheckoutController", () => {
     mockRendererInstance = {
       renderSummary: vi.fn(),
       renderSuccessPricing: vi.fn(),
+      renderQuote: vi.fn(),
+      renderQuoteStatus: vi.fn(),
     };
 
     CheckoutService.mockImplementation(function () {
@@ -134,7 +144,9 @@ describe("CheckoutController", () => {
       expect(closeSpy).toHaveBeenCalled();
 
       const form = document.getElementById("checkout-form");
-      const submitSpy = vi.spyOn(controller, "handleSubmit");
+      const submitSpy = vi
+        .spyOn(controller, "handleSubmit")
+        .mockResolvedValue();
       form.dispatchEvent(new Event("submit", { cancelable: true }));
       expect(submitSpy).toHaveBeenCalled();
 
@@ -218,6 +230,16 @@ describe("CheckoutController", () => {
   });
 
   describe("handleSubmit", () => {
+    beforeEach(() => {
+      controller.quote = {
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 195000,
+      };
+      controller.quoteDiscountCode = undefined;
+    });
     it("should prevent default and validate form", async () => {
       const event = new Event("submit", { cancelable: true });
       const preventDefault = vi.spyOn(event, "preventDefault");
@@ -230,6 +252,7 @@ describe("CheckoutController", () => {
           notes: undefined,
           discountCode: undefined,
           paymentMethod: "COD",
+          expectedTotal: 195000,
         },
         null,
       );
@@ -333,6 +356,7 @@ describe("CheckoutController", () => {
     it("should normalize optional notes and discount code in the current payload", async () => {
       document.getElementById("notes").value = "  Leave at the front desk  ";
       document.getElementById("discount-code").value = "  SAVE10  ";
+      controller.quoteDiscountCode = "SAVE10";
 
       await controller.handleSubmit(new Event("submit", { cancelable: true }));
 
@@ -343,6 +367,7 @@ describe("CheckoutController", () => {
           notes: "Leave at the front desk",
           discountCode: "SAVE10",
           paymentMethod: "COD",
+          expectedTotal: 195000,
         },
         null,
       );
@@ -419,6 +444,130 @@ describe("CheckoutController", () => {
       await controller.handleSubmit(event);
 
       expect(() => vi.advanceTimersByTime(1500)).not.toThrow();
+    });
+  });
+
+  describe("server pricing quote", () => {
+    beforeEach(() => {
+      mockCartController.getItems.mockReturnValue([
+        { id: 1, name: "Container", quantity: 1, subtotal: 150000 },
+      ]);
+    });
+
+    it("blocks placement while the quote is pending and then uses the tax-inclusive total", async () => {
+      let resolveQuote;
+      mockServiceInstance.getQuote.mockReturnValue(
+        new Promise((resolve) => {
+          resolveQuote = resolve;
+        }),
+      );
+      const opening = controller.openCheckout();
+      const button = document.querySelector(
+        '#checkout-form button[type="submit"]',
+      );
+      expect(button.disabled).toBe(true);
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+      expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
+      resolveQuote({
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 195000,
+      });
+      await opening;
+      expect(button.disabled).toBe(false);
+      expect(mockRendererInstance.renderQuote).toHaveBeenCalledWith(
+        expect.objectContaining({ total: 195000, tax: 15000 }),
+      );
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+      expect(mockServiceInstance.checkout).toHaveBeenCalledWith(
+        expect.objectContaining({ expectedTotal: 195000 }),
+        expect.any(String),
+      );
+    });
+
+    it("keeps placement disabled when pricing cannot be loaded", async () => {
+      mockServiceInstance.getQuote.mockRejectedValue(
+        new Error("Quote unavailable"),
+      );
+      await controller.openCheckout();
+      expect(
+        document.querySelector('#checkout-form button[type="submit"]').disabled,
+      ).toBe(true);
+      expect(controller.quote).toBeNull();
+      expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
+      expect(mockToast.error).toHaveBeenCalled();
+    });
+
+    it("requires an updated quote after the backend rejects a changed total", async () => {
+      await controller.openCheckout();
+      mockServiceInstance.checkout.mockRejectedValue(
+        new ApiError("Checkout total changed", 400),
+      );
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+      expect(controller.quote).toBeNull();
+      expect(
+        document.querySelector('#checkout-form button[type="submit"]').disabled,
+      ).toBe(true);
+      expect(mockCartController.clear).not.toHaveBeenCalled();
+    });
+
+    it("invalidates the reviewed quote as soon as the discount changes", async () => {
+      await controller.openCheckout();
+      const input = document.getElementById("discount-code");
+      input.value = "SAVE10";
+      input.dispatchEvent(new Event("input"));
+      expect(controller.quote).toBeNull();
+      expect(
+        document.querySelector('#checkout-form button[type="submit"]').disabled,
+      ).toBe(true);
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+      expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
+      expect(mockServiceInstance.getQuote).toHaveBeenLastCalledWith("SAVE10");
+    });
+
+    it("ignores an old quote after a newer discount request completes", async () => {
+      let resolveOld;
+      mockServiceInstance.getQuote.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveOld = resolve;
+        }),
+      );
+      const oldRequest = controller.openCheckout();
+      document.getElementById("discount-code").value = "SAVE10";
+      await controller.loadQuote();
+      resolveOld({
+        subtotal: 100000,
+        tax: 10000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 140000,
+      });
+      await oldRequest;
+      expect(controller.quote.total).toBe(195000);
+      expect(mockRendererInstance.renderQuote).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores a quote that arrives after checkout closes", async () => {
+      let resolveQuote;
+      mockServiceInstance.getQuote.mockReturnValue(
+        new Promise((resolve) => {
+          resolveQuote = resolve;
+        }),
+      );
+      const opening = controller.openCheckout();
+      controller.closeCheckout();
+      resolveQuote({
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 195000,
+      });
+      await opening;
+      expect(controller.quote).toBeNull();
+      expect(mockRendererInstance.renderQuote).not.toHaveBeenCalled();
     });
   });
 

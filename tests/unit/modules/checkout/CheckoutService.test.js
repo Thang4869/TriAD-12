@@ -39,6 +39,7 @@ describe("CheckoutService", () => {
         phone: "0123456789",
         notes: "Test note",
         discountCode: undefined,
+        expectedTotal: 195000,
       };
 
       const result = await service.checkout(data, "checkout-attempt-123");
@@ -111,6 +112,39 @@ describe("CheckoutService", () => {
       ).rejects.toThrow("network failure");
 
       expect(eventBus.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getQuote", () => {
+    it("reads the current server price without placing an order", async () => {
+      const quote = {
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: 195000,
+      };
+      api.get.mockResolvedValue(quote);
+      await expect(service.getQuote("SAVE10")).resolves.toEqual(quote);
+      expect(api.get).toHaveBeenCalledWith("/checkout/quote", {
+        discountCode: "SAVE10",
+      });
+      expect(api.post).not.toHaveBeenCalled();
+      expect(eventBus.emit).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      {},
+      {
+        subtotal: 150000,
+        tax: 15000,
+        shippingFee: 30000,
+        discountAmount: 0,
+        total: -1,
+      },
+    ])("rejects an incomplete or invalid quote", async (quote) => {
+      api.get.mockResolvedValue(quote);
+      await expect(service.getQuote()).rejects.toThrow(/quote/i);
     });
   });
 

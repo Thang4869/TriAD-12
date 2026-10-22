@@ -13,6 +13,10 @@ export class CheckoutController {
     this.items = [];
     this.isSubmitting = false;
     this.idempotencyKey = null;
+    this.quote = null;
+    this.quoteDiscountCode = undefined;
+    this.quoteRequest = 0;
+    this.isLoadingQuote = false;
     this.setupEventListeners();
   }
 
@@ -33,9 +37,19 @@ export class CheckoutController {
     document
       .getElementById("success-close-btn")
       ?.addEventListener("click", () => this.closeSuccess());
+
+    document
+      .getElementById("discount-code")
+      ?.addEventListener("input", () => this.invalidateQuote());
+    document
+      .getElementById("apply-discount-btn")
+      ?.addEventListener("click", () => {
+        void this.loadQuote();
+      });
   }
 
   openCheckout() {
+    if (this.isSubmitting) return;
     const cartItems = window.cartController?.getItems() || [];
     if (cartItems.length === 0) {
       window.toast?.warning(
@@ -60,9 +74,64 @@ export class CheckoutController {
     });
     document.body.style.overflow = "hidden";
     eventBus.emit(EVENTS.CHECKOUT_STARTED);
+    return this.loadQuote();
+  }
+
+  invalidateQuote(message = "Vui lòng cập nhật tổng tiền trước khi đặt hàng.") {
+    this.quoteRequest += 1;
+    this.quote = null;
+    this.isLoadingQuote = false;
+    this.renderer.renderQuoteStatus(message);
+    this.updateSubmitState();
+  }
+
+  updateSubmitState() {
+    const button = document.querySelector(
+      '#checkout-form button[type="submit"]',
+    );
+    if (button) button.disabled = this.isSubmitting || !this.quote;
+    const updateButton = document.getElementById("apply-discount-btn");
+    if (updateButton)
+      updateButton.disabled = this.isSubmitting || this.isLoadingQuote;
+    const discountInput = document.getElementById("discount-code");
+    if (discountInput) discountInput.disabled = this.isSubmitting;
+  }
+
+  async loadQuote() {
+    if (this.isSubmitting) return false;
+    this.invalidateQuote("Đang tính tổng tiền...");
+    const request = this.quoteRequest;
+    const discountCode =
+      document.getElementById("discount-code")?.value.trim() || undefined;
+    this.isLoadingQuote = true;
+    this.updateSubmitState();
+    try {
+      const quote = await this.service.getQuote(discountCode);
+      if (request !== this.quoteRequest) return false;
+      this.quote = quote;
+      this.quoteDiscountCode = discountCode;
+      this.renderer.renderQuote(quote);
+      return true;
+    } catch (error) {
+      if (request !== this.quoteRequest) return false;
+      this.renderer.renderQuoteStatus(
+        "Không thể tải tổng tiền. Nhấn cập nhật để thử lại.",
+      );
+      window.toast?.error(
+        "Không thể tải tổng tiền",
+        error instanceof ApiError ? error.message : "Vui lòng thử lại.",
+      );
+      return false;
+    } finally {
+      if (request === this.quoteRequest) {
+        this.isLoadingQuote = false;
+        this.updateSubmitState();
+      }
+    }
   }
 
   closeCheckout() {
+    this.invalidateQuote();
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
     modal.classList.add("opacity-0");
@@ -92,11 +161,19 @@ export class CheckoutController {
       return;
     }
 
+    if (!this.quote || data.discountCode !== this.quoteDiscountCode) {
+      if (!this.isLoadingQuote && (await this.loadQuote())) {
+        window.toast?.info(
+          "Kiểm tra tổng tiền",
+          "Vui lòng xác nhận lại tổng tiền trước khi đặt hàng.",
+        );
+      }
+      return;
+    }
+    data.expectedTotal = this.quote.total;
+
     this.isSubmitting = true;
-    const submitBtn = document.querySelector(
-      "#checkout-form button[type=submit]",
-    );
-    if (submitBtn) submitBtn.disabled = true;
+    this.updateSubmitState();
     window.toast?.info("Đang xử lý", "Vui lòng chờ trong giây lát...");
 
     try {
@@ -123,9 +200,11 @@ export class CheckoutController {
           : "Không thể xử lý đơn hàng. Vui lòng thử lại.";
       window.toast?.error("Lỗi", message);
       window.notifications?.add("Đặt hàng thất bại", message, "warning");
+      if (error instanceof ApiError && error.status === 400)
+        this.invalidateQuote();
     } finally {
       this.isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
+      this.updateSubmitState();
     }
   }
 

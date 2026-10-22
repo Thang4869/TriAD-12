@@ -536,6 +536,15 @@ syntax; the browser journey still has to verify the running backend.
 OAuth frontend flows and PayPal are separate unfinished features. Do not mark
 those complete just because the static deployment is ready.
 
+Checkout requires the backend's authenticated `GET /api/checkout/quote` endpoint
+to be deployed first. The order form displays that server's subtotal, tax,
+shipping, discount and total; placement stays disabled until pricing loads.
+Changing the discount invalidates the quote. Use **Update total / apply discount**
+to review it again. The submitted `expectedTotal` prevents the backend from
+creating an order at a different total; retrying the same request retains its
+idempotency key. Verify the pre-submit amount equals the persisted receipt on
+the actual deployment before accepting this change.
+
 ### GitHub Pages
 
 The existing demo link is
