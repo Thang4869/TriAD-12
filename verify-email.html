@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Xác minh email | TriAD</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f5f5f0;
+        color: #20221f;
+        font-family: system-ui, sans-serif;
+      }
+      main {
+        width: 100%;
+        max-width: 460px;
+        padding: 32px;
+        border: 1px solid #deded5;
+        border-radius: 24px;
+        background: #fff;
+      }
+      h1 {
+        margin-top: 12px;
+        font-size: 28px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      form {
+        margin: 24px 0;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+      input,
+      button {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        font: inherit;
+      }
+      input {
+        border: 1px solid #777;
+      }
+      button {
+        margin-top: 12px;
+        border: 0;
+        background: #20221f;
+        color: #fff;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      a {
+        color: #42543a;
+        text-underline-offset: 4px;
+      }
+      [data-state="error"] {
+        color: #a02121;
+      }
+      [data-state="success"] {
+        color: #315d32;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <strong>TRIAD</strong>
+      <h1>Xác minh email</h1>
+      <p id="verification-status" role="status" aria-live="polite">
+        Đang kiểm tra liên kết…
+      </p>
+      <form id="resend-verification-form">
+        <label for="verification-email">Email</label>
+        <input
+          id="verification-email"
+          type="email"
+          autocomplete="email"
+          required
+        />
+        <button id="resend-verification-submit" type="submit">
+          Gửi lại email xác minh
+        </button>
+      </form>
+      <p><a href="/pages/products.html">Về trang sản phẩm</a></p>
+      <noscript>Bạn cần bật JavaScript để xác minh email.</noscript>
+    </main>
+    <script type="module">
+      import { initializeEmailVerification } from "./src/modules/auth/email-verification.js";
+      void initializeEmailVerification();
+    </script>
+  </body>
+</html>

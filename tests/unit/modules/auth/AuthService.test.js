@@ -42,6 +42,50 @@ describe("AuthService", () => {
     expect(result.user.id).toBe("user-1");
   });
 
+  it("persists the authenticated user and CSRF token after email verification", async () => {
+    const user = { id: "verified-user", email: "test@example.com" };
+    api.get.mockResolvedValue({ user, csrfToken: "verification-csrf-token" });
+
+    const result = await service.verifyEmail("example-verification-token");
+
+    expect(api.get).toHaveBeenCalledWith("/auth/verify-email", {
+      token: "example-verification-token",
+    });
+    expect(result.user).toEqual(user);
+    expect(service.isAuthenticated).toBe(true);
+    expect(getCsrfToken()).toBe("verification-csrf-token");
+    expect(new AuthService(api).getCurrentUser()).toEqual(user);
+  });
+
+  it("does not authenticate when email verification fails", async () => {
+    api.get.mockRejectedValue(new Error("Expired verification link"));
+
+    await expect(service.verifyEmail("expired-example-token")).rejects.toThrow(
+      "Expired verification link",
+    );
+
+    expect(service.isAuthenticated).toBe(false);
+    expect(getCsrfToken()).toBeNull();
+    expect(sessionStorage.getItem("triad_current_user")).toBeNull();
+  });
+
+  it("requests a new verification email without authenticating", async () => {
+    const response = {
+      message: "If that account exists, an email will be sent.",
+    };
+    api.post.mockResolvedValue(response);
+
+    await expect(
+      service.resendVerification("test@example.com"),
+    ).resolves.toEqual(response);
+
+    expect(api.post).toHaveBeenCalledWith("/auth/resend-verification", {
+      email: "test@example.com",
+    });
+    expect(service.isAuthenticated).toBe(false);
+    expect(getCsrfToken()).toBeNull();
+  });
+
   it("replaces CSRF token after refresh", async () => {
     setCsrfToken("old-csrf-token");
 
