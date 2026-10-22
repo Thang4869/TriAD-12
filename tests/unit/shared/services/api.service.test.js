@@ -14,6 +14,7 @@ describe("ApiService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clearCsrfToken();
+    document.cookie = "csrfToken=; Max-Age=0; Path=/";
 
     service = new ApiService("http://localhost:5000/api");
 
@@ -134,6 +135,27 @@ describe("ApiService", () => {
       },
       body: JSON.stringify({ productId: "product-1", quantity: 2 }),
     });
+  });
+
+  it("uses the current same-origin CSRF cookie after another tab rotates it", async () => {
+    service = new ApiService("/api");
+    const original = "a".repeat(64);
+    const rotated = "b".repeat(64);
+    setCsrfToken(original);
+    document.cookie = `csrfToken=${original}; Path=/`;
+    fetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockResolvedValue({ data: {} }),
+    });
+
+    await service.post("/cart/items", { productId: "product-1", quantity: 1 });
+    document.cookie = `csrfToken=${rotated}; Path=/`;
+    await service.post("/cart/items", { productId: "product-1", quantity: 1 });
+
+    expect(
+      fetch.mock.calls.map(([, options]) => options.headers["x-csrf-token"]),
+    ).toEqual([original, rotated]);
   });
 
   it("should send JSON body for write requests", async () => {
