@@ -159,7 +159,7 @@ test("keeps protected writes working after another tab renews the CSRF cookie", 
       .first()
       .locator(".add-to-cart-btn")
       .click();
-    expect((await added).status()).toBe(200);
+    expect((await added).status()).toBe(201);
     await expect(page.locator("#cart-badge")).toHaveText("1");
 
     await page.locator("#cart-icon-btn").click();
