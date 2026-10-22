@@ -137,25 +137,108 @@ describe("ApiService", () => {
     });
   });
 
-  it("uses the current same-origin CSRF cookie after another tab rotates it", async () => {
-    service = new ApiService("/api");
-    const original = "a".repeat(64);
-    const rotated = "b".repeat(64);
-    setCsrfToken(original);
-    document.cookie = `csrfToken=${original}; Path=/`;
+  it.each(["post", "put", "patch", "delete"])(
+    "uses the current same-origin CSRF cookie after rotation for %s",
+    async (method) => {
+      service = new ApiService("/api");
+      const original = "a".repeat(64);
+      const rotated = "b".repeat(64);
+      setCsrfToken(original);
+      document.cookie = `csrfToken=${original}; Path=/`;
+      fetch.mockResolvedValue({
+        ok: true,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: vi.fn().mockResolvedValue({ data: {} }),
+      });
+
+      await service[method]("/cart/items", {
+        productId: "product-1",
+        quantity: 1,
+      });
+      document.cookie = `csrfToken=${rotated}; Path=/`;
+      await service[method]("/cart/items", {
+        productId: "product-1",
+        quantity: 1,
+      });
+
+      expect(
+        fetch.mock.calls.map(([, options]) => options.headers["x-csrf-token"]),
+      ).toEqual([original, rotated]);
+    },
+  );
+
+  it("keeps the API's JSON token for a cross-origin API", async () => {
+    service = new ApiService("https://api.other-origin.invalid/api");
+    document.cookie = `csrfToken=${"b".repeat(64)}; Path=/`;
+    setCsrfToken("api-json-token");
     fetch.mockResolvedValue({
       ok: true,
       headers: new Headers({ "content-type": "application/json" }),
       json: vi.fn().mockResolvedValue({ data: {} }),
     });
 
-    await service.post("/cart/items", { productId: "product-1", quantity: 1 });
-    document.cookie = `csrfToken=${rotated}; Path=/`;
-    await service.post("/cart/items", { productId: "product-1", quantity: 1 });
+    await service.post("/cart/items", {});
 
-    expect(
-      fetch.mock.calls.map(([, options]) => options.headers["x-csrf-token"]),
-    ).toEqual([original, rotated]);
+    expect(fetch.mock.calls[0][1].headers["x-csrf-token"]).toBe(
+      "api-json-token",
+    );
+  });
+
+  it("does not send a frontend cookie to a cross-origin API without a JSON token", async () => {
+    service = new ApiService("https://api.other-origin.invalid/api");
+    document.cookie = `csrfToken=${"b".repeat(64)}; Path=/`;
+    fetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockResolvedValue({ data: {} }),
+    });
+
+    await service.post("/cart/items", {});
+
+    expect(fetch.mock.calls[0][1].headers).not.toHaveProperty("x-csrf-token");
+  });
+
+  it("does not add CSRF headers to safe reads", async () => {
+    service = new ApiService("/api");
+    document.cookie = `csrfToken=${"b".repeat(64)}; Path=/`;
+    setCsrfToken("cached-json-token");
+    fetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockResolvedValue({ data: {} }),
+    });
+
+    await service.get("/cart");
+
+    expect(fetch.mock.calls[0][1].headers).not.toHaveProperty("x-csrf-token");
+  });
+
+  it("preserves a rejected checkout's idempotency key without replaying the write", async () => {
+    service = new ApiService("/api");
+    const current = "b".repeat(64);
+    document.cookie = `csrfToken=${current}; Path=/`;
+    setCsrfToken("old-cached-token");
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 403,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi
+        .fn()
+        .mockResolvedValue({ error: "Invalid or missing CSRF token" }),
+    });
+
+    await expect(
+      service.post("/checkout", {}, { "Idempotency-Key": "checkout-key" }),
+    ).rejects.toMatchObject({ status: 403 });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][1]).toMatchObject({
+      credentials: "include",
+      headers: {
+        "x-csrf-token": current,
+        "Idempotency-Key": "checkout-key",
+      },
+    });
   });
 
   it("should send JSON body for write requests", async () => {
