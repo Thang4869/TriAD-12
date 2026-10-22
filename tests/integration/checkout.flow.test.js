@@ -86,6 +86,8 @@ describe("Checkout flow integration", () => {
         cartState = [];
         return jsonResponse({});
       }
+      if (url.includes("/checkout/quote") && method === "GET")
+        return jsonResponse(serverOrder);
       if (url.endsWith("/checkout") && method === "POST") {
         checkoutRequests.push(JSON.parse(options.body));
         if (failCheckout)
@@ -116,7 +118,10 @@ describe("Checkout flow integration", () => {
     cartController.addToCart(product);
     await waitFor(() => expect(cartController.getItems()).toHaveLength(1));
 
-    checkoutController.openCheckout();
+    await checkoutController.openCheckout();
+    expect(document.getElementById("checkout-total").textContent).toBe(
+      "106.000 ₫",
+    );
     document.getElementById("notes").value = "Leave at reception";
     await checkoutController.handleSubmit(
       new Event("submit", { cancelable: true }),
@@ -129,6 +134,7 @@ describe("Checkout flow integration", () => {
         notes: "Leave at reception",
         discountCode: "SAVE5",
         paymentMethod: "COD",
+        expectedTotal: 106000,
       },
     ]);
     expect(document.getElementById("success-order-id").textContent).toBe(
@@ -152,7 +158,7 @@ describe("Checkout flow integration", () => {
     await waitFor(() => expect(cartController.getItems()).toHaveLength(1));
     failCheckout = true;
 
-    checkoutController.openCheckout();
+    await checkoutController.openCheckout();
     await checkoutController.handleSubmit(
       new Event("submit", { cancelable: true }),
     );

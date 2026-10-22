@@ -57,6 +57,10 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   await page.fill("#phone", "0123456789");
   await page.fill("#address", "123 Full Stack CI Street");
   await page.fill("#notes", "Created by full frontend-backend CI journey");
+  await expect(
+    page.locator('#checkout-form button[type="submit"]'),
+  ).toBeEnabled();
+  const reviewedTotal = await page.locator("#checkout-total").textContent();
 
   const checkoutResponsePromise = page.waitForResponse(
     (response) =>
@@ -82,6 +86,10 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   expect(order?.id).toBeTruthy();
   expect(order?.orderNumber).toBeTruthy();
   expect(Number(order?.total)).toBeGreaterThan(0);
+  expect(reviewedTotal).toBe(formatPrice(order.total));
+  expect(checkoutResponse.request().postDataJSON().expectedTotal).toBe(
+    order.total,
+  );
 
   // Frontend phải render chính dữ liệu server trả về.
   await expect(page.locator("#success-modal")).toBeVisible();
