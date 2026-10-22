@@ -465,6 +465,21 @@ cookie acceptance between `vercel.app` and `onrender.com`. The proxy disables
 API response caching. Access and refresh tokens stay in HttpOnly cookies;
 the browser continues to send CSRF headers on writes.
 
+On reload, a cached display user first requests `/auth/csrf`. If access is
+rejected with HTTP 401, restoration can read only the non-HttpOnly, 64-character
+hex `csrfToken` cookie for an API on the same origin, then attempt `/auth/refresh`
+once. A successful response replaces the in-memory CSRF value and cached user.
+Rejected refresh (400/401/403), or an unavailable bootstrap cookie after 401,
+clears the cached identity. Network/dependency failures leave that unverified
+display cache available for a later retry; they do not establish authentication.
+Access/refresh JWTs are never read by JavaScript or stored in browser storage.
+
+This is reload recovery, not automatic replay of a failed cart/order request.
+An already-open page whose access expires can require a reload. Cross-origin
+API configurations cannot use a frontend-domain cookie for this bootstrap and
+require sign-in again after the access session ends. Verify those limits against
+the intended hosting topology.
+
 The rewrite is specific to this staging backend. Review its destination before
 using this configuration with another environment. Do not increase Render's
 `TRUST_PROXY` just because Vercel adds a hop: the API is also directly reachable,
@@ -475,16 +490,29 @@ backend URLs; this rewrite does not complete or reconfigure those flows.
 
 ## Scripts
 
-| Command                      | Purpose                                   |
-| ---------------------------- | ----------------------------------------- |
-| `npm run dev`                | Start the Vite development server         |
-| `npm run build`              | Build the multipage site into `dist/`     |
-| `npm run preview`            | Serve the built output locally            |
-| `npm test -- --run`          | Run Vitest unit and integration tests     |
-| `npm run test:coverage`      | Generate the configured coverage reports  |
-| `npm run test:e2e`           | Run Playwright browser tests              |
-| `npm run test:e2e:fullstack` | Run the frontend/backend checkout journey |
-| `npm run format`             | Format repository files                   |
+| Command                      | Purpose                                             |
+| ---------------------------- | --------------------------------------------------- |
+| `npm run dev`                | Start the Vite development server                   |
+| `npm run build`              | Build the multipage site into `dist/`               |
+| `npm run preview`            | Serve the built output locally                      |
+| `npm test -- --run`          | Run Vitest unit and integration tests               |
+| `npm run test:coverage`      | Generate the configured coverage reports            |
+| `npm run test:e2e`           | Run Playwright browser tests                        |
+| `npm run test:e2e:fullstack` | Run the frontend/backend auth and checkout journeys |
+| `npm run format`             | Format repository files                             |
+
+The frontend CI also runs fullstack tests against backend `main`, recording both
+checked-out commits and using disposable loopback PostgreSQL/Redis fixtures.
+The auth journey covers refresh rotation after removing the access cookie,
+missing/invalid CSRF, a rejected origin, successful logout and replay rejection
+of the revoked access/refresh tokens. It also checks removal of a stale cached
+identity when both authentication cookies are absent. Token values stay inside
+the test process; auth trace/video capture is disabled.
+
+The missing-access-cookie scenario exercises bootstrap HTTP 401, not elapsed
+JWT expiry. Backend expiry tests and deployed HTTPS/cookie acceptance remain
+separate checks. The auth replay suite refuses non-loopback base URLs; run it
+only against the disposable backend fixtures, never a hosted user account.
 
 ## Development Workflow
 

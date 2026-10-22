@@ -1,5 +1,9 @@
 import { apiService } from "../../shared/services/api.service.js";
-import { setCsrfToken, clearCsrfToken } from "../../shared/utils/csrf.js";
+import {
+  setCsrfToken,
+  clearCsrfToken,
+  readSameOriginCsrfCookie,
+} from "../../shared/utils/csrf.js";
 import { eventBus } from "../../core/services/EventBus.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 
@@ -14,9 +18,8 @@ const CURRENT_USER_KEY = "triad_current_user";
  * (id, email, tên) vào sessionStorage để UI (header) biết "đang đăng nhập
  * là ai" ngay cả sau khi refresh trang, KHÔNG phải để xác thực.
  *
- * Yêu cầu backend: patch authMiddleware để chấp nhận accessToken từ cookie
- * (xem ghi chú đã gửi trước đó) - nếu chưa patch, mọi gọi tới cart/checkout/
- * orders sau khi login vẫn sẽ trả 401.
+ * Khi khôi phục trang, xác minh access session qua backend; chỉ thử refresh
+ * sau HTTP 401 và khi có CSRF cookie cùng origin với API.
  */
 export class AuthService {
   constructor(api = apiService) {
@@ -117,8 +120,24 @@ export class AuthService {
     try {
       const result = await this.api.get("/auth/csrf");
       setCsrfToken(result.csrfToken);
-    } catch {
+    } catch (error) {
       clearCsrfToken();
+      if (error.status !== 401) return;
+
+      const token = readSameOriginCsrfCookie(this.api.baseURL);
+      if (token) {
+        setCsrfToken(token);
+        try {
+          await this.refresh();
+          return;
+        } catch (refreshError) {
+          clearCsrfToken();
+          if (![400, 401, 403].includes(refreshError.status)) return;
+        }
+      }
+
+      this._persistUser(null);
+      eventBus.emit(EVENTS.AUTH_LOGOUT);
     }
   }
 

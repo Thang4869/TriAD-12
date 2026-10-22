@@ -47,3 +47,109 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+
+  fullstack:
+    name: Frontend ↔ Backend auth and checkout
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: triad_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d triad_e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      PORT: 5000
+      DATABASE_URL: postgresql://test:test@127.0.0.1:5432/triad_e2e
+      REDIS_URL: redis://127.0.0.1:6379
+      JWT_ACCESS_SECRET: ci-fullstack-access-secret-32charslong-enough
+      JWT_REFRESH_SECRET: ci-fullstack-refresh-secret-32chars-long-enough
+      JWT_PREAUTH_SECRET: ci-fullstack-preauth-secret-32chars-long-enough
+      TOTP_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      TOTP_ISSUER: TriAD
+      FRONTEND_URL: http://127.0.0.1:3000
+      CORS_ORIGIN: http://127.0.0.1:3000
+      FULLSTACK_API_URL: http://127.0.0.1:5000
+      FULLSTACK_E2E_BASE_URL: http://127.0.0.1:3000
+      FULLSTACK_E2E_PORT: 3000
+      VITE_API_BASE_URL: /api
+    steps:
+      - name: Checkout frontend under review
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout current backend
+        uses: actions/checkout@v4
+        with:
+          repository: Thang4869/TriAD-Backend
+          ref: main
+          path: backend
+          persist-credentials: false
+      - name: Record tested source commits
+        run: |
+          git rev-parse HEAD
+          git -C backend rev-parse HEAD
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+      - name: Initialize disposable CI database
+        working-directory: backend
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+          npm run seed
+          npm run projection:rebuild:products
+      - name: Build and start backend
+        working-directory: backend
+        run: |
+          npm run build
+          npm start > "$RUNNER_TEMP/triad-auth-backend.log" 2>&1 &
+      - name: Wait for backend readiness
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:5000/health/ready > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+      - name: Install frontend dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Verify real auth and checkout journeys
+        run: npm run test:e2e:fullstack
+      - name: Upload fullstack report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fullstack-playwright-report
+          path: playwright-fullstack-report/
+          retention-days: 3

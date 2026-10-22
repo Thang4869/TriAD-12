@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthService } from "../../../../src/modules/auth/AuthService.js";
+import { ApiError } from "../../../../src/shared/services/api.service.js";
 import {
   clearCsrfToken,
   getCsrfToken,
@@ -14,8 +15,10 @@ describe("AuthService", () => {
   beforeEach(() => {
     clearCsrfToken();
     sessionStorage.clear();
+    document.cookie = "csrfToken=; Max-Age=0; Path=/";
 
     api = {
+      baseURL: "/api",
       get: vi.fn(),
       post: vi.fn(),
     };
@@ -139,6 +142,119 @@ describe("AuthService", () => {
 
     expect(api.get).not.toHaveBeenCalled();
     expect(getCsrfToken()).toBeNull();
+  });
+
+  it("restores an expired access session on reload using the same-origin CSRF cookie", async () => {
+    const user = {
+      id: "user-1",
+      email: "test@example.com",
+      firstName: "Current",
+    };
+    sessionStorage.setItem(
+      "triad_current_user",
+      JSON.stringify({ ...user, firstName: "Cached" }),
+    );
+    document.cookie = `csrfToken=${"a".repeat(64)}; Path=/`;
+    service = new AuthService(api);
+    api.get.mockRejectedValue(new ApiError("Access token expired", 401));
+    api.post.mockImplementation(async () => {
+      expect(getCsrfToken()).toBe("a".repeat(64));
+      return { user, csrfToken: "rotated-csrf-token" };
+    });
+
+    await service.restoreCsrfToken();
+
+    expect(api.post).toHaveBeenCalledExactlyOnceWith("/auth/refresh", {});
+    expect(getCsrfToken()).toBe("rotated-csrf-token");
+    expect(service.getCurrentUser()).toEqual(user);
+  });
+
+  it.each(["", "malformed-csrf-value"])(
+    "clears a rejected cached session when a usable CSRF cookie is unavailable: %s",
+    async (cookie) => {
+      sessionStorage.setItem(
+        "triad_current_user",
+        JSON.stringify({ id: "cached-user" }),
+      );
+      if (cookie) document.cookie = `csrfToken=${cookie}; Path=/`;
+      service = new AuthService(api);
+      api.get.mockRejectedValue(new ApiError("No access token", 401));
+
+      await service.restoreCsrfToken();
+
+      expect(api.post).not.toHaveBeenCalled();
+      expect(service.isAuthenticated).toBe(false);
+      expect(sessionStorage.getItem("triad_current_user")).toBeNull();
+      expect(getCsrfToken()).toBeNull();
+    },
+  );
+
+  it("does not send a frontend CSRF cookie to an API on another origin", async () => {
+    sessionStorage.setItem(
+      "triad_current_user",
+      JSON.stringify({ id: "cached-user" }),
+    );
+    document.cookie = `csrfToken=${"a".repeat(64)}; Path=/`;
+    api.baseURL = "https://api.other-origin.invalid/api";
+    service = new AuthService(api);
+    api.get.mockRejectedValue(new ApiError("Access token expired", 401));
+
+    await service.restoreCsrfToken();
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(service.isAuthenticated).toBe(false);
+    expect(getCsrfToken()).toBeNull();
+  });
+
+  it.each([400, 401, 403])(
+    "ends restoration after refresh is rejected with %i",
+    async (status) => {
+      sessionStorage.setItem(
+        "triad_current_user",
+        JSON.stringify({ id: "cached-user" }),
+      );
+      document.cookie = `csrfToken=${"a".repeat(64)}; Path=/`;
+      service = new AuthService(api);
+      api.get.mockRejectedValue(new ApiError("Access token expired", 401));
+      api.post.mockRejectedValue(new ApiError("Refresh rejected", status));
+
+      await service.restoreCsrfToken();
+
+      expect(api.post).toHaveBeenCalledExactlyOnceWith("/auth/refresh", {});
+      expect(service.isAuthenticated).toBe(false);
+      expect(getCsrfToken()).toBeNull();
+    },
+  );
+
+  it.each([0, 503])(
+    "does not claim logout when refresh is unavailable with %i",
+    async (status) => {
+      const user = { id: "cached-user" };
+      sessionStorage.setItem("triad_current_user", JSON.stringify(user));
+      document.cookie = `csrfToken=${"a".repeat(64)}; Path=/`;
+      service = new AuthService(api);
+      api.get.mockRejectedValue(new ApiError("Access token expired", 401));
+      api.post.mockRejectedValue(new ApiError("Unavailable", status));
+
+      await service.restoreCsrfToken();
+
+      expect(api.post).toHaveBeenCalledExactlyOnceWith("/auth/refresh", {});
+      expect(service.getCurrentUser()).toEqual(user);
+      expect(getCsrfToken()).toBeNull();
+    },
+  );
+
+  it("does not start rotation when CSRF restoration fails with a dependency error", async () => {
+    const user = { id: "cached-user" };
+    sessionStorage.setItem("triad_current_user", JSON.stringify(user));
+    document.cookie = `csrfToken=${"a".repeat(64)}; Path=/`;
+    service = new AuthService(api);
+    api.get.mockRejectedValue(new ApiError("Unavailable", 503));
+
+    await service.restoreCsrfToken();
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(service.getCurrentUser()).toEqual(user);
   });
 
   it("clears CSRF token when restoration fails", async () => {
