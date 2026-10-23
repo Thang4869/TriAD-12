@@ -97,10 +97,6 @@ test("deployed API proxy CORS accepts the frontend but rejects an arbitrary orig
 test("direct Render API rejects forged edge and forwarding headers", async ({
   request,
 }) => {
-  test.skip(
-    process.env.STAGING_REQUIRE_EDGE !== "true",
-    "Authenticated edge deployment has not been activated for acceptance",
-  );
   const response = await request.get(`${BACKEND}/api/products`, {
     headers: {
       "X-Triad-Edge-Key": "forged-not-the-hosting-secret",
