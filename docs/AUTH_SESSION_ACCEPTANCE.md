@@ -46,19 +46,16 @@ access cookie, submits one protected write, verifies 401 without a refresh or
 replay, signs in explicitly, and verifies the previously saved cart remains.
 It then removes its fixture and logs out. Auth traces/video are disabled.
 
-## Deployment acceptance still required
+## Deployment acceptance (historical gap, closed on 2026-10-23)
 
 The backend hardening is [TriAD-Backend PR #217](https://github.com/Thang4869/TriAD-Backend/pull/217).
 Its signed CSRF token preserves the existing 64-hex format, so this frontend
 remains compatible with both the previous and signed-CSRF backend.
 
-Record exact reviewed commits and live deployment IDs after merge. On the new
-HTTPS deployment, verify cookie Secure/SameSite/host-only/Path behavior, allowed
-and denied browser origins, reload recovery, another tab renewing CSRF, and the
-open-page expiry UX. Use disposable sessions for negative/replay probes; never
-export a real hosted user's JWTs. Local loopback browser tests are not evidence
-of hosted HTTPS cookie acceptance. Keep backend #90/frontend #23 open until the
-deployed evidence is recorded.
+These were the outstanding verification requirements before the actual hosted
+Chromium acceptance run below. The full authenticated test ran successfully on
+2026-10-23, not just on loopback; local browser tests still provide additional
+expiry/regression coverage. No JWT values were exported.
 
 ## Hosted HTTPS browser test — 2026-10-23 (#23 / Backend #90)
 
@@ -80,25 +77,14 @@ deployed evidence is recorded.
   has completed login → cookie flags/host-only Path → missing/invalid/valid CSRF
   → reload/second tab → refresh → logout in actual Chromium.
 
-### Completing the final credentialed acceptance safely
+### Final authenticated HTTPS acceptance — PASS (2026-10-23)
 
-1. Create or identify a **dedicated staging-only test account**, not a real
-   personal login or production account. Confirm email verification is complete
-   and 2FA is disabled for this disposable fixture only.
-2. In the **TriAD-12 GitHub repository**, go to
-   `Settings → Secrets and variables → Actions` and configure the encrypted
-   repository secrets `STAGING_AUTH_EMAIL` and `STAGING_AUTH_PASSWORD`.
-   Do **not** paste the password in a PR, issue, log or chat.
-3. The `hosted-staging-auth` CI job deliberately never passes these secrets
-   to pull-request code; only a trusted `main` run may execute authenticated
-   tests. Open `Actions → Test & Coverage → Run workflow`, select branch
-   `main`, then inspect the `Deployed HTTPS origin / cookie acceptance` job.
-4. Require **5 PASS / 0 SKIPPED** and exact source/deployment IDs, with
-   `test:coverage`, fullstack, build and security checks green. The test
-   disables trace, video and screenshots; it does not emit cookie/JWT values.
-5. Inspect any failures and fix the actual Vercel rewrite, cookie/CORS settings
-   or session behavior as needed. **Only then close Backend #90 and FE #23.**
+- **Run:** [GitHub Actions #39967055295](https://github.com/Thang4869/TriAD-12/actions/runs/39967055295), manually dispatched on trusted `main`, source `7e345a3ac0de7c103ca058d5a9203e794905dc41`, conclusion `success`.
+- **Jobs:** 3/3 succeeded (unit/coverage + browser, disposable PostgreSQL/Redis fullstack, deployed HTTPS acceptance).
+- **Live hosted Chromium:** **5 passed, 0 skipped**, in 11.6 seconds, at `tests/staging/auth-origin.spec.js`. All hosted checks used Vercel `https://triad-staging-three.vercel.app` and Render `https://triad-api-staging.onrender.com`; the remaining authenticated scenario received configured GitHub repository secrets in the trusted `main` workflow.
+- **Auth browser assertions:** login through same-origin HTTPS `/api`; cookies `Secure`, `SameSite=None`, host-only domain and `Path=/`; access/refresh `HttpOnly`, CSRF browser-readable, no JWTs in JSON; missing/invalid CSRF 403 and valid CSRF allowed through middleware; reload, second-tab CSRF bootstrap, refresh, logout, cookie removal, and protected access after logout 401.
+- **Unauthenticated assertions:** HTTPS origin and catalog rewrite; missing session CSRF/refresh rejected; valid and disallowed CORS origins via Render; rejected simple-form login did not issue cookies.
+- **Deploy identity:** Render `dep-dbdm9n8ae00c738mhi10` (`d986ced677cd1e42c3b4fd23999a6bbed5c6f10c`, live). Frontend Vercel deployed source `7e345a3`.
+- **Security boundary:** Staging-only dedicated test account stored in GitHub Actions secrets, no raw password/JWT values emitted, and trace/video/screenshot capture disabled. Secrets never run on untrusted PR events.
 
-Never use the existing loopback fixture `user@example.com/user123` against
-hosted staging. Negative tests do not substitute for authenticated HTTPS
-browser acceptance; leave both issues open while credentials are absent.
+**Accepted:** [Frontend #23](https://github.com/Thang4869/TriAD-12/issues/23) and [Backend #90](https://github.com/Thang4869/TriAD-Backend/issues/90). This verifies the current deployed same-origin proxy topology and session behavior, not arbitrary cross-site deployments or availability during a Redis outage. The later cases remain in dedicated reliability/proxy work.
