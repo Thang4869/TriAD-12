@@ -50,6 +50,52 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
+  hosted-staging-auth:
+    name: Deployed HTTPS origin / cookie acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --init --ipc=host
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Document hosted-auth acceptance coverage
+        env:
+          # Never expose the hosted login account to pull_request code.
+          STAGING_AUTH_EMAIL: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_EMAIL || '' }}
+          STAGING_AUTH_PASSWORD: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_PASSWORD || '' }}
+        run: |
+          if [[ -z "$STAGING_AUTH_EMAIL" || -z "$STAGING_AUTH_PASSWORD" ]]; then
+            echo "HTTPS public-origin negatives: enabled; authenticated browser acceptance: SKIPPED (dedicated staging credentials not configured for a trusted main-branch run)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "HTTPS public-origin and authenticated browser acceptance: enabled; dedicated staging account credentials supplied via GitHub Actions secrets." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Check actual Vercel and Render HTTPS behavior
+        env:
+          STAGING_AUTH_EMAIL: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_EMAIL || '' }}
+          STAGING_AUTH_PASSWORD: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_PASSWORD || '' }}
+        run: npx playwright test --config=playwright.staging.config.ts
+      - name: Upload token-free staging acceptance results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-staging-auth-results
+          path: staging-auth-results.json
+          retention-days: 7
+          if-no-files-found: ignore
+
   fullstack:
     name: Frontend ↔ Backend auth and checkout
     runs-on: ubuntu-latest
