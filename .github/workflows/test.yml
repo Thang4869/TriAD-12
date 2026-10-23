@@ -85,7 +85,6 @@ jobs:
           fi
       - name: Check actual Vercel and Render HTTPS behavior
         env:
-          STAGING_REQUIRE_EDGE: ${{ vars.STAGING_REQUIRE_EDGE }}
           STAGING_AUTH_EMAIL: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_EMAIL || '' }}
           STAGING_AUTH_PASSWORD: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_PASSWORD || '' }}
         run: npx playwright test --config=playwright.staging.config.ts
