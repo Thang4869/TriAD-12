@@ -90,9 +90,9 @@ deployed evidence is recorded.
    repository secrets `STAGING_AUTH_EMAIL` and `STAGING_AUTH_PASSWORD`.
    Do **not** paste the password in a PR, issue, log or chat.
 3. The `hosted-staging-auth` CI job deliberately never passes these secrets
-   to pull-request code; only a trusted `main` push may execute authenticated
-   tests. Run the workflow from an approved main change and inspect the
-   `Deployed HTTPS origin / cookie acceptance` job.
+   to pull-request code; only a trusted `main` run may execute authenticated
+   tests. Open `Actions → Test & Coverage → Run workflow`, select branch
+   `main`, then inspect the `Deployed HTTPS origin / cookie acceptance` job.
 4. Require **5 PASS / 0 SKIPPED** and exact source/deployment IDs, with
    `test:coverage`, fullstack, build and security checks green. The test
    disables trace, video and screenshots; it does not emit cookie/JWT values.
