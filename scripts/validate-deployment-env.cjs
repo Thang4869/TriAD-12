@@ -8,6 +8,7 @@ function validateDeploymentApiUrl(value, proxyRewrites = rewrites) {
 
   if (value === "/api") {
     const proxy = proxyRewrites.find((route) => route.source === "/api/:path*");
+    if (proxy?.destination === "/api/proxy") return "/api";
     if (
       typeof proxy?.destination !== "string" ||
       !proxy.destination.endsWith("/api/:path*")

@@ -68,10 +68,10 @@ test("anonymous HTTPS requests cannot bootstrap a CSRF or refresh an absent sess
   ).toHaveLength(0);
 });
 
-test("deployed Render CORS accepts the frontend but rejects an arbitrary origin", async ({
+test("deployed API proxy CORS accepts the frontend but rejects an arbitrary origin", async ({
   request,
 }) => {
-  const target = new URL("/api/auth/login", BACKEND).href;
+  const target = new URL("/api/auth/login", FRONTEND).href;
   const common = {
     "Access-Control-Request-Method": "POST",
     "Access-Control-Request-Headers": "content-type,x-csrf-token",
@@ -92,6 +92,24 @@ test("deployed Render CORS accepts the frontend but rejects an arbitrary origin"
   });
   expect(denied.status()).toBeGreaterThanOrEqual(400);
   expect(denied.headers()["access-control-allow-origin"]).toBeUndefined();
+});
+
+test("direct Render API rejects forged edge and forwarding headers", async ({
+  request,
+}) => {
+  test.skip(
+    process.env.STAGING_REQUIRE_EDGE !== "true",
+    "Authenticated edge deployment has not been activated for acceptance",
+  );
+  const response = await request.get(`${BACKEND}/api/products`, {
+    headers: {
+      "X-Triad-Edge-Key": "forged-not-the-hosting-secret",
+      "X-Triad-Client-Ip": "203.0.113.99",
+      "X-Forwarded-For": "203.0.113.99",
+    },
+  });
+  expect(response.status()).toBe(403);
+  expect((await response.json()).error).toBe("Trusted API edge required");
 });
 
 test("the deployed proxy rejects a simple-form login without issuing cookies", async ({
@@ -120,22 +138,25 @@ test("disposable hosted session enforces cookie, CSRF, refresh and logout", asyn
   await page.goto("/pages/products.html");
   let loggedIn = false;
   try {
-    const login = await page.evaluate(async (credentials) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-      const body = await response.json();
-      return {
-        status: response.status,
-        hasTokensInJson: Boolean(
-          body?.data?.accessToken || body?.data?.refreshToken,
-        ),
-        requires2FA: body?.data?.requires2FA === true,
-      };
-    }, { email, password });
+    const login = await page.evaluate(
+      async (credentials) => {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
+        const body = await response.json();
+        return {
+          status: response.status,
+          hasTokensInJson: Boolean(
+            body?.data?.accessToken || body?.data?.refreshToken,
+          ),
+          requires2FA: body?.data?.requires2FA === true,
+        };
+      },
+      { email, password },
+    );
     expect(login).toEqual({
       status: 200,
       hasTokensInJson: false,
@@ -206,15 +227,19 @@ test("disposable hosted session enforces cookie, CSRF, refresh and logout", asyn
         cache: "no-store",
       });
       const body = await response.json();
-      return { status: response.status, tokenPresent: /^[a-f0-9]{64}$/.test(body?.data?.csrfToken ?? "") };
+      return {
+        status: response.status,
+        tokenPresent: /^[a-f0-9]{64}$/.test(body?.data?.csrfToken ?? ""),
+      };
     });
     expect(renewed).toEqual({ status: 200, tokenPresent: true });
 
     const otherTab = await context.newPage();
     try {
       await otherTab.goto("/pages/products.html");
-      const status = await otherTab.evaluate(async () =>
-        (await fetch("/api/auth/csrf", { credentials: "include" })).status,
+      const status = await otherTab.evaluate(
+        async () =>
+          (await fetch("/api/auth/csrf", { credentials: "include" })).status,
       );
       expect(status).toBe(200);
     } finally {
@@ -233,7 +258,9 @@ test("disposable hosted session enforces cookie, CSRF, refresh and logout", asyn
       const body = await response.json();
       return {
         status: response.status,
-        hasTokensInJson: Boolean(body?.data?.accessToken || body?.data?.refreshToken),
+        hasTokensInJson: Boolean(
+          body?.data?.accessToken || body?.data?.refreshToken,
+        ),
       };
     }, currentCsrf);
     expect(refresh).toEqual({ status: 200, hasTokensInJson: false });
@@ -257,28 +284,34 @@ test("disposable hosted session enforces cookie, CSRF, refresh and logout", asyn
       ),
     ).toHaveLength(0);
     expect(
-      await page.evaluate(async () =>
-        (await fetch("/api/cart", { credentials: "include" })).status,
+      await page.evaluate(
+        async () =>
+          (await fetch("/api/cart", { credentials: "include" })).status,
       ),
     ).toBe(401);
   } finally {
     if (loggedIn) {
       // Best-effort cleanup of a disposable staging session; no token logging.
-      await page.evaluate(async () => {
-        const token = document.cookie.split(";")
-          .map((item) => item.trim())
-          .find((item) => item.startsWith("csrfToken="));
-        if (!token) return;
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": decodeURIComponent(token.slice("csrfToken=".length)),
-          },
-          body: "{}",
-        }).catch(() => undefined);
-      }).catch(() => undefined);
+      await page
+        .evaluate(async () => {
+          const token = document.cookie
+            .split(";")
+            .map((item) => item.trim())
+            .find((item) => item.startsWith("csrfToken="));
+          if (!token) return;
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": decodeURIComponent(
+                token.slice("csrfToken=".length),
+              ),
+            },
+            body: "{}",
+          }).catch(() => undefined);
+        })
+        .catch(() => undefined);
     }
   }
 });
