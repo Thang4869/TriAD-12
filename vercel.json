@@ -13,7 +13,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://triad-api-staging.onrender.com/api/:path*"
+      "destination": "/api/proxy"
     },
     { "source": "/verify-email", "destination": "/verify-email.html" }
   ]
