@@ -59,3 +59,46 @@ open-page expiry UX. Use disposable sessions for negative/replay probes; never
 export a real hosted user's JWTs. Local loopback browser tests are not evidence
 of hosted HTTPS cookie acceptance. Keep backend #90/frontend #23 open until the
 deployed evidence is recorded.
+
+## Hosted HTTPS browser test — 2026-10-23 (#23 / Backend #90)
+
+- Backend deployed to Render Singapore: `triad-api-staging`, deployment
+  `dep-dbdm9n8ae00c738mhi10`, source
+  `d986ced677cd1e42c3b4fd23999a6bbed5c6f10c`, status **live**.
+  Render health log returned HTTP 200 for `/health/ready`.
+- Frontend canonical origin: `https://triad-staging-three.vercel.app`;
+  deployment `dpl_E7qerinuKs53La4HFaRCqDXPEaRy`,
+  source `1c312eb7ac14ea8d981f46448c05403aeff75229`.
+- The Playwright test `tests/staging/auth-origin.spec.js` uses actual public
+  HTTPS Vercel/Render endpoints, unlike local loopback fullstack tests.
+  First PR CI run:
+  [GitHub Actions #39964964556](https://github.com/Thang4869/TriAD-12/actions/runs/39964964556).
+  **4 PASS, 1 SKIPPED:** canonical origin/proxy, anonymous CSRF/refresh,
+  allowed/blocked Render CORS preflight and simple-form login rejection.
+- The credentialed scenario is deliberately **not PASS** until a disposable,
+  verified, dedicated staging account (with 2FA disabled for this scenario)
+  has completed login → cookie flags/host-only Path → missing/invalid/valid CSRF
+  → reload/second tab → refresh → logout in actual Chromium.
+
+### Completing the final credentialed acceptance safely
+
+1. Create or identify a **dedicated staging-only test account**, not a real
+   personal login or production account. Confirm email verification is complete
+   and 2FA is disabled for this disposable fixture only.
+2. In the **TriAD-12 GitHub repository**, go to
+   `Settings → Secrets and variables → Actions` and configure the encrypted
+   repository secrets `STAGING_AUTH_EMAIL` and `STAGING_AUTH_PASSWORD`.
+   Do **not** paste the password in a PR, issue, log or chat.
+3. The `hosted-staging-auth` CI job deliberately never passes these secrets
+   to pull-request code; only a trusted `main` run may execute authenticated
+   tests. Open `Actions → Test & Coverage → Run workflow`, select branch
+   `main`, then inspect the `Deployed HTTPS origin / cookie acceptance` job.
+4. Require **5 PASS / 0 SKIPPED** and exact source/deployment IDs, with
+   `test:coverage`, fullstack, build and security checks green. The test
+   disables trace, video and screenshots; it does not emit cookie/JWT values.
+5. Inspect any failures and fix the actual Vercel rewrite, cookie/CORS settings
+   or session behavior as needed. **Only then close Backend #90 and FE #23.**
+
+Never use the existing loopback fixture `user@example.com/user123` against
+hosted staging. Negative tests do not substitute for authenticated HTTPS
+browser acceptance; leave both issues open while credentials are absent.
