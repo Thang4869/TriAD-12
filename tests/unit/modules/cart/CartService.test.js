@@ -37,6 +37,69 @@ describe("CartService", () => {
     service = new CartService(repository);
   });
 
+  it("resets the view without clearing the persisted cart", () => {
+    service.items = [item()];
+    expect(service.reset()).toEqual([]);
+    expect(repository.clear).not.toHaveBeenCalled();
+    expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.CART_CLEARED);
+    expect(service.count).toBe(0);
+  });
+
+  it("ignores a cart load from an older login session", async () => {
+    let finish;
+    repository.getCart.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const oldLoad = service.load();
+    service.reset();
+    const currentItems = [item({ id: "new-session-item" })];
+    repository.getCart.mockResolvedValue(currentItems);
+    await service.load();
+    finish([item({ id: "old-session-item" })]);
+    await oldLoad;
+    expect(service.items).toEqual(currentItems);
+  });
+
+  it("does not restore old items or announce an add after the session resets", async () => {
+    let finish;
+    repository.addItem.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const oldAdd = service.add(1);
+    service.reset();
+    finish([item()]);
+    await expect(oldAdd).rejects.toThrow("Phiên đăng nhập đã thay đổi");
+    expect(service.items).toEqual([]);
+    expect(eventBus.emit).not.toHaveBeenCalledWith(
+      EVENTS.CART_ITEM_ADDED,
+      expect.anything(),
+    );
+  });
+
+  it("does not clear a newer session's view after an old clear completes", async () => {
+    let finish;
+    repository.clear.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const oldClear = service.clear();
+    service.reset();
+    const currentItems = [item({ id: "new-session-item" })];
+    repository.getCart.mockResolvedValue(currentItems);
+    await service.load();
+    finish();
+    await expect(oldClear).rejects.toThrow("Phiên đăng nhập đã thay đổi");
+    expect(service.items).toEqual(currentItems);
+  });
+
   describe("load", () => {
     it("loads cart from repository and notifies", async () => {
       const items = [item()];

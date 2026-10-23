@@ -192,3 +192,78 @@ test("clears the cached identity when both authentication cookies are absent", a
   await expect(page.locator("#account-btn")).toContainText("Đăng nhập");
   expect((await page.request.get("/api/cart")).status()).toBe(401);
 });
+
+test("does not replay an expired open-page write and preserves the saved cart on explicit sign-in", async ({
+  page,
+  context,
+}) => {
+  const cartWrite = (response) =>
+    new URL(response.url()).pathname === "/api/cart/items" &&
+    response.request().method() === "POST";
+  const product = page
+    .locator(".product-card")
+    .first()
+    .locator(".add-to-cart-btn");
+  const added = page.waitForResponse(cartWrite);
+  await product.click();
+  expect((await added).status()).toBe(201);
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+
+  // Disposable loopback fixture only; keep the page open and remove only access.
+  await context.clearCookies({ name: "accessToken" });
+  let writes = 0;
+  let refreshes = 0;
+  let deletes = 0;
+  page.on("request", (req) => {
+    const path = new URL(req.url()).pathname;
+    if (path === "/api/cart/items" && req.method() === "POST") writes++;
+    if (path === "/api/auth/refresh" && req.method() === "POST") refreshes++;
+    if (path === "/api/cart" && req.method() === "DELETE") deletes++;
+  });
+  const expired = page.waitForResponse(cartWrite);
+  await product.click();
+  expect((await expired).status()).toBe(401);
+  await expect(page.locator("#account-btn")).toContainText("Đăng nhập");
+  await expect(
+    page.getByText("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(writes).toBe(1);
+  expect(refreshes).toBe(0);
+
+  await page.locator("#account-btn").click();
+  await page.locator("#auth-email").fill("user@example.com");
+  await page.locator("#auth-password").fill("user123");
+  const login = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/auth/login" &&
+      response.request().method() === "POST",
+  );
+  await page.locator("#auth-submit-btn").click();
+  expect((await login).status()).toBe(200);
+  await expect(page.locator("#auth-modal")).toBeHidden();
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+  expect(writes).toBe(1);
+  expect(deletes).toBe(0);
+
+  await page.locator("#cart-icon-btn").click();
+  const removed = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname.startsWith("/api/cart/items/") &&
+      response.request().method() === "DELETE",
+  );
+  await page.locator(".cart-scroll .remove-btn").click();
+  expect((await removed).status()).toBe(200);
+  await expect(page.locator("#cart-badge")).toHaveText("0");
+  await page.locator("#close-cart-btn").click();
+  const logout = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/auth/logout" &&
+      response.request().method() === "POST",
+  );
+  await page.locator("#account-btn").click();
+  expect((await logout).status()).toBe(200);
+  await expect(page.locator("#account-btn")).toContainText("Đăng nhập");
+  expect(deletes).toBe(0);
+});

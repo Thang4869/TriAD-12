@@ -18,6 +18,7 @@ export class AuthController {
 
     eventBus.on(EVENTS.AUTH_LOGIN, () => this.updateHeaderUI());
     eventBus.on(EVENTS.AUTH_LOGOUT, () => this.updateHeaderUI());
+    eventBus.on(EVENTS.AUTH_EXPIRED, () => authService.expireSession());
   }
 
   setupEventListeners() {

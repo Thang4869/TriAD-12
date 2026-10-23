@@ -102,6 +102,13 @@ export class AuthService {
     }
   }
 
+  expireSession() {
+    const wasAuthenticated = this.isAuthenticated;
+    clearCsrfToken();
+    this._persistUser(null);
+    if (wasAuthenticated) eventBus.emit(EVENTS.AUTH_LOGOUT);
+  }
+
   async refresh() {
     const result = await this.api.post("/auth/refresh", {});
 

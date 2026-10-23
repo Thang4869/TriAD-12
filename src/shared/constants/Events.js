@@ -1,6 +1,9 @@
 export const EVENTS = {
   APP_READY: "app:ready",
   APP_ERROR: "app:error",
+  AUTH_LOGIN: "auth:login",
+  AUTH_LOGOUT: "auth:logout",
+  AUTH_EXPIRED: "auth:expired",
   CART_UPDATED: "cart:updated",
   CART_ITEM_ADDED: "cart:item:added",
   CART_ITEM_REMOVED: "cart:item:removed",

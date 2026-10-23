@@ -1,5 +1,7 @@
 import { APP_CONFIG } from "../../config/settings.config.js";
 import { getCsrfToken, readSameOriginCsrfCookie } from "../utils/csrf.js";
+import { eventBus } from "../../core/services/EventBus.js";
+import { EVENTS } from "../constants/Events.js";
 
 export class ApiError extends Error {
   constructor(message, status, payload = null) {
@@ -46,11 +48,11 @@ export class ApiService {
   async _request(method, endpoint, { params, body, headers = {} } = {}) {
     const url = this._buildUrl(endpoint, params);
     const finalHeaders = { "Content-Type": "application/json", ...headers };
+    const csrfAtStart =
+      readSameOriginCsrfCookie(this.baseURL) ?? getCsrfToken();
 
     if (!["GET", "HEAD"].includes(method)) {
-      const csrfToken =
-        readSameOriginCsrfCookie(this.baseURL) ?? getCsrfToken();
-      if (csrfToken) finalHeaders["x-csrf-token"] = csrfToken;
+      if (csrfAtStart) finalHeaders["x-csrf-token"] = csrfAtStart;
     }
 
     let response;
@@ -75,10 +77,24 @@ export class ApiService {
       : null;
 
     if (!response.ok) {
-      const message =
+      let message =
         (typeof payload?.error === "string" && payload.error.trim()) ||
         (typeof payload?.message === "string" && payload.message.trim()) ||
         `Yêu cầu thất bại (mã lỗi ${response.status})`;
+      if (response.status === 401 && !endpoint.startsWith("/auth/")) {
+        message = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        // A late response from an older session must not sign out a newer one.
+        // Auth bootstrap/refresh own their recovery; never replay a failed write.
+        const currentCsrf =
+          readSameOriginCsrfCookie(this.baseURL) ?? getCsrfToken();
+        if (currentCsrf === csrfAtStart) eventBus.emit(EVENTS.AUTH_EXPIRED);
+      } else if (
+        response.status === 403 &&
+        payload?.error === "Invalid or missing CSRF token"
+      ) {
+        message =
+          "Phiên bảo mật không còn hợp lệ. Vui lòng tải lại trang rồi thử lại.";
+      }
       throw new ApiError(message, response.status, payload);
     }
 
