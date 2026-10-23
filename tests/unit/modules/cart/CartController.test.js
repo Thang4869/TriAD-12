@@ -37,6 +37,7 @@ describe("CartController", () => {
       increase: vi.fn().mockResolvedValue([]),
       decrease: vi.fn().mockResolvedValue([]),
       clear: vi.fn().mockResolvedValue([]),
+      reset: vi.fn(),
       items: [{ id: "product-1", name: "Product A" }],
       total: 100,
       count: 3,
@@ -131,7 +132,7 @@ describe("CartController", () => {
       expect(service.load).toHaveBeenCalledTimes(1);
     });
 
-    it("clears cart after logout event", () => {
+    it("resets only the local cart after logout event", () => {
       const logoutRegistrations = eventBus.on.mock.calls.filter(
         ([event]) => event === EVENTS.AUTH_LOGOUT,
       );
@@ -140,7 +141,8 @@ describe("CartController", () => {
 
       callback();
 
-      expect(service.clear).toHaveBeenCalledTimes(1);
+      expect(service.reset).toHaveBeenCalledTimes(1);
+      expect(service.clear).not.toHaveBeenCalled();
     });
   });
 

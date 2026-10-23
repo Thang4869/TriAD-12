@@ -18,8 +18,11 @@ export class CartController {
       this.service.load();
     }
 
-    eventBus.on(EVENTS.AUTH_LOGIN, () => this.service.load());
-    eventBus.on(EVENTS.AUTH_LOGOUT, () => this.service.clear());
+    eventBus.on(EVENTS.AUTH_LOGIN, () => {
+      this.service.reset();
+      this.service.load();
+    });
+    eventBus.on(EVENTS.AUTH_LOGOUT, () => this.service.reset());
   }
 
   setupEventListeners() {
