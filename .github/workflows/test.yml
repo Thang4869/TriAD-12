@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -74,8 +75,8 @@ jobs:
       - name: Document hosted-auth acceptance coverage
         env:
           # Never expose the hosted login account to pull_request code.
-          STAGING_AUTH_EMAIL: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_EMAIL || '' }}
-          STAGING_AUTH_PASSWORD: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_PASSWORD || '' }}
+          STAGING_AUTH_EMAIL: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_EMAIL || '' }}
+          STAGING_AUTH_PASSWORD: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_PASSWORD || '' }}
         run: |
           if [[ -z "$STAGING_AUTH_EMAIL" || -z "$STAGING_AUTH_PASSWORD" ]]; then
             echo "HTTPS public-origin negatives: enabled; authenticated browser acceptance: SKIPPED (dedicated staging credentials not configured for a trusted main-branch run)." >> "$GITHUB_STEP_SUMMARY"
@@ -84,8 +85,8 @@ jobs:
           fi
       - name: Check actual Vercel and Render HTTPS behavior
         env:
-          STAGING_AUTH_EMAIL: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_EMAIL || '' }}
-          STAGING_AUTH_PASSWORD: ${{ github.event_name == 'push' && secrets.STAGING_AUTH_PASSWORD || '' }}
+          STAGING_AUTH_EMAIL: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_EMAIL || '' }}
+          STAGING_AUTH_PASSWORD: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.STAGING_AUTH_PASSWORD || '' }}
         run: npx playwright test --config=playwright.staging.config.ts
       - name: Upload token-free staging acceptance results
         if: always()
