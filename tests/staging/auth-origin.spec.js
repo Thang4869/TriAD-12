@@ -156,7 +156,7 @@ test("disposable hosted session enforces cookie, CSRF, refresh and logout", asyn
     const readable = await browserCsrfValue(page);
     expect(readable).toMatch(/^[a-f0-9]{64}$/);
     expect(await page.evaluate(() => document.cookie)).not.toMatch(
-      /(?:^|;\\s*)(?:accessToken|refreshToken)=/,
+      /(?:^|;[ ]*)(?:accessToken|refreshToken)=/,
     );
 
     const badWrite = await page.evaluate(async () => {
