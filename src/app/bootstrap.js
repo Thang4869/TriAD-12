@@ -24,6 +24,7 @@ import { ProductsService } from "../modules/products/services/ProductsService.js
 import { ProductsRenderer } from "../modules/products/renderers/ProductsRenderer.js";
 import { authService } from "../modules/auth/AuthService.js";
 
+import { AdminController } from "../modules/admin/AdminController.js";
 function getCurrentPage() {
   const pathname = window.location.pathname;
   const filename = pathname.split("/").pop();
@@ -37,6 +38,7 @@ function getCurrentPage() {
     reviews: "reviews",
     location: "location",
     contact: "contact",
+    "admin-dashboard": "admin-dashboard",
   };
   return pageMap[page] || "home";
 }
@@ -137,6 +139,12 @@ function getComponentsForPage(page) {
         filePath: `${root}pages/contact-content.html`,
       },
     ],
+    "admin-dashboard": [
+      {
+        elementId: "admin-dashboard-container",
+        filePath: `${root}pages/admin-dashboard-content.html`,
+      },
+    ],
   };
 
   const pageSpecific = pageComponents[page];
@@ -186,6 +194,7 @@ export async function bootstrap() {
     container.register("checkoutController", new CheckoutController());
     container.register("blogController", new BlogController());
     container.register("reviewsController", new ReviewsController());
+    container.register("adminController", new AdminController());
 
     const router = new RouterService();
     const uiService = new UIService(container.get("cartController"));
@@ -207,6 +216,9 @@ export async function bootstrap() {
 
     router.fixHeaderLinks();
     router.fixContentLinks();
+    if (currentPage === "admin-dashboard") {
+      await container.get("adminController").init();
+    }
     initHeaderNavigation(currentPage);
 
     const { initScrollReveal } =

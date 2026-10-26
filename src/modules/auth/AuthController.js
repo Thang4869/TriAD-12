@@ -176,11 +176,19 @@ export class AuthController {
     const btn = document.getElementById("account-btn");
     const label = document.getElementById("account-btn-label");
     if (!btn) return;
+
     const user = authService.getCurrentUser();
     if (label) {
       label.textContent = user ? user.firstName || user.email : "Đăng nhập";
     }
     btn.title = user ? "Đăng xuất" : "Đăng nhập";
+
+    // Toggle admin links based on role
+    const isAdmin = user?.role === "ADMIN";
+    const adminLink = document.getElementById("admin-nav-link");
+    const mobileAdminLink = document.getElementById("mobile-admin-nav-link");
+    adminLink?.classList.toggle("hidden", !isAdmin);
+    mobileAdminLink?.classList.toggle("hidden", !isAdmin);
   }
 
   _showError(message) {

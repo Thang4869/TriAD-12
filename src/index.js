@@ -21,6 +21,8 @@ import "./modules/contact/index.js";
 import "./modules/notification/index.js";
 import "./modules/blog/index.js";
 import "./modules/reviews/index.js";
+import "./modules/reviews/index.js";
+import "./modules/admin/index.js";
 
 import { bootstrap } from "./app/bootstrap.js";
 

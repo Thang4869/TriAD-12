@@ -1,0 +1,126 @@
+<section class="py-16 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Page header -->
+    <div
+      class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
+      <div>
+        <span
+          class="text-sm font-medium text-brand-accent tracking-widest uppercase"
+          >Admin</span
+        >
+        <h1 class="text-3xl md:text-4xl font-bold mt-1">Dashboard</h1>
+        <p class="text-brand-gray mt-1">Business overview at a glance</p>
+      </div>
+      <div class="flex gap-3">
+        <button
+          id="admin-refresh-btn"
+          class="px-5 py-2 border border-gray-300 rounded-full hover:bg-white transition-colors text-sm font-medium"
+        >
+          <i class="ph ph-arrow-clockwise"></i> Refresh
+        </button>
+        <a
+          href="./products.html"
+          class="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-sm font-medium"
+        >
+          Manage Products
+        </a>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="admin-loading" class="py-20 text-center text-brand-gray">
+      <i class="ph ph-spinner text-4xl inline-block animate-spin"></i>
+      <p class="mt-3">Loading dashboard...</p>
+    </div>
+
+    <!-- Gate: unauthorized / error -->
+    <div id="admin-gate" class="hidden py-20 text-center"></div>
+
+    <!-- Dashboard body -->
+    <div id="admin-dashboard-body" class="hidden space-y-6">
+      <!-- KPI CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-brand-gray">Gross order value (30d)</p>
+            <i
+              class="ph ph-currency-circle-dollar text-2xl text-brand-accent"
+            ></i>
+          </div>
+          <p id="kpi-gmv" class="text-3xl font-bold mt-3">—</p>
+          <p class="text-xs text-brand-gray mt-1">Excludes cancelled orders</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-brand-gray">Total orders</p>
+            <i class="ph ph-receipt text-2xl text-brand-accent"></i>
+          </div>
+          <p id="kpi-orders" class="text-3xl font-bold mt-3">—</p>
+          <p id="kpi-orders-pending" class="text-xs text-brand-gray mt-1">—</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-brand-gray">Users</p>
+            <i class="ph ph-users text-2xl text-brand-accent"></i>
+          </div>
+          <p id="kpi-users" class="text-3xl font-bold mt-3">—</p>
+          <p id="kpi-users-new" class="text-xs text-brand-gray mt-1">—</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-brand-gray">Products</p>
+            <i class="ph ph-package text-2xl text-brand-accent"></i>
+          </div>
+          <p id="kpi-products" class="text-3xl font-bold mt-3">—</p>
+          <p id="kpi-lowstock" class="text-xs text-brand-gray mt-1">—</p>
+        </div>
+      </div>
+
+      <!-- CHART + STATUS -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm lg:col-span-2">
+          <h2 class="text-lg font-semibold mb-4">
+            Gross order value · last 30 days
+          </h2>
+          <div id="admin-chart" class="h-64 flex items-end gap-1"></div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-lg font-semibold mb-4">Order status</h2>
+          <div id="admin-order-status" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- LOW STOCK + TOP SELLING -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-lg font-semibold mb-4">Low stock alert</h2>
+          <div id="admin-low-stock" class="overflow-x-auto"></div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-lg font-semibold mb-4">Top selling products</h2>
+          <div id="admin-top-selling" class="overflow-x-auto"></div>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Recent orders</h2>
+          <select
+            id="admin-order-status-filter"
+            class="p-2 border border-gray-200 rounded text-sm"
+          >
+            <option value="">All statuses</option>
+            <option value="PENDING">PENDING</option>
+            <option value="PROCESSING">PROCESSING</option>
+            <option value="SHIPPED">SHIPPED</option>
+            <option value="DELIVERED">DELIVERED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
+        </div>
+        <div id="admin-recent-orders" class="overflow-x-auto"></div>
+      </div>
+    </div>
+  </div>
+</section>

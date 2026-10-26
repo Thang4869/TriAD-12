@@ -7,10 +7,7 @@ export default defineConfig({
   retries: 0,
   timeout: 120_000,
   expect: { timeout: 20_000 },
-  reporter: [
-    ["line"],
-    ["json", { outputFile: "staging-auth-results.json" }],
-  ],
+  reporter: [["line"], ["json", { outputFile: "staging-auth-results.json" }]],
   use: {
     baseURL: "https://triad-staging-three.vercel.app",
     navigationTimeout: 60_000,
