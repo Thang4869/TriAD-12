@@ -1,0 +1,90 @@
+<section class="py-16 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <span class="text-sm font-medium text-brand-accent tracking-widest uppercase">Admin</span>
+        <h1 class="text-3xl md:text-4xl font-bold mt-1">Quản lý Sản phẩm</h1>
+        <p class="text-brand-gray mt-1">Thêm, sửa, xoá sản phẩm trong cửa hàng</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="./admin-dashboard.html" class="px-5 py-2 border border-gray-300 rounded-full hover:bg-white transition-colors text-sm font-medium">
+          <i class="ph ph-arrow-left"></i> Về Dashboard
+        </a>
+        <button id="btn-add-product" class="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-sm font-medium">
+          <i class="ph ph-plus"></i> Thêm sản phẩm
+        </button>
+      </div>
+    </div>
+
+    <!-- Bảng sản phẩm -->
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="px-6 py-4 font-semibold">Sản phẩm</th>
+              <th class="px-6 py-4 font-semibold">Danh mục</th>
+              <th class="px-6 py-4 font-semibold">Giá</th>
+              <th class="px-6 py-4 font-semibold">Kho</th>
+              <th class="px-6 py-4 font-semibold">Trạng thái</th>
+              <th class="px-6 py-4 font-semibold text-right">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="admin-products-table-body" class="divide-y divide-gray-100">
+            <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">Đang tải dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Thêm/Sửa Sản phẩm -->
+<div id="product-modal" class="fixed inset-0 bg-black/50 z-[90] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+      <h2 id="product-modal-title" class="text-xl font-bold">Thêm Sản phẩm</h2>
+      <button id="close-product-modal" class="text-gray-400 hover:text-black"><i class="ph ph-x text-2xl"></i></button>
+    </div>
+    <form id="product-form" class="p-6 space-y-4">
+      <input type="hidden" id="product-id">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Tên sản phẩm *</label>
+          <input type="text" id="product-name" required class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Slug *</label>
+          <input type="text" id="product-slug" required class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Mô tả *</label>
+        <textarea id="product-desc" required rows="2" class="w-full p-2.5 border rounded-lg focus:border-black outline-none"></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Giá (VNĐ) *</label>
+          <input type="number" id="product-price" required min="1" class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Tồn kho *</label>
+          <input type="number" id="product-stock" required min="0" class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Danh mục *</label>
+          <input type="text" id="product-category" required class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Link ảnh (URL) *</label>
+        <input type="url" id="product-image" required placeholder="https://..." class="w-full p-2.5 border rounded-lg focus:border-black outline-none">
+      </div>
+      <div class="pt-4 flex justify-end gap-3">
+        <button type="button" id="cancel-product-btn" class="px-6 py-2.5 border rounded-lg hover:bg-gray-50 transition-colors">Huỷ</button>
+        <button type="submit" class="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">Lưu sản phẩm</button>
+      </div>
+    </form>
+  </div>
+</div>
