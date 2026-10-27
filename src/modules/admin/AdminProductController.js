@@ -151,6 +151,8 @@ export class AdminProductController {
   async handleSubmit(e) {
     e.preventDefault();
     const id = document.getElementById("product-id").value;
+    const isNewProduct = !id;
+
     const data = {
       name: document.getElementById("product-name").value.trim(),
       slug: document.getElementById("product-slug").value.trim(),
@@ -159,6 +161,7 @@ export class AdminProductController {
       stock: Number(document.getElementById("product-stock").value),
       category: document.getElementById("product-category").value.trim(),
       images: [document.getElementById("product-image").value.trim()],
+      ...(isNewProduct && { isActive: true }),
     };
 
     const btn = e.target.querySelector('button[type="submit"]');

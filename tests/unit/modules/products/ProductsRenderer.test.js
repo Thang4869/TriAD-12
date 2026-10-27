@@ -475,7 +475,7 @@ describe("ProductsRenderer", () => {
       expect(state).toEqual({
         keyword: "",
         sort: "default",
-        maxPrice: 350000,
+        maxPrice: 10000000,
       });
     });
 
@@ -496,7 +496,7 @@ describe("ProductsRenderer", () => {
 
       const state = renderer.getUIState();
 
-      expect(state.maxPrice).toBe(350000);
+      expect(state.maxPrice).toBe(10000000);
     });
   });
 

@@ -59,11 +59,19 @@ export class ProductsController {
     input.addEventListener("input", (e) => {
       const keyword = e.target.value.trim();
       debouncedSearch(keyword);
-      // Gợi ý tức thời lấy từ danh sách đã tải trong bộ nhớ (không gọi API
-      // riêng cho dropdown gợi ý, để giữ UX phản hồi tức thì).
+
       const results = this.service.products
         .filter((p) => p.matchesKeyword(keyword))
+        .sort((a, b) => {
+          const nameA = a.name.toLowerCase();
+          const nameB = b.name.toLowerCase();
+          const kw = keyword.toLowerCase();
+          if (nameA.startsWith(kw) && !nameB.startsWith(kw)) return -1;
+          if (!nameA.startsWith(kw) && nameB.startsWith(kw)) return 1;
+          return 0;
+        })
         .slice(0, 5);
+
       this.renderer.renderSuggestions(keyword, results, (id) => {
         const product = this.service.getProductById(id);
         if (product) {
@@ -175,8 +183,8 @@ export class ProductsController {
     if (this.renderer.searchInput) this.renderer.searchInput.value = "";
     if (this.renderer.sortSelect) this.renderer.sortSelect.value = "default";
     if (this.renderer.priceSlider) {
-      this.renderer.priceSlider.value = 350000;
-      this.renderer.updatePriceDisplay(350000);
+      this.renderer.priceSlider.value = 10_000_000;
+      this.renderer.updatePriceDisplay(10_000_000);
     }
     const container = document.getElementById("search-suggestion");
     if (container) {

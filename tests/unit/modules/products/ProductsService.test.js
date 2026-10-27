@@ -43,7 +43,7 @@ describe("ProductsService", () => {
       expect(service.filters).toEqual({
         keyword: "",
         minPrice: 0,
-        maxPrice: 350000,
+        maxPrice: 10000000,
         sort: "default",
       });
     });
@@ -58,7 +58,7 @@ describe("ProductsService", () => {
         limit: 12,
         keyword: undefined,
         minPrice: undefined,
-        maxPrice: 350000,
+        maxPrice: 10000000,
         sortBy: "createdAt",
         sortOrder: "desc",
       });
@@ -158,7 +158,7 @@ describe("ProductsService", () => {
       expect(service.filters).toEqual({
         keyword: "mug",
         minPrice: 100000,
-        maxPrice: 350000,
+        maxPrice: 10000000,
         sort: "default",
       });
     });
@@ -181,7 +181,7 @@ describe("ProductsService", () => {
         limit: 12,
         keyword: undefined,
         minPrice: undefined,
-        maxPrice: 350000,
+        maxPrice: 10000000,
         sortBy: "createdAt",
         sortOrder: "desc",
       });
