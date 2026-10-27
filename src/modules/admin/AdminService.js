@@ -27,4 +27,20 @@ export class AdminService {
     if (filters.keyword) params.keyword = filters.keyword;
     return this.api.get("/products/admin/all", params);
   }
+
+  createProduct(data) {
+    return this.api.post("/products/admin", data);
+  }
+
+  updateProduct(id, data) {
+    return this.api.put(`/products/admin/${id}`, data);
+  }
+
+  deleteProduct(id) {
+    return this.api.delete(`/products/admin/${id}`);
+  }
+
+  restoreProduct(id) {
+    return this.api.patch(`/products/admin/${id}/restore`, {});
+  }
 }

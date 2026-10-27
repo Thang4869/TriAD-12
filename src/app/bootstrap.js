@@ -25,6 +25,8 @@ import { ProductsRenderer } from "../modules/products/renderers/ProductsRenderer
 import { authService } from "../modules/auth/AuthService.js";
 
 import { AdminController } from "../modules/admin/AdminController.js";
+import { AdminProductController } from "../modules/admin/AdminProductController.js";
+
 function getCurrentPage() {
   const pathname = window.location.pathname;
   const filename = pathname.split("/").pop();
@@ -39,6 +41,7 @@ function getCurrentPage() {
     location: "location",
     contact: "contact",
     "admin-dashboard": "admin-dashboard",
+    "admin-products": "admin-products",
   };
   return pageMap[page] || "home";
 }
@@ -145,6 +148,12 @@ function getComponentsForPage(page) {
         filePath: `${root}pages/admin-dashboard-content.html`,
       },
     ],
+    "admin-products": [
+      {
+        elementId: "admin-products-container",
+        filePath: `${root}pages/admin-products-content.html`,
+      },
+    ],
   };
 
   const pageSpecific = pageComponents[page];
@@ -218,6 +227,9 @@ export async function bootstrap() {
     router.fixContentLinks();
     if (currentPage === "admin-dashboard") {
       await container.get("adminController").init();
+    }
+    if (currentPage === "admin-products") {
+      await new AdminProductController().init();
     }
     initHeaderNavigation(currentPage);
 
