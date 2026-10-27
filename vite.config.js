@@ -4,6 +4,7 @@ import { resolve } from "path";
 
 export default defineConfig({
   plugins: [tailwindcss()],
+  base: './', 
 
   build: {
     outDir: "dist",
