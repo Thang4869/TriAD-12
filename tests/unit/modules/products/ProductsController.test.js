@@ -726,8 +726,8 @@ describe("ProductsController", () => {
 
       expect(searchInput.value).toBe("");
       expect(sortSelect.value).toBe("default");
-      expect(priceSlider.value).toBe("350000");
-      expect(renderer.updatePriceDisplay).toHaveBeenCalledWith(350000);
+      expect(priceSlider.value).toBe("10000000");
+      expect(renderer.updatePriceDisplay).toHaveBeenCalledWith(10000000);
       expect(suggestions.classList.contains("hidden")).toBe(true);
       expect(suggestions.innerHTML).toBe("");
       expect(service.resetFilters).toHaveBeenCalledTimes(1);
