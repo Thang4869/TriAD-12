@@ -7,6 +7,8 @@ const PAGE_HREF_MAP = {
   reviews: "reviews.html",
   location: "location.html",
   contact: "contact.html",
+  "admin-dashboard": "admin-dashboard",
+  "admin-products": "admin-products",
 };
 
 function normalizePath(href) {

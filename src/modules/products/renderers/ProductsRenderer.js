@@ -153,7 +153,7 @@ export class ProductsRenderer extends BaseRenderer {
     return {
       keyword: this.searchInput?.value || "",
       sort: this.sortSelect?.value || "default",
-      maxPrice: Number(this.priceSlider?.value) || 350000,
+      maxPrice: Number(this.priceSlider?.value) || 10_000_000,
     };
   }
 
