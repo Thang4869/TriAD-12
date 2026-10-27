@@ -129,6 +129,7 @@ describe("ApiService", () => {
     expect(fetch).toHaveBeenCalledWith("/api/cart/items", {
       method: "POST",
       credentials: "include",
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         "x-csrf-token": "test-csrf-token",
