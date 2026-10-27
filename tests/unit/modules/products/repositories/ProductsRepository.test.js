@@ -136,4 +136,107 @@ describe("ProductsRepository", () => {
       ).rejects.toBe(error);
     });
   });
+  // Thêm vào tests/unit/modules/products/repositories/ProductsRepository.test.js
+
+  describe("findById", () => {
+    it("returns a Product instance for the given ID", async () => {
+      api.get.mockResolvedValue(productData);
+
+      const result = await repository.findById("product-1");
+
+      expect(api.get).toHaveBeenCalledWith("/products/product-1");
+      expect(result).toBeInstanceOf(Product);
+      expect(result.id).toBe("product-1");
+    });
+
+    it("propagates API errors", async () => {
+      const error = new Error("Product not found");
+      api.get.mockRejectedValue(error);
+
+      await expect(repository.findById("missing")).rejects.toBe(error);
+    });
+  });
+
+  describe("findBySlug", () => {
+    it("returns a Product instance for the given slug", async () => {
+      api.get.mockResolvedValue(productData);
+
+      const result = await repository.findBySlug("premium-lunch-box");
+
+      expect(api.get).toHaveBeenCalledWith("/products/slug/premium-lunch-box");
+      expect(result).toBeInstanceOf(Product);
+      expect(result.slug).toBe("premium-lunch-box");
+    });
+
+    it("propagates API errors", async () => {
+      const error = new Error("Slug not found");
+      api.get.mockRejectedValue(error);
+
+      await expect(repository.findBySlug("missing")).rejects.toBe(error);
+    });
+  });
+
+  describe("getCategories", () => {
+    it("fetches the category list from backend", async () => {
+      const categories = [
+        { name: "Lunch Box", count: 5 },
+        { name: "Storage", count: 3 },
+      ];
+      api.get.mockResolvedValue(categories);
+
+      const result = await repository.getCategories();
+
+      expect(api.get).toHaveBeenCalledWith("/products/categories");
+      expect(result).toEqual(categories);
+    });
+  });
+
+  describe("search", () => {
+    it("maps backend search results to Product instances", async () => {
+      api.get.mockResolvedValue({
+        products: [productData],
+        total: 1,
+        page: 1,
+        limit: 12,
+        totalPages: 1,
+      });
+
+      const result = await repository.search("lunch", 1, 12);
+
+      expect(api.get).toHaveBeenCalledWith("/products/search", {
+        q: "lunch",
+        page: 1,
+        limit: 12,
+      });
+      expect(result.products[0]).toBeInstanceOf(Product);
+      expect(result.total).toBe(1);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(12);
+      expect(result.totalPages).toBe(1);
+    });
+
+    it("uses default page/limit when omitted", async () => {
+      api.get.mockResolvedValue({
+        products: [],
+        total: 0,
+        page: 1,
+        limit: 12,
+        totalPages: 0,
+      });
+
+      await repository.search("x");
+
+      expect(api.get).toHaveBeenCalledWith("/products/search", {
+        q: "x",
+        page: 1,
+        limit: 12,
+      });
+    });
+
+    it("propagates search errors", async () => {
+      api.get.mockRejectedValue(new Error("Search failed"));
+
+      await expect(repository.search("x")).rejects.toThrow("Search failed");
+    });
+  });
 });

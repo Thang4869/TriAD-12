@@ -86,6 +86,9 @@ export default defineConfig({
         "**/src/modules/*/index.js",
         "**/src/shared/models/index.js",
         "**/src/index.js",
+
+        "**/*.html",
+        "**/src/modules/admin/**",
       ],
     },
     testTimeout: 30000,

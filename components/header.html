@@ -5,7 +5,7 @@
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div
-      class="flex justify-between items-center h-20 transition-all duration-300"
+      class="flex justify-between items-center h-20 transition-all duration-300 gap-4"
     >
       <!-- Logo -->
       <a href="./" class="flex-shrink-0 flex items-center">
@@ -16,7 +16,9 @@
       </a>
 
       <!-- Desktop Menu -->
-      <nav class="hidden md:flex space-x-6 lg:space-x-10">
+      <nav
+        class="hidden md:flex items-center space-x-4 lg:space-x-8 flex-1 justify-center"
+      >
         <a
           href="./"
           class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
@@ -56,18 +58,21 @@
           id="admin-nav-link"
           href="./pages/admin-dashboard.html"
           class="hidden text-sm font-medium hover:text-brand-accent transition-colors relative group"
-          >ADMIN</a
         >
+          ADMIN
+        </a>
       </nav>
 
       <!-- Icons -->
-      <div class="hidden md:flex items-center space-x-6">
+      <div
+        class="hidden md:flex items-center space-x-4 lg:space-x-6 flex-shrink-0"
+      >
         <div class="relative">
           <input
             id="search-input"
             type="text"
-            placeholder="Search product..."
-            class="border rounded-full px-5 py-2 w-48 md:w-56 lg:w-72 focus:outline-none focus:border-brand-accent transition-all duration-300"
+            placeholder="Search..."
+            class="border rounded-full px-4 py-2 w-32 lg:w-56 text-sm focus:outline-none focus:border-brand-accent transition-all duration-300"
           />
           <div
             id="search-suggestion"
@@ -180,6 +185,13 @@
         class="hidden block text-sm font-medium hover:text-brand-accent transition-colors py-2"
       >
         ADMIN
+      </a>
+      <a
+        id="admin-products-nav-link"
+        href="./pages/admin-products.html"
+        class="hidden text-sm font-medium hover:text-brand-accent transition-colors py-2"
+      >
+        ADMIN PRODUCTS
       </a>
     </div>
   </div>
