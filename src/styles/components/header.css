@@ -41,7 +41,7 @@ body {
   padding-top: 80px; /* Tương ứng với chiều cao header */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   body {
     padding-top: 64px; /* Chiều cao header trên mobile */
   }
