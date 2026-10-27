@@ -63,9 +63,9 @@ export class ProductsController {
       const results = this.service.products
         .filter((p) => p.matchesKeyword(keyword))
         .sort((a, b) => {
-          const nameA = a.name.toLowerCase();
-          const nameB = b.name.toLowerCase();
-          const kw = keyword.toLowerCase();
+          const nameA = String(a.name ?? "").toLowerCase();
+          const nameB = String(b.name ?? "").toLowerCase();
+          const kw = String(keyword ?? "").toLowerCase();
           if (nameA.startsWith(kw) && !nameB.startsWith(kw)) return -1;
           if (!nameA.startsWith(kw) && nameB.startsWith(kw)) return 1;
           return 0;
