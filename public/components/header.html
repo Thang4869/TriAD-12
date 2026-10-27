@@ -3,143 +3,144 @@
   id="main-header"
   class="fixed top-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md z-40 border-b border-brand-border transition-all duration-300"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
     <div
-      class="flex justify-between items-center h-20 transition-all duration-300"
+      class="flex justify-between items-center h-16 lg:h-20 transition-all duration-300 gap-2 lg:gap-6"
     >
       <!-- Logo -->
       <a href="./" class="flex-shrink-0 flex items-center">
         <span
-          class="font-bold text-2xl tracking-widest uppercase transition-all duration-300"
+          class="font-bold text-xl lg:text-2xl tracking-widest uppercase transition-all duration-300"
           >TriAD</span
         >
       </a>
 
-      <!-- Desktop Menu -->
-      <nav class="hidden md:flex space-x-6 lg:space-x-10">
+      <!-- Desktop Menu (lg+) -->
+      <nav
+        class="hidden lg:flex items-center gap-2 xl:gap-5 flex-1 justify-center min-w-0"
+      >
         <a
           href="./"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
           >HOME</a
         >
         <a
           href="./pages/about.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
-          >ABOUT US</a
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
+          >ABOUT</a
         >
         <a
           href="./pages/products.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
-          >ALL PRODUCTS</a
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
+          >PRODUCTS</a
         >
         <a
           href="./pages/blog.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
           >BLOG</a
         >
         <a
           href="./pages/reviews.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
           >REVIEWS</a
         >
         <a
           href="./pages/location.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
           >LOCATION</a
         >
         <a
           href="./pages/contact.html"
-          class="text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
           >CONTACT</a
         >
         <a
           id="admin-nav-link"
           href="./pages/admin-dashboard.html"
-          class="hidden text-sm font-medium hover:text-brand-accent transition-colors relative group"
+          class="hidden text-xs xl:text-sm font-medium hover:text-brand-accent transition-colors whitespace-nowrap"
+          >ADMIN</a
         >
-          ADMIN
-        </a>
       </nav>
 
-      <!-- Icons -->
-      <div class="hidden md:flex items-center space-x-6">
+      <!-- Icons (lg+) -->
+      <div class="hidden lg:flex items-center gap-2 xl:gap-4 flex-shrink-0">
         <div class="relative">
           <input
             id="search-input"
             type="text"
-            placeholder="Search product..."
-            class="border rounded-full px-5 py-2 w-48 md:w-56 lg:w-72 focus:outline-none focus:border-brand-accent transition-all duration-300"
+            placeholder="Search..."
+            class="border rounded-full px-3 py-1.5 w-32 xl:w-56 text-sm focus:outline-none focus:border-brand-accent transition-all duration-300"
           />
           <div
             id="search-suggestion"
-            class="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg w-full hidden max-h-60 overflow-y-auto"
+            class="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg w-full hidden max-h-60 overflow-y-auto z-50"
           ></div>
         </div>
         <button
           id="notification-btn"
-          class="hover:text-brand-accent transition-colors relative"
+          class="hover:text-brand-accent transition-colors relative p-1"
           title="Thông báo"
         >
           <i class="ph ph-bell text-xl"></i>
           <span
             id="notification-badge"
-            class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"
+            class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full hidden"
           ></span>
         </button>
         <button
           id="account-btn"
-          class="hover:text-brand-accent transition-colors flex items-center gap-1 text-sm font-medium"
+          class="hover:text-brand-accent transition-colors flex items-center gap-1 text-sm font-medium p-1"
           title="Tài khoản"
         >
           <i class="ph ph-user-circle text-xl"></i>
-          <span id="account-btn-label" class="hidden lg:inline">Đăng nhập</span>
+          <span id="account-btn-label" class="hidden xl:inline">Đăng nhập</span>
         </button>
         <button
           id="cart-icon-btn"
-          class="hover:text-brand-accent transition-colors relative"
+          class="hover:text-brand-accent transition-colors relative p-1"
           title="Giỏ hàng"
         >
           <i class="ph ph-shopping-bag text-xl"></i>
           <span
             id="cart-badge"
-            class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center"
+            class="absolute -top-0.5 -right-1 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center"
             >0</span
           >
         </button>
       </div>
 
-      <!-- Mobile -->
-      <div class="md:hidden flex items-center gap-4">
-        <button id="mobile-notification-btn" class="relative">
+      <!-- Mobile / Tablet icons (< lg) -->
+      <div class="lg:hidden flex items-center gap-3 sm:gap-4">
+        <button id="mobile-notification-btn" class="relative p-1">
           <i class="ph ph-bell text-xl"></i>
           <span
             id="mobile-notification-badge"
-            class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"
+            class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full hidden"
           ></span>
         </button>
-        <button id="mobile-cart-btn" class="relative">
+        <button id="mobile-cart-btn" class="relative p-1">
           <i class="ph ph-shopping-bag text-xl"></i>
           <span
-            class="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center"
+            class="absolute -top-0.5 -right-1 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center"
             >0</span
           >
-          <button id="mobile-account-btn" class="relative">
-            <i class="ph ph-user-circle text-xl"></i>
-          </button>
         </button>
-        <button id="mobile-menu-btn" class="focus:outline-none">
+        <button id="mobile-account-btn" class="relative p-1">
+          <i class="ph ph-user-circle text-xl"></i>
+        </button>
+        <button id="mobile-menu-btn" class="focus:outline-none p-1">
           <i class="ph ph-list text-2xl"></i>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Mobile Menu -->
+  <!-- Mobile Menu (< lg) -->
   <div
     id="mobile-menu"
-    class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg"
+    class="hidden lg:hidden bg-white border-t border-gray-100 shadow-lg"
   >
-    <div class="px-4 py-4 space-y-3">
+    <div class="px-4 py-4 space-y-1">
       <a
         href="./"
         class="block text-sm font-medium hover:text-brand-accent transition-colors py-2"
@@ -179,9 +180,14 @@
         id="mobile-admin-nav-link"
         href="./pages/admin-dashboard.html"
         class="hidden block text-sm font-medium hover:text-brand-accent transition-colors py-2"
+        >ADMIN</a
       >
-        ADMIN
-      </a>
+      <a
+        id="admin-products-nav-link"
+        href="./pages/admin-products.html"
+        class="hidden block text-sm font-medium hover:text-brand-accent transition-colors py-2"
+        >ADMIN PRODUCTS</a
+      >
     </div>
   </div>
 </header>
