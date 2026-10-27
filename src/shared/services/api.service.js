@@ -62,6 +62,7 @@ export class ApiService {
         headers: finalHeaders,
         credentials: "include",
         body: body !== undefined ? JSON.stringify(body) : undefined,
+        cache: "no-store",
       });
     } catch (networkError) {
       throw new ApiError(

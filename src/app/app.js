@@ -39,12 +39,15 @@ export class App {
       this._initialized = true;
       eventBus.emit(EVENTS.APP_READY);
 
-      setTimeout(() => {
-        toast.info(
-          "Welcome!",
-          "Start exploring our premium thermal lunch boxes.",
-        );
-      }, 1000);
+      if (!sessionStorage.getItem("hasSeenWelcomeToast")) {
+        setTimeout(() => {
+          toast.info(
+            "Welcome!",
+            "Start exploring our premium thermal lunch boxes.",
+          );
+          sessionStorage.setItem("hasSeenWelcomeToast", "true");
+        }, 1000);
+      }
 
       Logger.info("Application ready!");
     } catch (error) {
