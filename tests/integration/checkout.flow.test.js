@@ -39,10 +39,12 @@ describe("Checkout flow integration", () => {
   let cartController;
   let checkoutRequests;
   let failCheckout;
+  let cartDeleteRequests;
 
   beforeEach(() => {
     cartState = [];
     checkoutRequests = [];
+    cartDeleteRequests = [];
     failCheckout = false;
     authService.currentUser = { id: "user-1", email: "user@example.com" };
 
@@ -83,15 +85,19 @@ describe("Checkout flow integration", () => {
         return jsonResponse({});
       }
       if (url.endsWith("/cart") && method === "DELETE") {
-        cartState = [];
+        cartDeleteRequests.push({ method, url });
         return jsonResponse({});
       }
       if (url.includes("/checkout/quote") && method === "GET")
         return jsonResponse(serverOrder);
       if (url.endsWith("/checkout") && method === "POST") {
         checkoutRequests.push(JSON.parse(options.body));
+
         if (failCheckout)
           return jsonResponse({ message: "Checkout failed" }, 500);
+
+        cartState = [];
+
         return jsonResponse({ order: serverOrder });
       }
       throw new Error(`Unexpected request: ${method} ${url}`);
@@ -114,7 +120,7 @@ describe("Checkout flow integration", () => {
     vi.restoreAllMocks();
   });
 
-  it("adds a product, submits checkout, renders the server order, and clears the cart", async () => {
+  it("clears the cart through checkout without a redundant DELETE request", async () => {
     cartController.addToCart(product);
     await waitFor(() => expect(cartController.getItems()).toHaveLength(1));
 
@@ -137,6 +143,8 @@ describe("Checkout flow integration", () => {
         expectedTotal: 106000,
       },
     ]);
+    expect(cartDeleteRequests).toHaveLength(0);
+    expect(cartState).toHaveLength(0);
     expect(document.getElementById("success-order-id").textContent).toBe(
       "ORD-SERVER-001",
     );
