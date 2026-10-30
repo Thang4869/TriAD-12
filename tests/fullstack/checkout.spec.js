@@ -68,11 +68,18 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
       response.request().method() === "POST",
   );
 
-  const clearCartResponsePromise = page.waitForResponse(
-    (response) =>
-      new URL(response.url()).pathname === "/api/cart" &&
-      response.request().method() === "DELETE",
-  );
+  const cartDeleteRequests = [];
+
+  const trackCartDelete = (request) => {
+    if (
+      new URL(request.url()).pathname === "/api/cart" &&
+      request.method() === "DELETE"
+    ) {
+      cartDeleteRequests.push(request);
+    }
+  };
+
+  page.on("request", trackCartDelete);
 
   await page.locator('#checkout-form button[type="submit"]').click();
 
@@ -100,9 +107,28 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
     formatPrice(order.total),
   );
 
-  // CheckoutController phải clear cart thật ở backend.
-  const clearCartResponse = await clearCartResponsePromise;
-  expect(clearCartResponse.ok()).toBe(true);
+  // Backend checkout transaction phải tự clear cart.
+  const cartResponse = await page.evaluate(async () => {
+    const response = await fetch("/api/cart", {
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      body: await response.json(),
+    };
+  });
+
+  expect(cartResponse.ok).toBe(true);
+  expect(cartResponse.status).toBe(200);
+  expect(cartResponse.body?.data?.items).toHaveLength(0);
+
+  // Không được gọi DELETE /api/cart sau checkout.
+  expect(cartDeleteRequests).toHaveLength(0);
+
+  page.off("request", trackCartDelete);
 
   await expect(page.locator("#cart-badge")).toHaveText("0");
   await expect(page.locator(".cart-scroll")).toContainText("empty");
