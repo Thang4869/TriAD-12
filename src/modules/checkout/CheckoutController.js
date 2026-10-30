@@ -179,7 +179,7 @@ export class CheckoutController {
     try {
       const order = await this.service.checkout(data, this.idempotencyKey);
 
-      await window.cartController?.clear();
+      window.cartController?.resetLocal();
       window.cartController?.closeDrawer();
       this.closeCheckout();
       this.showSuccess(order);

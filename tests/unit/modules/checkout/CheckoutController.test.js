@@ -82,6 +82,7 @@ describe("CheckoutController", () => {
     mockCartController = {
       getItems: vi.fn().mockReturnValue([]),
       clear: vi.fn(),
+      resetLocal: vi.fn(),
       closeDrawer: vi.fn(),
     };
     window.cartController = mockCartController;
@@ -309,7 +310,8 @@ describe("CheckoutController", () => {
       expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith(
         order,
       );
-      expect(mockCartController.clear).toHaveBeenCalled();
+      expect(mockCartController.resetLocal).toHaveBeenCalledTimes(1);
+      expect(mockCartController.clear).not.toHaveBeenCalled();
       expect(mockCartController.closeDrawer).toHaveBeenCalled();
       expect(mockNotifications.add).toHaveBeenCalledWith(
         "Đặt hàng thành công!",

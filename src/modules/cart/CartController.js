@@ -88,6 +88,11 @@ export class CartController {
     return this.service.clear();
   }
 
+  /** Chỉ reset trạng thái giỏ hàng cục bộ, không gọi API xóa giỏ hàng. */
+  resetLocal() {
+    this.service.reset();
+  }
+
   getItems() {
     return this.service.items;
   }

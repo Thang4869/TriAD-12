@@ -330,6 +330,13 @@ describe("CartController", () => {
       expect(service.clear).toHaveBeenCalledTimes(1);
     });
 
+    it("resets only the local cart without calling the API", () => {
+      controller.resetLocal();
+
+      expect(service.reset).toHaveBeenCalledTimes(1);
+      expect(service.clear).not.toHaveBeenCalled();
+    });
+
     it.each([
       ["removeItem", "remove"],
       ["increaseItem", "increase"],
