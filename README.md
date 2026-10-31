@@ -1,7 +1,7 @@
 # TriAD
 
 <p align="center">
-  <img src="images/Banner.png" alt="TriAD Banner" style="border-radius: 20px; width: 100%; max-width: 100%;" />
+  <img src="images/Banner.png" alt="TriAD Banner AAA" style="border-radius: 20px; width: 100%; max-width: 100%;" />
 </p>
 <p align="center">
   <img src="images/Logo.png" alt="TriAD Logo" width="120" style="border-radius: 50%;" />
