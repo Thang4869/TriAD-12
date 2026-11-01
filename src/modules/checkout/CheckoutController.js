@@ -61,7 +61,7 @@ export class CheckoutController {
 
     this.renderer.renderSummary(cartItems);
     this.items = cartItems;
-    this.idempotencyKey = crypto.randomUUID();
+    if (!this.idempotencyKey) this.idempotencyKey = crypto.randomUUID();
 
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
@@ -132,6 +132,7 @@ export class CheckoutController {
 
   closeCheckout() {
     this.invalidateQuote();
+    if (!this.isSubmitting) this.idempotencyKey = null;
     const modal = document.getElementById("checkout-modal");
     const content = modal.querySelector(".bg-white");
     modal.classList.add("opacity-0");
@@ -181,6 +182,7 @@ export class CheckoutController {
 
       window.cartController?.resetLocal();
       window.cartController?.closeDrawer();
+      this.idempotencyKey = null;
       this.closeCheckout();
       this.showSuccess(order);
 
@@ -194,8 +196,10 @@ export class CheckoutController {
         `Đơn ${order.orderNumber}.`,
       );
     } catch (error) {
-      const message =
-        error instanceof ApiError
+      const isAmbiguousResult = error instanceof ApiError && error.status === 0;
+      const message = isAmbiguousResult
+        ? "Không xác định được trạng thái đơn hàng. Vui lòng thử lại để kiểm tra đơn đã được xử lý hay chưa."
+        : error instanceof ApiError
           ? error.message
           : "Không thể xử lý đơn hàng. Vui lòng thử lại.";
       window.toast?.error("Lỗi", message);

@@ -1,6 +1,20 @@
 import { test, expect } from "@playwright/test";
 
 const formatPrice = (value) => Number(value).toLocaleString("vi-VN") + " ₫";
+const clearCart = async (page) => {
+  const origin = new URL(page.url());
+  if (!["localhost", "127.0.0.1"].includes(origin.hostname)) {
+    throw new Error("Cart cleanup requires disposable loopback CI fixtures");
+  }
+
+  const csrf = (await page.context().cookies()).find(
+    (cookie) => cookie.name === "csrfToken",
+  );
+  const response = await page.request.delete("/api/cart", {
+    headers: { "x-csrf-token": csrf.value },
+  });
+  expect([200, 404]).toContain(response.status());
+};
 
 test("full stack: login -> product -> cart -> checkout -> persisted order", async ({
   page,
@@ -28,6 +42,7 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   expect(loginResponse.ok()).toBe(true);
 
   await expect(page.locator("#auth-modal")).toBeHidden();
+  await clearCart(page);
 
   // Add sản phẩm thật vào cart backend.
   const addCartResponsePromise = page.waitForResponse(
@@ -69,6 +84,7 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   );
 
   const cartDeleteRequests = [];
+  const checkoutIdempotencyKeys = [];
 
   const trackCartDelete = (request) => {
     if (
@@ -80,6 +96,14 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   };
 
   page.on("request", trackCartDelete);
+  page.on("request", (request) => {
+    if (
+      new URL(request.url()).pathname === "/api/checkout" &&
+      request.method() === "POST"
+    ) {
+      checkoutIdempotencyKeys.push(request.headers()["idempotency-key"]);
+    }
+  });
 
   await page.locator('#checkout-form button[type="submit"]').click();
 
@@ -97,6 +121,8 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   expect(checkoutResponse.request().postDataJSON().expectedTotal).toBe(
     order.total,
   );
+  expect(checkoutIdempotencyKeys).toHaveLength(1);
+  expect(checkoutIdempotencyKeys[0]).toBeTruthy();
 
   // Frontend phải render chính dữ liệu server trả về.
   await expect(page.locator("#success-modal")).toBeVisible();

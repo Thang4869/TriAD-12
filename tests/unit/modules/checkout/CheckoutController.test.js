@@ -200,6 +200,21 @@ describe("CheckoutController", () => {
       expect(mockEventBusEmit).toHaveBeenCalledWith(EVENTS.CHECKOUT_STARTED);
     });
 
+    it("should create one idempotency key for the checkout modal attempt", async () => {
+      const items = [{ id: 1, name: "Product", quantity: 1, subtotal: 100000 }];
+      mockCartController.getItems.mockReturnValue(items);
+      const randomUUID = vi.spyOn(crypto, "randomUUID");
+
+      await controller.openCheckout();
+      const firstKey = controller.idempotencyKey;
+      await controller.openCheckout();
+
+      expect(firstKey).toBeTruthy();
+      expect(controller.idempotencyKey).toBe(firstKey);
+      expect(randomUUID).toHaveBeenCalledTimes(1);
+      randomUUID.mockRestore();
+    });
+
     it("should handle openCheckout when window.cartController is undefined", () => {
       delete window.cartController;
       controller.openCheckout();
@@ -388,17 +403,28 @@ describe("CheckoutController", () => {
     });
 
     it("should reuse the same idempotency key when checkout is retried", async () => {
-      controller.idempotencyKey = "checkout-attempt-123";
-
       mockServiceInstance.checkout
-        .mockRejectedValueOnce(new Error("Network failure"))
+        .mockRejectedValueOnce(new ApiError("Network failure", 0))
         .mockResolvedValueOnce({
           id: "order-123",
           orderNumber: "ORD-123",
         });
 
+      mockCartController.getItems.mockReturnValue([
+        { id: 1, name: "Product", quantity: 1, subtotal: 100000 },
+      ]);
+      await controller.openCheckout();
+      const firstKey = controller.idempotencyKey;
+
       const firstEvent = new Event("submit", { cancelable: true });
       await controller.handleSubmit(firstEvent);
+
+      expect(controller.idempotencyKey).toBe(firstKey);
+      expect(mockCartController.resetLocal).not.toHaveBeenCalled();
+      expect(mockToast.error).toHaveBeenCalledWith(
+        "Lỗi",
+        "Không xác định được trạng thái đơn hàng. Vui lòng thử lại để kiểm tra đơn đã được xử lý hay chưa.",
+      );
 
       const secondEvent = new Event("submit", { cancelable: true });
       await controller.handleSubmit(secondEvent);
@@ -406,12 +432,13 @@ describe("CheckoutController", () => {
       expect(mockServiceInstance.checkout).toHaveBeenCalledTimes(2);
 
       expect(mockServiceInstance.checkout.mock.calls[0][1]).toBe(
-        "checkout-attempt-123",
+        firstKey,
       );
 
       expect(mockServiceInstance.checkout.mock.calls[1][1]).toBe(
-        "checkout-attempt-123",
+        firstKey,
       );
+      expect(mockCartController.resetLocal).toHaveBeenCalledTimes(1);
     });
 
     it("should handle error during checkout execution", async () => {
