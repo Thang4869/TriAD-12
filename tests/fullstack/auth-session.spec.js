@@ -1,5 +1,20 @@
 import { test, expect } from "@playwright/test";
 
+const clearCart = async (page) => {
+  const origin = new URL(page.url());
+  if (!["localhost", "127.0.0.1"].includes(origin.hostname)) {
+    throw new Error("Cart cleanup requires disposable loopback CI fixtures");
+  }
+
+  const csrf = (await page.context().cookies()).find(
+    (cookie) => cookie.name === "csrfToken",
+  );
+  const response = await page.request.delete("/api/cart", {
+    headers: { "x-csrf-token": csrf.value },
+  });
+  expect([200, 404]).toContain(response.status());
+};
+
 // These replay checks use disposable local CI accounts, never a hosted account.
 // Auth request headers must not be retained in browser trace/video artifacts.
 test.use({ trace: "off", video: "off" });
@@ -25,6 +40,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.locator("#auth-submit-btn").click();
   expect((await loginResponse).status()).toBe(200);
   await expect(page.locator("#auth-modal")).toBeHidden();
+  await clearCart(page);
 });
 
 test("refreshes a missing access session and enforces CSRF and logout revocation", async ({
