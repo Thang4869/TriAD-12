@@ -182,3 +182,140 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
     )
     .toBe(order.id);
 });
+
+test("full stack: recovers a committed checkout after response loss", async ({
+  page,
+}) => {
+  await page.goto("/pages/products.html");
+  await expect(page.locator(".product-card").first()).toBeVisible();
+
+  await page.locator("#account-btn").click();
+  await expect(page.locator("#auth-modal")).toBeVisible();
+  await page.fill("#auth-email", "user@example.com");
+  await page.fill("#auth-password", "user123");
+
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/auth/login" &&
+      response.request().method() === "POST",
+  );
+  await page.locator("#auth-form button[type=submit]").click();
+  expect((await loginResponsePromise).ok()).toBe(true);
+  await expect(page.locator("#auth-modal")).toBeHidden();
+  await clearCart(page);
+
+  const addCartResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/cart/items" &&
+      response.request().method() === "POST",
+  );
+  await page
+    .locator(".product-card")
+    .first()
+    .locator(".add-to-cart-btn")
+    .click();
+  expect((await addCartResponsePromise).ok()).toBe(true);
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+
+  await page.locator("#cart-icon-btn").click();
+  await expect(page.locator("#cart-drawer")).toBeVisible();
+  await page.locator("#checkout-btn").click();
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await page.fill("#phone", "0123456789");
+  await page.fill("#address", "123 Response Loss Recovery Street");
+  await page.fill("#notes", "Committed before the browser lost the response");
+  await expect(
+    page.locator('#checkout-form button[type="submit"]'),
+  ).toBeEnabled();
+
+  const checkoutAttempts = [];
+  const checkoutIdempotencyKeys = [];
+  let firstCommittedPayload;
+  let interceptedCheckoutCount = 0;
+  const cartDeleteRequests = [];
+
+  page.on("request", (request) => {
+    if (
+      new URL(request.url()).pathname === "/api/checkout" &&
+      request.method() === "POST"
+    ) {
+      checkoutAttempts.push(request);
+      checkoutIdempotencyKeys.push(request.headers()["idempotency-key"]);
+    }
+    if (
+      new URL(request.url()).pathname === "/api/cart" &&
+      request.method() === "DELETE"
+    ) {
+      cartDeleteRequests.push(request);
+    }
+  });
+
+  await page.route("**/api/checkout", async (route) => {
+    if (route.request().method() !== "POST" || interceptedCheckoutCount > 0) {
+      await route.continue();
+      return;
+    }
+
+    interceptedCheckoutCount += 1;
+    const backendResponse = await route.fetch();
+    expect(backendResponse.ok()).toBe(true);
+    firstCommittedPayload = await backendResponse.json();
+    expect(firstCommittedPayload?.data?.order?.id).toBeTruthy();
+    await route.abort("connectionfailed");
+  });
+
+  await page.locator('#checkout-form button[type="submit"]').click();
+
+  await expect.poll(() => checkoutAttempts.length, { timeout: 10000 }).toBe(1);
+  await expect(page.locator(".toast-error")).toContainText(
+    "Không xác định được trạng thái đơn hàng",
+  );
+  await expect(
+    page.locator('#checkout-form button[type="submit"]'),
+  ).toBeEnabled();
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+
+  const recoveredResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/checkout" &&
+      response.request().method() === "POST" &&
+      checkoutAttempts.length >= 2,
+  );
+  await page.locator('#checkout-form button[type="submit"]').click();
+  const recoveredResponse = await recoveredResponsePromise;
+  expect(recoveredResponse.ok()).toBe(true);
+
+  const recoveredPayload = await recoveredResponse.json();
+  const recoveredOrder = recoveredPayload?.data?.order;
+  const committedOrder = firstCommittedPayload?.data?.order;
+
+  expect(checkoutAttempts).toHaveLength(2);
+  expect(checkoutIdempotencyKeys).toHaveLength(2);
+  expect(checkoutIdempotencyKeys[0]).toBeTruthy();
+  expect(checkoutIdempotencyKeys[1]).toBe(checkoutIdempotencyKeys[0]);
+  expect(recoveredOrder?.id).toBe(committedOrder.id);
+  expect(recoveredOrder?.orderNumber).toBe(committedOrder.orderNumber);
+  expect(Number(recoveredOrder?.total)).toBe(Number(committedOrder.total));
+  expect(recoveredOrder?.paymentStatus).toBe("PENDING");
+
+  await expect(page.locator("#success-modal")).toBeVisible();
+  await expect(page.locator("#success-order-id")).toHaveText(
+    recoveredOrder.orderNumber,
+  );
+  await expect(page.locator("#cart-badge")).toHaveText("0");
+  await expect(page.locator(".cart-scroll")).toContainText("empty");
+  expect(cartDeleteRequests).toHaveLength(0);
+
+  const ordersResponse = await page.request.get("/api/checkout/orders", {
+    params: { limit: 50 },
+  });
+  expect(ordersResponse.ok()).toBe(true);
+  const ordersPayload = await ordersResponse.json();
+  const matchingOrders = (ordersPayload?.data?.orders || []).filter(
+    (order) => order.id === committedOrder.id,
+  );
+  expect(matchingOrders).toHaveLength(1);
+  expect(matchingOrders[0].orderNumber).toBe(committedOrder.orderNumber);
+  expect(matchingOrders[0].paymentStatus).toBe("PENDING");
+});
