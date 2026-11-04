@@ -474,6 +474,46 @@ describe("CheckoutController", () => {
 
       expect(() => vi.advanceTimersByTime(1500)).not.toThrow();
     });
+
+    it("should ignore duplicate submissions while checkout is in flight", async () => {
+      let resolveCheckout;
+
+      mockServiceInstance.checkout.mockReturnValue(
+        new Promise((resolve) => {
+          resolveCheckout = resolve;
+        }),
+      );
+
+      controller.idempotencyKey = "checkout-attempt-1";
+
+      const submitButton = document.querySelector(
+        '#checkout-form button[type="submit"]',
+      );
+
+      const firstSubmit = controller.handleSubmit(
+        new Event("submit", { cancelable: true }),
+      );
+
+      expect(controller.isSubmitting).toBe(true);
+      expect(submitButton.disabled).toBe(true);
+
+      await controller.handleSubmit(
+        new Event("submit", { cancelable: true }),
+      );
+
+      expect(mockServiceInstance.checkout).toHaveBeenCalledTimes(1);
+      expect(mockCartController.resetLocal).not.toHaveBeenCalled();
+
+      resolveCheckout({
+        id: "order-123",
+        orderNumber: "ORD-123",
+      });
+
+      await firstSubmit;
+
+      expect(mockCartController.resetLocal).toHaveBeenCalledTimes(1);
+      expect(controller.isSubmitting).toBe(false);
+    });
   });
 
   describe("server pricing quote", () => {
