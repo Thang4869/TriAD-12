@@ -139,4 +139,75 @@ describe("CheckoutRenderer", () => {
     renderer2.updateTotal(1000);
     expect(document.getElementById("checkout-total")).toBeNull();
   });
+
+  it("renders an empty summary for a null item list", () => {
+    renderer.renderSummary(null);
+
+    expect(document.getElementById("checkout-items").textContent).toBe(
+      "Your cart is empty.",
+    );
+    expect(document.getElementById("checkout-total").textContent).toBe("0 ₫");
+  });
+
+  it("renders quote status and clears pricing fields when present", () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<span id="checkout-subtotal">100</span><span id="checkout-tax">10</span><span id="checkout-shipping">20</span><span id="checkout-discount">5</span><p id="checkout-quote-status"></p>',
+    );
+
+    renderer.renderQuoteStatus("Pricing unavailable");
+
+    expect(document.getElementById("checkout-total").textContent).toBe("—");
+    for (const id of [
+      "checkout-subtotal",
+      "checkout-tax",
+      "checkout-shipping",
+      "checkout-discount",
+    ]) {
+      expect(document.getElementById(id).textContent).toBe("—");
+    }
+    expect(document.getElementById("checkout-quote-status").textContent).toBe(
+      "Pricing unavailable",
+    );
+  });
+
+  it("renders quote values when the optional status element is absent", () => {
+    document.body.innerHTML = `
+      <span id="checkout-items"></span><span id="checkout-total"></span>
+      <span id="checkout-subtotal"></span><span id="checkout-tax"></span>
+      <span id="checkout-shipping"></span><span id="checkout-discount"></span>
+    `;
+    const minimalRenderer = new CheckoutRenderer();
+
+    expect(() =>
+      minimalRenderer.renderQuote({
+        subtotal: 100,
+        tax: 10,
+        shippingFee: 20,
+        discountAmount: 5,
+        total: 125,
+      }),
+    ).not.toThrow();
+    expect(document.getElementById("checkout-total").textContent).toBe("125 ₫");
+  });
+
+  it("omits an empty discount code from success pricing", () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<span id="success-subtotal"></span><span id="success-tax"></span><span id="success-shipping"></span><span id="success-discount"></span><span id="success-discount-code">stale</span><span id="success-total"></span>',
+    );
+
+    renderer.renderSuccessPricing({
+      subtotal: 100,
+      tax: 10,
+      shippingFee: 20,
+      discountAmount: 0,
+      discountCode: null,
+      total: 130,
+    });
+
+    expect(document.getElementById("success-discount-code").textContent).toBe("");
+    expect(document.getElementById("success-total").textContent).toBe("130 ₫");
+  });
+
 });
