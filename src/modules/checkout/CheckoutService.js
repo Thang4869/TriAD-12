@@ -1,4 +1,7 @@
-import { apiService } from "../../shared/services/api.service.js";
+import {
+  ApiError,
+  apiService,
+} from "../../shared/services/api.service.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
 
@@ -20,8 +23,23 @@ export class CheckoutService {
       { paymentMethod, address, phone, notes, discountCode, expectedTotal },
       { "Idempotency-Key": idempotencyKey },
     );
-    eventBus.emit(EVENTS.CHECKOUT_COMPLETED, { order: result.order });
-    return result.order;
+    const order = result?.order;
+
+    if (
+      !order ||
+      typeof order.id !== "string" ||
+      !order.id ||
+      typeof order.orderNumber !== "string" ||
+      !order.orderNumber
+    ) {
+      throw new ApiError(
+        "Checkout response is incomplete; commit status is unknown",
+        0,
+      );
+    }
+
+    eventBus.emit(EVENTS.CHECKOUT_COMPLETED, { order });
+    return order;
   }
 
   async getOrders(page = 1, limit = 10) {
