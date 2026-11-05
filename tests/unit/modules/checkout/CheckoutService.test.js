@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckoutService } from "../../../../src/modules/checkout/CheckoutService.js";
 import { eventBus } from "../../../../src/core/services/EventBus.js";
 import { EVENTS } from "../../../../src/shared/constants/Events.js";
+import { ApiError } from "../../../../src/shared/services/api.service.js";
 
 vi.mock("../../../../src/core/services/EventBus.js", () => ({
   eventBus: {
@@ -113,6 +114,42 @@ describe("CheckoutService", () => {
 
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
+
+    it.each([
+      ["the API returns null", null],
+      ["the API returns an empty object", {}],
+      ["the order is null", { order: null }],
+      ["the order is missing an id", { order: { orderNumber: "ORD-1" } }],
+      ["the order is missing an order number", { order: { id: "order-1" } }],
+      ["the order has a non-string id", { order: { id: 123, orderNumber: "ORD-1" } }],
+      [
+        "the order has a non-string order number",
+        { order: { id: "order-1", orderNumber: 123 } },
+      ],
+      ["the order has an empty id", { order: { id: "", orderNumber: "ORD-1" } }],
+      [
+        "the order has an empty order number",
+        { order: { id: "order-1", orderNumber: "" } },
+      ],
+    ])(
+      "classifies incomplete checkout responses as ambiguous: %s",
+      async (_case, response) => {
+        api.post.mockResolvedValue(response);
+
+        const checkout = service.checkout(
+          {
+            paymentMethod: "COD",
+            address: "123 Test Street",
+            phone: "0123456789",
+          },
+          "checkout-key",
+        );
+
+        await expect(checkout).rejects.toBeInstanceOf(ApiError);
+        await expect(checkout).rejects.toMatchObject({ status: 0 });
+        expect(eventBus.emit).not.toHaveBeenCalled();
+      },
+    );
   });
 
   describe("getQuote", () => {

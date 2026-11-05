@@ -156,7 +156,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Thang4869/TriAD-Backend
-          ref: commit-02112026
+          ref: main
           path: backend
           persist-credentials: false
       - name: Record tested source commits
