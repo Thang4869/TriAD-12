@@ -127,4 +127,42 @@ describe("ToastService", () => {
       expect(iconEl.className).toContain("ph-star");
     });
   });
+
+  describe("optional toast controls", () => {
+    it("handles toast elements without close buttons or progress bars", () => {
+      const element = document.createElement("div");
+      toastService.renderer.render = vi.fn().mockReturnValue(element);
+      toastService.renderer.remove = vi.fn();
+
+      expect(() =>
+        toastService.show({
+          title: "Minimal",
+          message: "No optional controls",
+          duration: 500,
+        }),
+      ).not.toThrow();
+
+      element.dispatchEvent(new Event("mouseenter"));
+      element.dispatchEvent(new Event("mouseleave"));
+      expect(toastService.renderer.remove).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(500);
+      expect(toastService.renderer.remove).toHaveBeenCalledWith(element);
+    });
+
+    it("clears the active timer when a close button is present", () => {
+      const element = document.createElement("div");
+      const close = document.createElement("button");
+      close.className = "close-btn";
+      element.append(close);
+      toastService.renderer.render = vi.fn().mockReturnValue(element);
+      const remove = vi.spyOn(toastService.renderer, "remove");
+
+      toastService.show({ title: "Closable", message: "Close me" });
+      close.click();
+      expect(remove).toHaveBeenCalledWith(element);
+      vi.runAllTimers();
+      expect(remove).toHaveBeenCalledTimes(1);
+    });
+  });
+
 });
