@@ -68,4 +68,45 @@ describe("CartRenderer", () => {
     expect(btn.disabled).toBe(true);
     expect(btn.style.opacity).toBe("0.5");
   });
+
+  it("returns early when the cart container is missing", () => {
+    document.body.innerHTML = "";
+    const rendererWithoutContainer = new CartRenderer();
+
+    expect(() => rendererWithoutContainer.render([{ id: "item" }])).not.toThrow();
+    expect(rendererWithoutContainer.container).toBeNull();
+  });
+
+  it("treats a null item list as an empty cart", () => {
+    renderer.render(null);
+
+    expect(document.querySelector(".cart-scroll").textContent).toContain(
+      "The shopping cart is empty.",
+    );
+    expect(document.getElementById("cart-total").textContent).toBe("0 ₫");
+    expect(document.getElementById("cart-badge").style.display).toBe("none");
+  });
+
+  it("uses an empty image filter when the item has no filter", () => {
+    const element = renderer.createItemElement({
+      id: "plain",
+      image: "plain.jpg",
+      name: "Plain item",
+      price: 1000,
+      subtotal: 1000,
+      quantity: 1,
+    });
+
+    expect(element.querySelector("img").className).not.toContain("undefined");
+  });
+
+  it("tolerates missing optional badge, total, and checkout elements", () => {
+    document.body.innerHTML = '<div class="cart-scroll"></div>';
+    const minimalRenderer = new CartRenderer();
+
+    expect(() => minimalRenderer.updateBadge(2)).not.toThrow();
+    expect(() => minimalRenderer.updateTotal(2000)).not.toThrow();
+    expect(() => minimalRenderer.setCheckoutEnabled(true)).not.toThrow();
+  });
+
 });
