@@ -498,3 +498,18 @@ describe("ModalController", () => {
     });
   });
 });
+
+describe("ModalController missing dependencies", () => {
+  it("does not add an item when the cart controller is unavailable", () => {
+    delete window.cartController;
+    modalController.open(1);
+    expect(() => modalController.handleAddToCart()).not.toThrow();
+    expect(() => modalController.handleBuyNow()).not.toThrow();
+  });
+
+  it("does not throw when modal content is absent during show", () => {
+    modalController.content = null;
+    expect(() => modalController.show()).not.toThrow();
+    expect(modalController.overlay.classList.contains("hidden")).toBe(false);
+  });
+});
