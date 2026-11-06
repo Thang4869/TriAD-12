@@ -199,3 +199,14 @@ describe("StorageService key filtering", () => {
     expect(isolated.keys()).not.toContain("unrelated_key");
   });
 });
+
+describe("StorageService prefixed key enumeration", () => {
+  it("returns only keys belonging to the configured prefix", () => {
+    const isolated = new StorageService("coverage_");
+    vi.spyOn(isolated, "_isAvailable").mockReturnValue(false);
+    isolated.set("visible", "yes");
+    isolated._memory.set("other_hidden", "no");
+    expect(isolated.keys()).toContain("visible");
+    expect(isolated.keys()).not.toContain("other_hidden");
+  });
+});

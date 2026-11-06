@@ -358,3 +358,15 @@ describe("RouterService ignored links", () => {
     expect(document.getElementById("missing").hasAttribute("href")).toBe(false);
   });
 });
+
+describe("RouterService unsupported content URLs", () => {
+  it("leaves non-rewritable relative links and images unchanged", () => {
+    const router = new RouterService();
+    router.rootPath = "../";
+    document.body.innerHTML = '<div id="page-content"><a id="relative" href="catalog">Catalog</a><img id="external-image" src="https://example.com/image.png"></div>';
+    router.fixContentLinks();
+    router.fixContentLinks();
+    expect(document.getElementById("relative").getAttribute("href")).toBe("catalog");
+    expect(document.getElementById("external-image").getAttribute("src")).toBe("https://example.com/image.png");
+  });
+});

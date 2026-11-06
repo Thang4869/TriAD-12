@@ -633,3 +633,11 @@ describe("ProductsRenderer empty append and optional controls", () => {
     expect(instance.getUIState()).toEqual({ keyword: "", sort: "default", maxPrice: 10_000_000 });
   });
 });
+
+describe("ProductsRenderer missing container", () => {
+  it("does not append products when the grid container is unavailable", () => {
+    document.body.innerHTML = "";
+    const instance = new ProductsRenderer();
+    expect(() => instance.append([{ id: "missing-grid" }])).not.toThrow();
+  });
+});

@@ -659,3 +659,13 @@ describe("NotificationController state guards", () => {
     expect(instance.markAllAsRead()).toBe(false);
   });
 });
+
+describe("NotificationController initialization guard", () => {
+  it("does not initialize again after destruction", () => {
+    document.body.innerHTML = "";
+    const instance = new NotificationController();
+    instance.destroy();
+    expect(() => instance._init()).not.toThrow();
+    expect(instance._initialized).toBe(false);
+  });
+});

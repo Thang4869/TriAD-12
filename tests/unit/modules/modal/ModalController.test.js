@@ -518,3 +518,14 @@ describe("ModalController missing dependencies", () => {
     expect(instance.overlay.classList.contains("hidden")).toBe(false);
   });
 });
+
+describe("ModalController absent overlay", () => {
+  it("does not change body state when the overlay is unavailable", () => {
+    document.body.innerHTML = "";
+    document.body.style.overflow = "auto";
+    const instance = new ModalController();
+    instance.overlay = null;
+    expect(() => instance.show()).not.toThrow();
+    expect(document.body.style.overflow).toBe("auto");
+  });
+});
