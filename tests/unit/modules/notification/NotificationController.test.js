@@ -636,20 +636,24 @@ describe("NotificationController", () => {
 
 describe("NotificationController state guards", () => {
   it("does not initialize after destruction", () => {
-    controller = new NotificationController();
-    controller.destroy();
-    controller._init();
-    expect(controller._initialized).toBe(false);
+    document.body.innerHTML = '<button id="notification-btn"></button>';
+    const instance = new NotificationController();
+    instance.destroy();
+    instance._init();
+    expect(instance._initialized).toBe(false);
   });
 
   it("returns false when marking an unknown notification as read", () => {
-    controller = new NotificationController();
-    expect(controller.markAsRead(-999)).toBe(false);
+    document.body.innerHTML = "";
+    const instance = new NotificationController();
+    instance.destroy();
+    expect(instance.markAsRead(-999)).toBe(false);
   });
 
   it("returns false when all notifications are already read", () => {
-    controller = new NotificationController();
-    controller.service.markAllAsRead();
-    expect(controller.markAllAsRead()).toBe(false);
+    document.body.innerHTML = "";
+    const instance = new NotificationController();
+    instance.destroy();
+    expect(instance.markAllAsRead()).toBe(false);
   });
 });
