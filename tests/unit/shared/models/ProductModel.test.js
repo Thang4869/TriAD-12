@@ -229,3 +229,16 @@ describe("ProductModel", () => {
     });
   });
 });
+
+describe("ProductModel legacy fallbacks", () => {
+  it("uses the configured placeholder when no image is available", () => {
+    const product = new ProductModel({ id: "empty-image", name: "No image", price: 10 });
+    expect(product.images).toEqual([]);
+    expect(product.image).toBeTruthy();
+  });
+
+  it("does not append a category suffix when the display label is empty", () => {
+    const product = new ProductModel({ id: "plain", name: "Plain", price: 10, color: "" });
+    expect(product.displayName).toBe("Plain");
+  });
+});
