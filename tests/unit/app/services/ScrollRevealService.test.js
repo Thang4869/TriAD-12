@@ -467,7 +467,7 @@ describe("ScrollRevealService non-intersecting entries", () => {
     vi.advanceTimersByTime(200);
 
     const card = document.getElementById("not-visible-card");
-    const observer = global.IntersectionObserver.mock.results[0].value;
+    const observer = global.IntersectionObserver.mock.results[1].value;
     observer._callback([{ target: card, isIntersecting: false }]);
 
     expect(card.style.opacity).toBe("0");
