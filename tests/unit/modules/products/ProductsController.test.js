@@ -772,3 +772,18 @@ describe("ProductsController", () => {
     });
   });
 });
+
+describe("ProductsController load guards", () => {
+  it("does not request another page while a load is already active", async () => {
+    controller.isLoading = true;
+    await controller.loadMore();
+    expect(service.loadMore).not.toHaveBeenCalled();
+  });
+
+  it("does not request another page when the service has no more products", async () => {
+    controller.isLoading = false;
+    service.hasMore = false;
+    await controller.loadMore();
+    expect(service.loadMore).not.toHaveBeenCalled();
+  });
+});
