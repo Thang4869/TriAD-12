@@ -229,3 +229,17 @@ describe("EventBus", () => {
     });
   });
 });
+
+describe("EventBus context filtering", () => {
+  it("does not remove a listener registered with a different context", () => {
+    const bus = new EventBus();
+    const callback = vi.fn();
+    const firstContext = {};
+    const secondContext = {};
+    bus.on("context-event", callback, firstContext);
+    bus.off("context-event", callback, secondContext);
+    bus.emit("context-event", "payload");
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback).toHaveBeenCalledWith("payload");
+  });
+});
