@@ -231,8 +231,9 @@ describe("DomUtils unsupported child values", () => {
   });
 
   it("treats an element touching the viewport boundary as not visible", () => {
+    document.body.innerHTML = '<div id="visibility-boundary"></div>';
     vi.spyOn(window, "innerHeight", "get").mockReturnValue(500);
-    const element = document.getElementById("target");
+    const element = document.getElementById("visibility-boundary");
     vi.spyOn(element, "getBoundingClientRect").mockReturnValue({ top: 500, bottom: 550 });
     expect(DomUtils.isVisible(element)).toBe(false);
   });
