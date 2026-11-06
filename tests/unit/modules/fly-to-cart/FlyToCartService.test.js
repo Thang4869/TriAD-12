@@ -100,6 +100,12 @@ describe("FlyToCart", () => {
     vi.runAllTimers();
   });
 
+  it("should return immediately without a callback if already flying", () => {
+    flyToCart.isFlying = true;
+    flyToCart.fly(document.getElementById("product-img"));
+    expect(flyToCart.isFlying).toBe(true);
+  });
+
   it("should return immediately if already flying", () => {
     flyToCart.isFlying = true;
     const callback = vi.fn();
@@ -110,12 +116,22 @@ describe("FlyToCart", () => {
     vi.runAllTimers();
   });
 
+  it("should return if element is null without a callback", () => {
+    flyToCart.fly(null);
+    expect(flyToCart.isFlying).toBe(false);
+  });
+
   it("should return if element is null", () => {
     const callback = vi.fn();
     flyToCart.fly(null, callback);
     expect(callback).toHaveBeenCalled();
     expect(flyToCart.isFlying).toBe(false);
     vi.runAllTimers();
+  });
+
+  it("should return if image src is empty without a callback", () => {
+    flyToCart.fly(document.createElement("div"));
+    expect(flyToCart.isFlying).toBe(false);
   });
 
   it("should return if image src is empty", () => {
@@ -215,6 +231,16 @@ describe("FlyToCart", () => {
       Logger.debug.mockClear();
     });
 
+    it("should handle a missing retry rect without a callback", () => {
+      vi.spyOn(badge, "getBoundingClientRect").mockReturnValue(null);
+      vi.spyOn(flyToCart, "findCartBadge").mockReturnValue(badge);
+
+      flyToCart.fly(img);
+
+      expect(flyToCart.isFlying).toBe(false);
+      expect(Logger.debug).toHaveBeenCalledWith("Cart target not found");
+    });
+
     it("should handle when getBoundingClientRect returns null and retryRect also null", () => {
       vi.spyOn(badge, "getBoundingClientRect").mockReturnValue(null);
 
@@ -230,6 +256,24 @@ describe("FlyToCart", () => {
       expect(findSpy).toHaveBeenCalled();
       expect(flyToCart.isFlying).toBe(false);
       expect(callback).toHaveBeenCalled();
+    });
+
+    it("should handle an available retry rect without a callback", () => {
+      const newBadge = document.createElement("span");
+      document.body.appendChild(newBadge);
+      vi.spyOn(badge, "getBoundingClientRect").mockReturnValue(null);
+      vi.spyOn(newBadge, "getBoundingClientRect").mockReturnValue({
+        left: 100,
+        top: 100,
+        width: 20,
+        height: 20,
+      });
+      vi.spyOn(flyToCart, "findCartBadge").mockReturnValue(newBadge);
+
+      flyToCart.fly(img);
+
+      expect(flyToCart.isFlying).toBe(false);
+      expect(Logger.debug).toHaveBeenCalledWith("Cart target not found");
     });
 
     it("should handle when getBoundingClientRect returns null but retryRect exists", () => {
@@ -254,5 +298,30 @@ describe("FlyToCart", () => {
       expect(flyToCart.isFlying).toBe(false);
       expect(callback).toHaveBeenCalled();
     });
+  });
+
+  it("should complete animation when the cart badge and callback are absent", () => {
+    const img = document.getElementById("product-img");
+    const badge = document.getElementById("cart-badge");
+    vi.spyOn(badge, "getBoundingClientRect").mockReturnValue({
+      left: 200,
+      top: 100,
+      width: 20,
+      height: 20,
+    });
+    vi.spyOn(img, "getBoundingClientRect").mockReturnValue({
+      left: 50,
+      top: 50,
+      width: 100,
+      height: 100,
+    });
+
+    const animateSpy = vi.spyOn(flyToCart, "animateFly");
+    flyToCart.fly(img);
+    flyToCart.cartBadge = null;
+
+    const animationCallback = animateSpy.mock.calls[0][3];
+    expect(() => animationCallback()).not.toThrow();
+    expect(flyToCart.isFlying).toBe(false);
   });
 });
