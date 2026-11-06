@@ -324,3 +324,11 @@ describe("ContactService optional form controls", () => {
     expect(event.preventDefault).toHaveBeenCalled();
   });
 });
+
+describe("ContactService validation helper", () => {
+  it("rejects malformed email addresses and accepts a valid address", () => {
+    const instance = Object.create(ContactService.prototype);
+    expect(instance.isValidEmail("not-an-email")).toBe(false);
+    expect(instance.isValidEmail("person@example.com")).toBe(true);
+  });
+});
