@@ -67,3 +67,11 @@ describe("BaseRenderer retained container", () => {
     expect(instance.findContainer()).toBe(existing);
   });
 });
+
+describe("BaseRenderer missing container", () => {
+  it("returns null when the configured container cannot be found", () => {
+    document.body.innerHTML = "";
+    const renderer = new BaseRenderer("missing-container");
+    expect(renderer.findContainer()).toBeNull();
+  });
+});
