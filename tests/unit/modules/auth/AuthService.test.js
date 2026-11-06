@@ -276,3 +276,20 @@ describe("AuthService", () => {
     expect(getCsrfToken()).toBeNull();
   });
 });
+
+describe("AuthService alternate authentication states", () => {
+  it("returns the two-factor challenge without persisting a user", async () => {
+    const challenge = { requires2FA: true, preAuthToken: "pre-auth", message: "Verify" };
+    api.post.mockResolvedValue(challenge);
+    await expect(service.login("test@example.com", "password")).resolves.toEqual(challenge);
+    expect(service.isAuthenticated).toBe(false);
+    expect(sessionStorage.getItem("triad_current_user")).toBeNull();
+  });
+
+  it("expires an already unauthenticated session without emitting a logout transition", async () => {
+    service.expireSession();
+    expect(service.isAuthenticated).toBe(false);
+    expect(getCsrfToken()).toBeNull();
+    expect(sessionStorage.getItem("triad_current_user")).toBeNull();
+  });
+});
