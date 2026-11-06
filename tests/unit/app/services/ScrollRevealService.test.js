@@ -420,3 +420,58 @@ describe("ScrollReveal without product grid", () => {
     expect(observe).toHaveBeenCalled();
   });
 });
+
+describe("ScrollRevealService non-intersecting entries", () => {
+  let originalIntersectionObserver;
+  let originalMutationObserver;
+
+  beforeEach(() => {
+    originalIntersectionObserver = global.IntersectionObserver;
+    originalMutationObserver = global.MutationObserver;
+    global.IntersectionObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    document.body.innerHTML = "";
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    global.IntersectionObserver = originalIntersectionObserver;
+    global.MutationObserver = originalMutationObserver;
+  });
+
+  it("keeps a section hidden when its observer entry is not intersecting", () => {
+    document.body.innerHTML = '<section class="section" id="not-visible"></section>';
+    initScrollReveal();
+
+    const section = document.getElementById("not-visible");
+    const observer = global.IntersectionObserver.mock.results[0].value;
+    observer._callback([{ target: section, isIntersecting: false }]);
+
+    expect(section.style.opacity).toBe("0");
+    expect(section.style.transform).toBe("translateY(50px)");
+  });
+
+  it("keeps a product card hidden and observed when it is not intersecting", () => {
+    document.body.innerHTML = '<div id="product-grid"><div class="product-card" id="not-visible-card"></div></div>';
+    initScrollReveal();
+    vi.advanceTimersByTime(200);
+
+    const card = document.getElementById("not-visible-card");
+    const observer = global.IntersectionObserver.mock.results[0].value;
+    observer._callback([{ target: card, isIntersecting: false }]);
+
+    expect(card.style.opacity).toBe("0");
+    expect(card.style.transform).toBe("translateY(30px) scale(0.97)");
+    expect(observer.unobserve).not.toHaveBeenCalled();
+  });
+});
