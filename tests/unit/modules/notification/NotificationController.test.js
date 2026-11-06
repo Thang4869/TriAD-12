@@ -633,3 +633,23 @@ describe("NotificationController", () => {
     });
   });
 });
+
+describe("NotificationController state guards", () => {
+  it("does not initialize after destruction", () => {
+    controller = new NotificationController();
+    controller.destroy();
+    controller._init();
+    expect(controller._initialized).toBe(false);
+  });
+
+  it("returns false when marking an unknown notification as read", () => {
+    controller = new NotificationController();
+    expect(controller.markAsRead(-999)).toBe(false);
+  });
+
+  it("returns false when all notifications are already read", () => {
+    controller = new NotificationController();
+    controller.service.markAllAsRead();
+    expect(controller.markAllAsRead()).toBe(false);
+  });
+});
