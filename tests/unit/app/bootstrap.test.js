@@ -184,7 +184,8 @@ describe("bootstrap", () => {
       <div id="product-grid"></div>
     `;
 
-    loadComponentsMock.mockClear();
+    loadComponentsMock.mockReset();
+    loadComponentsMock.mockResolvedValue([{ success: true }]);
     initHeaderNavigationMock.mockClear();
     initHeaderScrollMock.mockClear();
     initScrollRevealMock.mockClear();
