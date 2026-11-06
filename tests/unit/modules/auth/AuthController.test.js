@@ -358,6 +358,8 @@ describe("AuthController", () => {
 
   it("returns early from header update when the account button is missing", () => {
     document.getElementById("account-btn").remove();
+    authService.getCurrentUser.mockClear();
+
     expect(() => controller.updateHeaderUI()).not.toThrow();
     expect(authService.getCurrentUser).not.toHaveBeenCalled();
   });
