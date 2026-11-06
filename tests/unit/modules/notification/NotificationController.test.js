@@ -645,6 +645,7 @@ describe("NotificationController state guards", () => {
 
   it("returns false when marking an unknown notification as read", () => {
     document.body.innerHTML = "";
+    localStorage.setItem("triad_notifications", JSON.stringify([]));
     const instance = new NotificationController();
     instance.destroy();
     expect(instance.markAsRead(-999)).toBe(false);
@@ -652,6 +653,7 @@ describe("NotificationController state guards", () => {
 
   it("returns false when all notifications are already read", () => {
     document.body.innerHTML = "";
+    localStorage.setItem("triad_notifications", JSON.stringify([]));
     const instance = new NotificationController();
     instance.destroy();
     expect(instance.markAllAsRead()).toBe(false);
