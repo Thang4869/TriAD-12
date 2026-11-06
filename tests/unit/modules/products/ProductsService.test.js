@@ -23,7 +23,7 @@ describe("ProductsService", () => {
 
   beforeEach(() => {
     repository = {
-      findPage: vi.fn().mockResolvedValue({ products: [], page: 1, totalPages: 1, total: 0 }),
+      findPage: vi.fn().mockResolvedValue(pageResult()),
     };
 
     eventBus = {
