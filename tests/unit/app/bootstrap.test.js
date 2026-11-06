@@ -34,10 +34,18 @@ vi.mock("../../../src/modules/notification/index.js", () => ({
   notificationController: { reinit: vi.fn() },
 }));
 
+vi.mock("../../../src/modules/auth/AuthService.js", () => ({
+  authService: { restoreCsrfToken: vi.fn().mockResolvedValue(undefined) },
+}));
+
 vi.mock("../../../src/core/di/container.js", () => ({
   Container: vi.fn().mockImplementation(function () {
     this.register = vi.fn();
-    this.get = vi.fn(() => ({}));
+    this.get = vi.fn((key) =>
+      key === "adminController"
+        ? { init: vi.fn().mockResolvedValue(undefined) }
+        : {},
+    );
   }),
 }));
 
@@ -72,6 +80,16 @@ vi.mock("../../../src/modules/blog/BlogController.js", () => ({
 }));
 vi.mock("../../../src/modules/reviews/ReviewsController.js", () => ({
   ReviewsController: vi.fn(),
+}));
+
+vi.mock("../../../src/modules/admin/AdminController.js", () => ({
+  AdminController: vi.fn(),
+}));
+
+vi.mock("../../../src/modules/admin/AdminProductController.js", () => ({
+  AdminProductController: vi.fn().mockImplementation(function () {
+    this.init = vi.fn().mockResolvedValue(undefined);
+  }),
 }));
 vi.mock(
   "../../../src/modules/products/repositories/ProductsRepository.js",
@@ -166,7 +184,8 @@ describe("bootstrap", () => {
       <div id="product-grid"></div>
     `;
 
-    loadComponentsMock.mockClear();
+    loadComponentsMock.mockReset();
+    loadComponentsMock.mockResolvedValue([{ success: true }]);
     initHeaderNavigationMock.mockClear();
     initHeaderScrollMock.mockClear();
     initScrollRevealMock.mockClear();
@@ -275,6 +294,36 @@ describe("bootstrap", () => {
     expect(window.modalController).toBeDefined();
     expect(window.checkoutController).toBeDefined();
   });
+  it("initializes the admin dashboard controller on its page", async () => {
+    const { Container } = await import("../../../src/core/di/container.js");
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-dashboard.html" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const container = Container.mock.instances.at(-1);
+    expect(container.get).toHaveBeenCalledWith("adminController");
+  });
+
+  it("initializes the admin products controller on its page", async () => {
+    const { AdminProductController } = await import(
+      "../../../src/modules/admin/AdminProductController.js"
+    );
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-products.html" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const instance = AdminProductController.mock.instances.at(-1);
+    expect(instance.init).toHaveBeenCalledOnce();
+  });
+
 });
 
 describe("bootstrap page-specific initialization", () => {
@@ -288,3 +337,4 @@ describe("bootstrap page-specific initialization", () => {
     await bootstrap();
   });
 });
+

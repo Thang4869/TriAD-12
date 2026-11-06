@@ -529,3 +529,47 @@ describe("ModalController absent overlay", () => {
     expect(document.body.style.overflow).toBe("auto");
   });
 });
+
+describe("ModalController optional render targets", () => {
+  afterEach(() => {
+    eventBus.clear();
+    vi.restoreAllMocks();
+    delete window.productsController;
+    delete window.cartController;
+    document.body.innerHTML = "";
+  });
+
+  it("renders a product when all optional detail elements are absent", () => {
+    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    window.productsController = {
+      getProduct: vi.fn().mockReturnValue({
+        id: "optional-targets",
+        name: "Optional targets",
+        price: 100,
+        image: "optional.jpg",
+      }),
+    };
+
+    const controller = new ModalController();
+    controller.title = null;
+    controller.price = null;
+    controller.image = null;
+    controller.quantityEl = null;
+    const showSpy = vi.spyOn(controller, "show");
+
+    expect(() => controller.render("optional-targets")).not.toThrow();
+    expect(showSpy).toHaveBeenCalledOnce();
+  });
+
+  it("updates quantity in the service when the quantity element is absent", () => {
+    document.body.innerHTML = "";
+    const controller = new ModalController();
+    controller.quantityEl = null;
+    const updateSpy = vi
+      .spyOn(controller.service, "updateQuantity")
+      .mockReturnValue(2);
+
+    expect(() => controller.updateQuantity(1)).not.toThrow();
+    expect(updateSpy).toHaveBeenCalledWith(1);
+  });
+});

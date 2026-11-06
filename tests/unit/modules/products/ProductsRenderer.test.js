@@ -641,3 +641,87 @@ describe("ProductsRenderer missing container", () => {
     expect(() => instance.append([{ id: "missing-grid" }])).not.toThrow();
   });
 });
+
+describe("ProductsRenderer remaining branches", () => {
+  let instance;
+  const product = {
+    id: "product-1",
+    name: "Test product",
+    color: "Blue",
+    price: 100000,
+    image: "test.jpg",
+    inStock: true,
+  };
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="product-grid"></div>
+      <div id="product-count"></div>
+      <div id="load-more-container"><button id="load-more-btn"></button></div>
+      <span id="price-value"></span>
+    `;
+    instance = new ProductsRenderer();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("does not append a card when the card factory returns null during render", () => {
+    vi.spyOn(instance, "createProductCard").mockReturnValue(null);
+
+    instance.render([product]);
+
+    expect(instance.container.children).toHaveLength(0);
+    expect(instance.countElement.textContent).toBe("1 products");
+  });
+
+  it("does not append a card when the card factory returns null during append", () => {
+    instance.countElement.dataset.total = "1";
+    vi.spyOn(instance, "createProductCard").mockReturnValue(null);
+
+    instance.append([product]);
+
+    expect(instance.container.children).toHaveLength(0);
+    expect(instance.loadMoreContainer.classList.contains("hidden")).toBe(false);
+  });
+
+  it("renders the API error state and logs the original error", () => {
+    const error = new Error("API unavailable");
+    const errorSpy = vi.spyOn(Logger, "error").mockImplementation(() => {});
+
+    instance.renderError(error);
+
+    expect(instance.container.textContent).toContain(
+      "Không tải được danh sách sản phẩm",
+    );
+    expect(errorSpy).toHaveBeenCalledWith("Products render error:", error);
+  });
+
+  it("toggles the load-more button disabled state", () => {
+    const button = document.getElementById("load-more-btn");
+
+    instance.setLoading(true);
+    expect(button.hasAttribute("disabled")).toBe(true);
+
+    instance.setLoading(false);
+    expect(button.hasAttribute("disabled")).toBe(false);
+  });
+
+  it("uses safe defaults when optional filter controls are absent", () => {
+    document.body.innerHTML = '<div id="product-grid"></div>';
+    const rendererWithoutControls = new ProductsRenderer();
+
+    rendererWithoutControls.updateCount(4);
+    rendererWithoutControls.updateLoadMore(true);
+    rendererWithoutControls.updatePriceDisplay(50000);
+
+    expect(rendererWithoutControls.getUIState()).toEqual({
+      keyword: "",
+      sort: "default",
+      maxPrice: 10_000_000,
+    });
+    expect(() => rendererWithoutControls.setLoading(true)).not.toThrow();
+  });
+});
