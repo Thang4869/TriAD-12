@@ -304,6 +304,70 @@ describe("ApiService", () => {
     });
   });
 
+  it.each([200, 201])(
+    "should reject malformed JSON from successful HTTP %s responses",
+    async (status) => {
+      const json = vi.fn().mockRejectedValue(new SyntaxError("Invalid JSON"));
+      fetch.mockResolvedValue({
+        ok: true,
+        status,
+        headers: new Headers({ "content-type": "application/json" }),
+        json,
+      });
+
+      await expect(service.get("/health")).rejects.toMatchObject({
+        name: "ApiError",
+        message: "Invalid JSON response from the server. Please try again.",
+        status: 0,
+      });
+      expect(json).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each([204, 205])(
+    "should not parse empty HTTP %s responses",
+    async (status) => {
+      const json = vi.fn();
+      fetch.mockResolvedValue({
+        ok: true,
+        status,
+        headers: new Headers({ "content-type": "application/json" }),
+        json,
+      });
+
+      await expect(service.get("/health")).resolves.toBeNull();
+      expect(json).not.toHaveBeenCalled();
+    },
+  );
+
+  it("should preserve the HTTP status and fallback message for malformed error JSON", async () => {
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockRejectedValue(new SyntaxError("Invalid JSON")),
+    });
+
+    await expect(service.get("/health")).rejects.toMatchObject({
+      name: "ApiError",
+      message: "Yêu cầu thất bại (mã lỗi 500)",
+      status: 500,
+      payload: null,
+    });
+  });
+
+  it("should return valid JSON responses unchanged", async () => {
+    const payload = { data: { healthy: true } };
+    fetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: vi.fn().mockResolvedValue(payload),
+    });
+
+    await expect(service.get("/health")).resolves.toEqual({ healthy: true });
+  });
+
   it.each(["Invalid credentials", "Please verify your email"])(
     "should preserve backend error envelope message: %s",
     async (message) => {
