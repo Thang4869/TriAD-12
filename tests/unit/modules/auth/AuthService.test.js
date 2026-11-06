@@ -279,6 +279,8 @@ describe("AuthService", () => {
 
 describe("AuthService alternate authentication states", () => {
   it("returns the two-factor challenge without persisting a user", async () => {
+    sessionStorage.removeItem("triad_current_user");
+    clearCsrfToken();
     const apiClient = { baseURL: "/api", get: vi.fn(), post: vi.fn().mockResolvedValue({ requires2FA: true, preAuthToken: "pre-auth", message: "Verify" }) };
     const instance = new AuthService(apiClient);
     await expect(instance.login("test@example.com", "password")).resolves.toMatchObject({ requires2FA: true, preAuthToken: "pre-auth" });
@@ -287,6 +289,8 @@ describe("AuthService alternate authentication states", () => {
   });
 
   it("expires an already unauthenticated session without persisting a user", () => {
+    sessionStorage.removeItem("triad_current_user");
+    clearCsrfToken();
     const instance = new AuthService({ baseURL: "/api", get: vi.fn(), post: vi.fn() });
     instance.expireSession();
     expect(instance.isAuthenticated).toBe(false);
