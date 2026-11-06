@@ -298,3 +298,17 @@ describe("AuthService alternate authentication states", () => {
     expect(sessionStorage.getItem("triad_current_user")).toBeNull();
   });
 });
+
+describe("AuthService persisted user state", () => {
+  it("persists a user and clears it when the session expires", () => {
+    sessionStorage.removeItem("triad_current_user");
+    const instance = new AuthService({ baseURL: "/api", get: vi.fn(), post: vi.fn() });
+    const user = { id: "coverage-user", email: "coverage@example.com" };
+    instance._persistUser(user);
+    expect(instance.currentUser).toEqual(user);
+    expect(JSON.parse(sessionStorage.getItem("triad_current_user"))).toEqual(user);
+    instance._persistUser(null);
+    expect(instance.currentUser).toBeNull();
+    expect(sessionStorage.getItem("triad_current_user")).toBeNull();
+  });
+});
