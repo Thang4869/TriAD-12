@@ -34,6 +34,10 @@ vi.mock("../../../src/modules/notification/index.js", () => ({
   notificationController: { reinit: vi.fn() },
 }));
 
+vi.mock("../../../src/modules/auth/AuthService.js", () => ({
+  authService: { restoreCsrfToken: vi.fn().mockResolvedValue(undefined) },
+}));
+
 vi.mock("../../../src/core/di/container.js", () => ({
   Container: vi.fn().mockImplementation(function () {
     this.register = vi.fn();
@@ -299,7 +303,7 @@ describe("bootstrap", () => {
 
     await bootstrap();
 
-    const container = Container.mock.results.at(-1).value;
+    const container = Container.mock.instances.at(-1);
     expect(container.get).toHaveBeenCalledWith("adminController");
   });
 
@@ -315,7 +319,7 @@ describe("bootstrap", () => {
 
     await bootstrap();
 
-    const instance = AdminProductController.mock.results.at(-1).value;
+    const instance = AdminProductController.mock.instances.at(-1);
     expect(instance.init).toHaveBeenCalledOnce();
   });
 
