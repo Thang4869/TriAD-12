@@ -189,19 +189,19 @@ describe("UIService", () => {
 describe("UIService optional controls", () => {
   it("does not bind an incomplete mobile menu", () => {
     document.body.innerHTML = '<button id="mobile-menu-btn"></button>';
-    expect(() => new UIService(mockCartController)).not.toThrow();
+    expect(() => new UIService({})).not.toThrow();
     document.getElementById("mobile-menu-btn").click();
     expect(document.getElementById("mobile-menu-btn").innerHTML).toBe("");
   });
 
   it("does not invoke cart callbacks when no cart controller is supplied", () => {
     document.body.innerHTML = '<button id="cart-icon-btn"></button><button id="close-cart-btn"></button><div id="cart-overlay"></div>';
-    const service = new UIService(null);
     expect(() => {
+      const instance = new UIService(null);
       document.getElementById("cart-icon-btn").click();
       document.getElementById("close-cart-btn").click();
       document.getElementById("cart-overlay").click();
+      expect(instance.cartController).toBeNull();
     }).not.toThrow();
-    expect(service.cartController).toBeNull();
   });
 });
