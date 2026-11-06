@@ -243,3 +243,15 @@ describe("EventBus context filtering", () => {
     expect(callback).toHaveBeenCalledWith("payload");
   });
 });
+
+describe("EventBus once callback context", () => {
+  it("invokes a one-time callback with its supplied context", () => {
+    const bus = new EventBus();
+    const context = { marker: "context" };
+    const callback = vi.fn(function () { return this.marker; });
+    bus.once("context-once", callback, context);
+    bus.emit("context-once", { id: 1 });
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mock.instances[0]).toBe(context);
+  });
+});
