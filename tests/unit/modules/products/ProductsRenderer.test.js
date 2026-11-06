@@ -614,3 +614,22 @@ describe("ProductsRenderer", () => {
     });
   });
 });
+
+describe("ProductsRenderer empty append and optional controls", () => {
+  it("does nothing when appending an empty page", () => {
+    document.body.innerHTML = '<div id="product-grid"></div>';
+    const instance = new ProductsRenderer();
+    const grid = document.getElementById("product-grid");
+    instance.append([]);
+    expect(grid.children).toHaveLength(0);
+  });
+
+  it("returns default UI state when optional controls are absent", () => {
+    document.body.innerHTML = '<div id="product-grid"></div>';
+    const instance = new ProductsRenderer();
+    instance.searchInput = null;
+    instance.sortSelect = null;
+    instance.priceSlider = null;
+    expect(instance.getUIState()).toEqual({ keyword: "", sort: "default", maxPrice: 10_000_000 });
+  });
+});

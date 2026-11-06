@@ -221,3 +221,20 @@ describe("DomUtils", () => {
     });
   });
 });
+
+describe("DomUtils unsupported child values", () => {
+  it("does not append a non-string, non-array children value", () => {
+    const child = document.createElement("span");
+    const element = DomUtils.createElement("div", "", {}, child);
+    expect(element.childNodes).toHaveLength(0);
+    expect(element.innerHTML).toBe("");
+  });
+
+  it("treats an element touching the viewport boundary as not visible", () => {
+    document.body.innerHTML = '<div id="visibility-boundary"></div>';
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(500);
+    const element = document.getElementById("visibility-boundary");
+    vi.spyOn(element, "getBoundingClientRect").mockReturnValue({ top: 500, bottom: 550 });
+    expect(DomUtils.isVisible(element)).toBe(false);
+  });
+});

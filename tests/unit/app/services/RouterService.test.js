@@ -339,3 +339,22 @@ describe("RouterService", () => {
     });
   });
 });
+
+describe("RouterService ignored links", () => {
+  it("leaves empty and external content links unchanged", () => {
+    const router = new RouterService();
+    router.rootPath = "../";
+    document.body.innerHTML = '<div id="page-content"><a id="empty"></a><a id="external" href="https://example.com">External</a><a id="anchor" href="#section">Anchor</a></div>';
+    router.fixContentLinks();
+    expect(document.getElementById("empty").getAttribute("href")).toBeNull();
+    expect(document.getElementById("external").getAttribute("href")).toBe("https://example.com");
+    expect(document.getElementById("anchor").getAttribute("href")).toBe("#section");
+  });
+
+  it("leaves header links without href unchanged", () => {
+    const router = new RouterService();
+    document.body.innerHTML = '<div id="header-container"><a id="missing">No href</a></div>';
+    router.fixHeaderLinks();
+    expect(document.getElementById("missing").hasAttribute("href")).toBe(false);
+  });
+});

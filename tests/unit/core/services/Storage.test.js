@@ -189,3 +189,13 @@ describe("StorageService", () => {
     });
   });
 });
+
+describe("StorageService key filtering", () => {
+  it("ignores memory keys outside its configured prefix", () => {
+    const isolated = new StorageService("app_");
+    isolated._memory.set("unrelated_key", "ignored");
+    isolated._memory.set("app_visible", "included");
+    expect(isolated.keys()).toContain("visible");
+    expect(isolated.keys()).not.toContain("unrelated_key");
+  });
+});

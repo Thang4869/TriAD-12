@@ -498,3 +498,23 @@ describe("ModalController", () => {
     });
   });
 });
+
+describe("ModalController missing dependencies", () => {
+  it("does not add an item when the cart controller is unavailable", () => {
+    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    window.productsController = { getProduct: vi.fn(() => null) };
+    delete window.cartController;
+    const instance = new ModalController();
+    expect(() => instance.handleAddToCart()).not.toThrow();
+    expect(() => instance.handleBuyNow()).not.toThrow();
+    delete window.productsController;
+  });
+
+  it("does not throw when modal content is absent during show", () => {
+    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    const instance = new ModalController();
+    instance.content = null;
+    expect(() => instance.show()).not.toThrow();
+    expect(instance.overlay.classList.contains("hidden")).toBe(false);
+  });
+});

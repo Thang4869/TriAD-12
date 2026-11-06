@@ -772,3 +772,22 @@ describe("ProductsController", () => {
     });
   });
 });
+
+describe("ProductsController load guards", () => {
+  it("does not request another page while a load is already active", async () => {
+    const serviceStub = { loadMore: vi.fn(), hasMore: true, products: [], updateFilters: vi.fn(), resetFilters: vi.fn(), getCurrentPage: vi.fn(() => []), getProductById: vi.fn() };
+    const rendererStub = {};
+    const busStub = { on: vi.fn() };
+    const instance = new ProductsController(serviceStub, rendererStub, busStub);
+    instance.isLoading = true;
+    await instance.loadMore();
+    expect(serviceStub.loadMore).not.toHaveBeenCalled();
+  });
+
+  it("does not request another page when the service has no more products", async () => {
+    const serviceStub = { loadMore: vi.fn(), hasMore: false, products: [], updateFilters: vi.fn(), resetFilters: vi.fn(), getCurrentPage: vi.fn(() => []), getProductById: vi.fn() };
+    const instance = new ProductsController(serviceStub, {}, { on: vi.fn() });
+    await instance.loadMore();
+    expect(serviceStub.loadMore).not.toHaveBeenCalled();
+  });
+});

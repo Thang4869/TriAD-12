@@ -57,3 +57,13 @@ describe("BaseRenderer", () => {
     expect(renderer.container.innerHTML).toBe("");
   });
 });
+
+describe("BaseRenderer retained container", () => {
+  it("keeps the previously resolved container when a later lookup misses", () => {
+    document.body.innerHTML = '<div id="retained-container"></div>';
+    const instance = new BaseRenderer("retained-container");
+    const existing = instance.container;
+    existing.remove();
+    expect(instance.findContainer()).toBe(existing);
+  });
+});
