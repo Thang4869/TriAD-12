@@ -311,8 +311,17 @@ describe("ProductsService", () => {
 });
 
 describe("ProductsService default query branches", () => {
+  const createService = () => {
+    const repository = {
+      findPage: vi.fn().mockResolvedValue({ products: [], page: 1, totalPages: 1, total: 0 }),
+    };
+    const eventBus = { emit: vi.fn() };
+    return { instance: new ProductsService(repository, eventBus), repository };
+  };
+
   it("omits empty keyword and zero minimum price from repository parameters", async () => {
-    await service.load();
+    const { instance, repository } = createService();
+    await instance.load();
     const params = repository.findPage.mock.calls[0][0];
     expect(params.keyword).toBeUndefined();
     expect(params.minPrice).toBeUndefined();
@@ -322,9 +331,10 @@ describe("ProductsService default query branches", () => {
   });
 
   it("returns an empty page without querying when there are no more pages", async () => {
-    await service.load();
+    const { instance, repository } = createService();
+    await instance.load();
     repository.findPage.mockClear();
-    expect(await service.loadMore()).toEqual([]);
+    expect(await instance.loadMore()).toEqual([]);
     expect(repository.findPage).not.toHaveBeenCalled();
   });
 
@@ -334,7 +344,8 @@ describe("ProductsService default query branches", () => {
     ["name-asc", "name", "asc"],
     ["name-desc", "name", "desc"],
   ])("maps %s sorting to repository parameters", async (sort, sortBy, sortOrder) => {
-    await service.updateFilters({ sort });
+    const { instance, repository } = createService();
+    await instance.updateFilters({ sort });
     expect(repository.findPage.mock.calls.at(-1)[0]).toMatchObject({ sortBy, sortOrder });
   });
 });
