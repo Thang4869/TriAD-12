@@ -211,3 +211,19 @@ describe("CheckoutRenderer", () => {
   });
 
 });
+
+describe("CheckoutRenderer optional pricing elements", () => {
+  it("renders success pricing when the discount code element is absent", () => {
+    document.body.innerHTML = '<span id="success-total"></span>';
+    const minimal = new CheckoutRenderer();
+    expect(() => minimal.renderSuccessPricing({ subtotal: 1, tax: 2, shippingFee: 3, discountAmount: 0, total: 6 })).not.toThrow();
+    expect(document.getElementById("success-total").textContent).toBe("6 ₫");
+  });
+
+  it("renders quote status when optional fields are absent", () => {
+    document.body.innerHTML = '<span id="checkout-total"></span>';
+    const minimal = new CheckoutRenderer();
+    expect(() => minimal.renderQuoteStatus("Unavailable")).not.toThrow();
+    expect(document.getElementById("checkout-total").textContent).toBe("—");
+  });
+});
