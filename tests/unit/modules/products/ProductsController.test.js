@@ -810,15 +810,22 @@ describe("ProductsController suggestion ordering branches", () => {
       name: "Product Beta",
       matchesKeyword: vi.fn(() => true),
     };
-    service.products = [nonPrefix, prefix, equalPrefix];
     const input = document.createElement("input");
-    renderer.searchInput = input;
-    controller.setupSearch();
+    const serviceStub = {
+      products: [nonPrefix, prefix, equalPrefix],
+      updateFilters: vi.fn().mockResolvedValue(undefined),
+      getProductById: vi.fn(() => null),
+    };
+    const rendererStub = {
+      searchInput: input,
+      renderSuggestions: vi.fn(),
+    };
+    new ProductsController(serviceStub, rendererStub, { on: vi.fn() });
 
     input.value = "Product";
     input.dispatchEvent(new Event("input"));
 
-    const suggestions = renderer.renderSuggestions.mock.calls[0][1];
+    const suggestions = rendererStub.renderSuggestions.mock.calls[0][1];
     expect(suggestions).toEqual([prefix, equalPrefix, nonPrefix]);
   });
 });
