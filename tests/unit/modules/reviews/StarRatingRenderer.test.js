@@ -66,6 +66,19 @@ describe("StarRatingRenderer", () => {
     expect(document.getElementById("selected-rating")).toBeNull();
   });
 
+  it("should reset rating when display element is missing", () => {
+    document.getElementById("selected-rating")?.remove();
+    const newRenderer = new StarRatingRenderer(
+      "#star-rating",
+      "#selected-rating",
+    );
+    document.querySelectorAll(".star-rating")[2].click();
+
+    expect(() => newRenderer.reset()).not.toThrow();
+    expect(newRenderer.getRating()).toBe(0);
+    expect(document.getElementById("selected-rating")).toBeNull();
+  });
+
   it("should call _updateStars on mouseenter and mouseleave", () => {
     const stars = document.querySelectorAll(".star-rating");
     const updateSpy = vi.spyOn(renderer, "_updateStars");
