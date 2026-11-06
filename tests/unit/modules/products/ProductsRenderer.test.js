@@ -614,3 +614,18 @@ describe("ProductsRenderer", () => {
     });
   });
 });
+
+describe("ProductsRenderer empty append and optional controls", () => {
+  it("does nothing when appending an empty page", () => {
+    const grid = document.getElementById("product-grid");
+    renderer.append([]);
+    expect(grid.children).toHaveLength(0);
+  });
+
+  it("returns default UI state when optional controls are absent", () => {
+    renderer.searchInput = null;
+    renderer.sortSelect = null;
+    renderer.priceSlider = null;
+    expect(renderer.getUIState()).toEqual({ keyword: "", sort: "default", maxPrice: 10_000_000 });
+  });
+});
