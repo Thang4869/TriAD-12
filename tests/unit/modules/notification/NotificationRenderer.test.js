@@ -266,3 +266,19 @@ describe("NotificationRenderer", () => {
     });
   });
 });
+
+describe("NotificationRenderer fallback rendering", () => {
+  it("uses the informational icon for an unknown notification type", () => {
+    expect(renderer.getIconHtml("unrecognized")).toBe(renderer.getIconHtml("info"));
+  });
+
+  it("does not throw when optional badge and dropdown elements are absent", () => {
+    renderer.badge = null;
+    renderer.mobileBadge = null;
+    renderer.dropdown = null;
+    renderer.overlay = null;
+    expect(() => renderer.updateBadge(0)).not.toThrow();
+    expect(() => renderer.showDropdown()).not.toThrow();
+    expect(() => renderer.hideDropdown()).not.toThrow();
+  });
+});
