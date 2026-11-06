@@ -349,3 +349,12 @@ describe("ProductsService default query branches", () => {
     expect(repository.findPage.mock.calls.at(-1)[0]).toMatchObject({ sortBy, sortOrder });
   });
 });
+
+describe("ProductsService default maximum price", () => {
+  it("exposes the configured default maximum price", () => {
+    const repository = { findPage: vi.fn() };
+    const eventBus = { emit: vi.fn() };
+    const instance = new ProductsService(repository, eventBus);
+    expect(instance.defaultMaxPrice).toBe(10_000_000);
+  });
+});
