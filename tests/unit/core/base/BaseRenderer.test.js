@@ -60,8 +60,10 @@ describe("BaseRenderer", () => {
 
 describe("BaseRenderer retained container", () => {
   it("keeps the previously resolved container when a later lookup misses", () => {
-    const existing = renderer.container;
-    document.getElementById("test-container").remove();
-    expect(renderer.findContainer()).toBe(existing);
+    document.body.innerHTML = '<div id="retained-container"></div>';
+    const instance = new BaseRenderer("retained-container");
+    const existing = instance.container;
+    existing.remove();
+    expect(instance.findContainer()).toBe(existing);
   });
 });
