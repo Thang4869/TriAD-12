@@ -57,3 +57,11 @@ describe("BaseRenderer", () => {
     expect(renderer.container.innerHTML).toBe("");
   });
 });
+
+describe("BaseRenderer retained container", () => {
+  it("keeps the previously resolved container when a later lookup misses", () => {
+    const existing = renderer.container;
+    document.getElementById("test-container").remove();
+    expect(renderer.findContainer()).toBe(existing);
+  });
+});
