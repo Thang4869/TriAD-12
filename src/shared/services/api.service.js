@@ -73,9 +73,23 @@ export class ApiService {
     }
 
     const contentType = response.headers.get("content-type") || "";
-    const payload = contentType.includes("application/json")
-      ? await response.json().catch(() => null)
-      : null;
+    let payload = null;
+
+    if (
+      ![204, 205].includes(response.status) &&
+      contentType.includes("application/json")
+    ) {
+      try {
+        payload = await response.json();
+      } catch {
+        if (response.ok) {
+          throw new ApiError(
+            "Invalid JSON response from the server. Please try again.",
+            0,
+          );
+        }
+      }
+    }
 
     if (!response.ok) {
       let message =
