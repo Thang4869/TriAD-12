@@ -414,6 +414,19 @@ describe("AuthController", () => {
     expect(controller.mode).toBe("register");
   });
 
+  it("covers missing optional controls when switching back to login", () => {
+    [
+      "auth-modal-title",
+      "auth-register-fields",
+      "auth-submit-btn",
+      "auth-switch-text",
+      "auth-switch-mode",
+    ].forEach((id) => document.getElementById(id)?.remove());
+
+    expect(() => controller.setMode("login")).not.toThrow();
+    expect(controller.mode).toBe("login");
+  });
+
   it("submits successfully when the submit button is absent", async () => {
     document.getElementById("auth-submit-btn").remove();
 
