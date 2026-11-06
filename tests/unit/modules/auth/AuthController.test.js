@@ -392,4 +392,63 @@ describe("AuthController", () => {
 
     expect(() => new AuthController()).not.toThrow();
   });
+
+  it("covers the reverse mode-switch branch", () => {
+    document.getElementById("auth-switch-mode").click();
+    expect(controller.mode).toBe("register");
+
+    document.getElementById("auth-switch-mode").click();
+    expect(controller.mode).toBe("login");
+  });
+
+  it("tolerates missing optional mode controls", () => {
+    [
+      "auth-modal-title",
+      "auth-register-fields",
+      "auth-submit-btn",
+      "auth-switch-text",
+      "auth-switch-mode",
+    ].forEach((id) => document.getElementById(id)?.remove());
+
+    expect(() => controller.setMode("register")).not.toThrow();
+    expect(controller.mode).toBe("register");
+  });
+
+  it("submits successfully when the submit button is absent", async () => {
+    document.getElementById("auth-submit-btn").remove();
+
+    await controller.handleSubmit({ preventDefault: vi.fn() });
+
+    expect(authService.login).toHaveBeenCalledWith("user@example.com", "secret");
+  });
+
+  it("updates the header when the account label is absent", () => {
+    document.getElementById("account-btn-label").remove();
+    authService.getCurrentUser.mockReturnValue({
+      firstName: "Member",
+      email: "member@example.com",
+      role: "USER",
+    });
+
+    expect(() => controller.updateHeaderUI()).not.toThrow();
+    expect(document.getElementById("account-btn").title).toBe("Đăng xuất");
+  });
+
+  it("tolerates a missing auth message element", () => {
+    document.getElementById("auth-error").remove();
+
+    expect(() => controller._showError("Failure")).not.toThrow();
+    expect(() => controller._showInfo("Information")).not.toThrow();
+    expect(() => controller._clearError()).not.toThrow();
+  });
+
+  it("allows guest auth checks when the toast service is unavailable", () => {
+    delete window.toast;
+    const action = vi.fn();
+
+    expect(() => controller.requireAuth(action)).not.toThrow();
+    expect(action).not.toHaveBeenCalled();
+    expect(controller._pendingAction).toBe(action);
+  });
+
 });
