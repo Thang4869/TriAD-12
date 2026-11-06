@@ -281,3 +281,12 @@ describe("NotificationRenderer fallback rendering", () => {
     expect(() => instance.hideDropdown()).not.toThrow();
   });
 });
+
+describe("NotificationRenderer missing dropdown", () => {
+  it("safely shows and hides the dropdown when no dropdown element exists", () => {
+    document.body.innerHTML = "";
+    const instance = new NotificationRenderer();
+    expect(() => instance.showDropdown()).not.toThrow();
+    expect(() => instance.hideDropdown()).not.toThrow();
+  });
+});
