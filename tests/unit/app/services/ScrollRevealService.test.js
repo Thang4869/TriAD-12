@@ -410,3 +410,13 @@ describe("ScrollReveal optional sections", () => {
     expect(() => initScrollReveal()).not.toThrow();
   });
 });
+
+describe("ScrollReveal without product grid", () => {
+  it("initializes section observers without requiring a product grid", () => {
+    document.body.innerHTML = '<section class="reveal-section"></section>';
+    const observe = vi.fn();
+    global.IntersectionObserver = vi.fn(function () { this.observe = observe; });
+    expect(() => initScrollReveal()).not.toThrow();
+    expect(observe).toHaveBeenCalled();
+  });
+});
