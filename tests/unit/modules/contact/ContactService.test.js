@@ -318,9 +318,9 @@ describe("ContactService", () => {
 describe("ContactService optional form controls", () => {
   it("does not throw when optional inputs and status container are missing", () => {
     document.body.innerHTML = '<form id="contact-form"></form>';
-    service = new ContactService();
+    const instance = new ContactService();
     const event = { preventDefault: vi.fn() };
-    expect(() => service.handleSubmit(event)).not.toThrow();
+    expect(() => instance.handleSubmit(event)).not.toThrow();
     expect(event.preventDefault).toHaveBeenCalled();
   });
 });
