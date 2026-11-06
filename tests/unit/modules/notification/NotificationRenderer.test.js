@@ -290,3 +290,20 @@ describe("NotificationRenderer missing dropdown", () => {
     expect(() => instance.hideDropdown()).not.toThrow();
   });
 });
+
+describe("NotificationRenderer dropdown without optional controls", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("shows the dropdown without positioning when its trigger and overlay are absent", () => {
+    document.body.innerHTML = '<div id="notification-dropdown" class="hidden"></div>';
+    const renderer = new NotificationRenderer();
+
+    expect(() => renderer.showDropdown()).not.toThrow();
+    expect(renderer.dropdown.classList.contains("hidden")).toBe(false);
+    expect(renderer.dropdown.style.top).toBe("");
+    expect(renderer.dropdown.style.right).toBe("");
+    expect(renderer.overlay).toBeNull();
+  });
+});
