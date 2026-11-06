@@ -37,6 +37,7 @@ describe("CheckoutController", () => {
         <input id="address" value="123 Main St">
         <textarea id="notes"></textarea>
         <input id="discount-code">
+        <button id="apply-discount-btn" type="button">Apply</button>
         <input type="radio" name="payment" value="cod" checked>
         <button type="submit">Place Order</button>
       </form>
@@ -45,6 +46,7 @@ describe("CheckoutController", () => {
       </div>
       <div id="success-modal" class="hidden opacity-0">
         <div class="bg-white scale-95"></div>
+        <span id="success-order-id"></span>
       </div>
       <button id="success-close-btn"></button>
       <div id="checkout-items"></div>
@@ -215,6 +217,15 @@ describe("CheckoutController", () => {
       randomUUID.mockRestore();
     });
 
+    it("should stop opening checkout while a submission is in progress", () => {
+      controller.isSubmitting = true;
+
+      controller.openCheckout();
+
+      expect(mockCartController.getItems).not.toHaveBeenCalled();
+      expect(mockRendererInstance.renderSummary).not.toHaveBeenCalled();
+    });
+
     it("should handle openCheckout when window.cartController is undefined", () => {
       delete window.cartController;
       controller.openCheckout();
@@ -222,6 +233,35 @@ describe("CheckoutController", () => {
         "Giỏ hàng trống",
         "Vui lòng thêm sản phẩm trước khi thanh toán.",
       );
+    });
+  });
+
+  describe("updateSubmitState", () => {
+    it("should update optional controls and both quote-loading states", () => {
+      const applyButton = document.getElementById("apply-discount-btn");
+
+      controller.isSubmitting = false;
+      controller.isLoadingQuote = false;
+      controller.updateSubmitState();
+      expect(applyButton.disabled).toBe(false);
+
+      controller.isLoadingQuote = true;
+      controller.updateSubmitState();
+      expect(applyButton.disabled).toBe(true);
+
+      controller.isSubmitting = true;
+      controller.isLoadingQuote = false;
+      controller.updateSubmitState();
+      expect(applyButton.disabled).toBe(true);
+    });
+
+    it("should tolerate missing optional submit and discount controls", () => {
+      document
+        .querySelector('#checkout-form button[type="submit"]')
+        .remove();
+      document.getElementById("discount-code").remove();
+
+      expect(() => controller.updateSubmitState()).not.toThrow();
     });
   });
 
@@ -556,6 +596,15 @@ describe("CheckoutController", () => {
       );
     });
 
+    it("does not request a quote while checkout is submitting", async () => {
+      controller.isSubmitting = true;
+
+      await expect(controller.loadQuote()).resolves.toBe(false);
+
+      expect(mockServiceInstance.getQuote).not.toHaveBeenCalled();
+      expect(controller.isLoadingQuote).toBe(false);
+    });
+
     it("keeps placement disabled when pricing cannot be loaded", async () => {
       mockServiceInstance.getQuote.mockRejectedValue(
         new Error("Quote unavailable"),
@@ -567,6 +616,36 @@ describe("CheckoutController", () => {
       expect(controller.quote).toBeNull();
       expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
       expect(mockToast.error).toHaveBeenCalled();
+    });
+
+    it("uses the ApiError message when quote loading fails", async () => {
+      mockServiceInstance.getQuote.mockRejectedValue(
+        new ApiError("Discount code expired", 422),
+      );
+
+      await expect(controller.loadQuote()).resolves.toBe(false);
+
+      expect(mockToast.error).toHaveBeenCalledWith(
+        "Không thể tải tổng tiền",
+        "Discount code expired",
+      );
+    });
+
+    it("ignores a stale quote rejection after a newer request completes", async () => {
+      let rejectOld;
+      mockServiceInstance.getQuote.mockReturnValueOnce(
+        new Promise((_, reject) => {
+          rejectOld = reject;
+        }),
+      );
+
+      const oldRequest = controller.openCheckout();
+      await controller.loadQuote();
+      rejectOld(new Error("Old quote failed"));
+
+      await expect(oldRequest).resolves.toBe(false);
+      expect(controller.quote.total).toBe(195000);
+      expect(mockRendererInstance.renderQuote).toHaveBeenCalledTimes(1);
     });
 
     it("requires an updated quote after the backend rejects a changed total", async () => {
@@ -641,6 +720,14 @@ describe("CheckoutController", () => {
   });
 
   describe("showSuccess", () => {
+    it("should use the order id when the order number is unavailable", () => {
+      controller.showSuccess({ id: "fallback-order-id" });
+
+      expect(document.getElementById("success-order-id").textContent).toBe(
+        "fallback-order-id",
+      );
+    });
+
     it("should display success modal and update styles", () => {
       const modal = document.getElementById("success-modal");
       const content = modal.querySelector(".bg-white");
