@@ -314,6 +314,22 @@ describe("AuthService persisted user state", () => {
 });
 
 describe("AuthService persistence and registration fallbacks", () => {
+  let api;
+  let service;
+
+  beforeEach(() => {
+    api = {
+      baseURL: "/api",
+      get: vi.fn(),
+      post: vi.fn(),
+    };
+    service = new AuthService(api);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("treats persisted user data as absent when session storage throws", () => {
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("Storage unavailable");
