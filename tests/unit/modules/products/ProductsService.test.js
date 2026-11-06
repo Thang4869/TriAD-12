@@ -309,3 +309,32 @@ describe("ProductsService", () => {
     });
   });
 });
+
+describe("ProductsService default query branches", () => {
+  it("omits empty keyword and zero minimum price from repository parameters", async () => {
+    await service.load();
+    const params = repository.findPage.mock.calls[0][0];
+    expect(params.keyword).toBeUndefined();
+    expect(params.minPrice).toBeUndefined();
+    expect(params.maxPrice).toBe(10_000_000);
+    expect(params.sortBy).toBe("createdAt");
+    expect(params.sortOrder).toBe("desc");
+  });
+
+  it("returns an empty page without querying when there are no more pages", async () => {
+    await service.load();
+    repository.findPage.mockClear();
+    expect(await service.loadMore()).toEqual([]);
+    expect(repository.findPage).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["price-asc", "price", "asc"],
+    ["price-desc", "price", "desc"],
+    ["name-asc", "name", "asc"],
+    ["name-desc", "name", "desc"],
+  ])("maps %s sorting to repository parameters", async (sort, sortBy, sortOrder) => {
+    await service.updateFilters({ sort });
+    expect(repository.findPage.mock.calls.at(-1)[0]).toMatchObject({ sortBy, sortOrder });
+  });
+});
