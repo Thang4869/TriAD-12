@@ -791,3 +791,34 @@ describe("ProductsController load guards", () => {
     expect(serviceStub.loadMore).not.toHaveBeenCalled();
   });
 });
+
+
+describe("ProductsController suggestion ordering branches", () => {
+  it("prioritizes prefix matches, demotes non-prefix matches, and preserves equal ordering", () => {
+    const prefix = {
+      id: "prefix",
+      name: "Product Alpha",
+      matchesKeyword: vi.fn(() => true),
+    };
+    const nonPrefix = {
+      id: "contains",
+      name: "Premium Product",
+      matchesKeyword: vi.fn(() => true),
+    };
+    const equalPrefix = {
+      id: "prefix-2",
+      name: "Product Beta",
+      matchesKeyword: vi.fn(() => true),
+    };
+    service.products = [nonPrefix, prefix, equalPrefix];
+    const input = document.createElement("input");
+    renderer.searchInput = input;
+    controller.setupSearch();
+
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+
+    const suggestions = renderer.renderSuggestions.mock.calls[0][1];
+    expect(suggestions).toEqual([prefix, equalPrefix, nonPrefix]);
+  });
+});
