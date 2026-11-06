@@ -82,6 +82,63 @@ describe("CartService", () => {
     );
   });
 
+  it("does not announce a removal after the session resets", async () => {
+    let finish;
+    repository.removeItem.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+
+    const oldRemove = service.remove(1);
+    service.reset();
+    finish([]);
+
+    await expect(oldRemove).rejects.toThrow("Phiên đăng nhập đã thay đổi");
+    expect(service.items).toEqual([]);
+    expect(eventBus.emit).not.toHaveBeenCalledWith(
+      EVENTS.CART_ITEM_REMOVED,
+      { productId: 1 },
+    );
+  });
+
+  it("does not apply an increase after the session resets", async () => {
+    service.items = [item()];
+    let finish;
+    repository.updateItem.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+
+    const oldIncrease = service.increase(1);
+    service.reset();
+    finish([item({ quantity: 2, subtotal: 200000 })]);
+
+    await expect(oldIncrease).rejects.toThrow("Phiên đăng nhập đã thay đổi");
+    expect(service.items).toEqual([]);
+  });
+
+  it("does not apply a decrease after the session resets", async () => {
+    service.items = [item({ quantity: 3, subtotal: 300000 })];
+    let finish;
+    repository.updateItem.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+
+    const oldDecrease = service.decrease(1);
+    service.reset();
+    finish([item({ quantity: 2, subtotal: 200000 })]);
+
+    await expect(oldDecrease).rejects.toThrow("Phiên đăng nhập đã thay đổi");
+    expect(service.items).toEqual([]);
+  });
+
   it("does not clear a newer session's view after an old clear completes", async () => {
     let finish;
     repository.clear.mockImplementationOnce(
