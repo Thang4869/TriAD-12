@@ -159,6 +159,14 @@ describe("CheckoutController", () => {
       expect(successSpy).toHaveBeenCalled();
     });
 
+    it("should load a quote when the discount update button is clicked", () => {
+      const loadQuote = vi.spyOn(controller, "loadQuote").mockResolvedValue(false);
+
+      document.getElementById("apply-discount-btn").click();
+
+      expect(loadQuote).toHaveBeenCalledTimes(1);
+    });
+
     it("should handle initialization smoothly when DOM elements are missing", () => {
       document.body.innerHTML = "";
       expect(() => new CheckoutController()).not.toThrow();
@@ -726,6 +734,18 @@ describe("CheckoutController", () => {
       expect(document.getElementById("success-order-id").textContent).toBe(
         "fallback-order-id",
       );
+    });
+
+    it("should display success when the optional order ID element is missing", () => {
+      document.getElementById("success-order-id").remove();
+
+      expect(() => controller.showSuccess({ id: "order-without-display" })).not.toThrow();
+      expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith({
+        id: "order-without-display",
+      });
+      expect(
+        document.getElementById("success-modal").classList.contains("hidden"),
+      ).toBe(false);
     });
 
     it("should display success modal and update styles", () => {
