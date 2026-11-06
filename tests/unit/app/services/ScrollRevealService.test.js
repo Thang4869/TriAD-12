@@ -403,3 +403,10 @@ describe("ScrollRevealService - additional coverage", () => {
     expect(card.style.opacity).toBe("");
   });
 });
+
+describe("ScrollReveal optional sections", () => {
+  it("initializes safely when no hero, sections, or product grid exist", () => {
+    document.body.innerHTML = "<main></main>";
+    expect(() => initScrollReveal()).not.toThrow();
+  });
+});
