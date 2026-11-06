@@ -312,3 +312,33 @@ describe("AuthService persisted user state", () => {
     expect(sessionStorage.getItem("triad_current_user")).toBeNull();
   });
 });
+
+describe("AuthService persistence and registration fallbacks", () => {
+  it("treats persisted user data as absent when session storage throws", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("Storage unavailable");
+    });
+
+    const restoredService = new AuthService(api);
+
+    expect(restoredService.getCurrentUser()).toBeNull();
+    expect(restoredService.isAuthenticated).toBe(false);
+  });
+
+  it("forwards all registration fields without authenticating the user", async () => {
+    const payload = {
+      email: "new@example.com",
+      password: "secure-password",
+      firstName: "New",
+      lastName: "User",
+      phone: "0123456789",
+    };
+    const response = { message: "Verification email sent" };
+    api.post.mockResolvedValue(response);
+
+    await expect(service.register(payload)).resolves.toEqual(response);
+
+    expect(api.post).toHaveBeenCalledWith("/auth/register", payload);
+    expect(service.isAuthenticated).toBe(false);
+  });
+});
