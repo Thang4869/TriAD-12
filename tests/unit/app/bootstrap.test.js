@@ -37,7 +37,11 @@ vi.mock("../../../src/modules/notification/index.js", () => ({
 vi.mock("../../../src/core/di/container.js", () => ({
   Container: vi.fn().mockImplementation(function () {
     this.register = vi.fn();
-    this.get = vi.fn(() => ({}));
+    this.get = vi.fn((key) =>
+      key === "adminController"
+        ? { init: vi.fn().mockResolvedValue(undefined) }
+        : {},
+    );
   }),
 }));
 
@@ -72,6 +76,16 @@ vi.mock("../../../src/modules/blog/BlogController.js", () => ({
 }));
 vi.mock("../../../src/modules/reviews/ReviewsController.js", () => ({
   ReviewsController: vi.fn(),
+}));
+
+vi.mock("../../../src/modules/admin/AdminController.js", () => ({
+  AdminController: vi.fn(),
+}));
+
+vi.mock("../../../src/modules/admin/AdminProductController.js", () => ({
+  AdminProductController: vi.fn().mockImplementation(function () {
+    this.init = vi.fn().mockResolvedValue(undefined);
+  }),
 }));
 vi.mock(
   "../../../src/modules/products/repositories/ProductsRepository.js",
@@ -286,5 +300,38 @@ describe("bootstrap page-specific initialization", () => {
   it("initializes admin products only on its page", async () => {
     Object.defineProperty(window, "location", { value: { pathname: "/pages/admin-products.html" }, writable: true, configurable: true });
     await bootstrap();
+  });
+});
+
+describe("bootstrap admin initialization", () => {
+  it("initializes the admin dashboard controller on its page", async () => {
+    const { Container } = await import("../../../src/core/di/container.js");
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-dashboard.html" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const container = Container.mock.results.at(-1).value;
+    expect(container.get).toHaveBeenCalledWith("adminController");
+  });
+
+  it("initializes the admin products controller on its page", async () => {
+    const { AdminProductController } = await import(
+      "../../../src/modules/admin/AdminProductController.js"
+    );
+    await import("../../../src/modules/admin/AdminController.js");
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-products.html" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const instance = AdminProductController.mock.results.at(-1).value;
+    expect(instance.init).toHaveBeenCalledOnce();
   });
 });
