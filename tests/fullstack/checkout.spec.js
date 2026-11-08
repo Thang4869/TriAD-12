@@ -272,7 +272,7 @@ test("full stack: recovers a committed checkout after response loss", async ({
   );
   await page.locator("#close-checkout-btn").click();
   await expect(page.locator("#checkout-modal")).toBeVisible();
-  await expect(page.locator(".toast-warning")).toContainText(
+  await expect(page.locator(".toast-warning").last()).toContainText(
     "Vui lòng thử lại cùng yêu cầu thanh toán",
   );
   await expect(
