@@ -324,3 +324,171 @@ test("full stack: recovers a committed checkout after response loss", async ({
   expect(matchingOrders[0].orderNumber).toBe(committedOrder.orderNumber);
   expect(matchingOrders[0].paymentStatus).toBe("PENDING");
 });
+
+
+test("full stack: recovers from a checkout price conflict and suppresses duplicate retry submissions", async ({
+  page,
+}) => {
+  await page.goto("/pages/products.html");
+  await expect(page.locator(".product-card").first()).toBeVisible();
+
+  await page.locator("#account-btn").click();
+  await expect(page.locator("#auth-modal")).toBeVisible();
+  await page.fill("#auth-email", "user@example.com");
+  await page.fill("#auth-password", "user123");
+
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/auth/login" &&
+      response.request().method() === "POST",
+  );
+  await page.locator("#auth-form button[type=submit]").click();
+  expect((await loginResponsePromise).ok()).toBe(true);
+  await expect(page.locator("#auth-modal")).toBeHidden();
+  await clearCart(page);
+
+  const addCartResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/cart/items" &&
+      response.request().method() === "POST",
+  );
+  await page
+    .locator(".product-card")
+    .first()
+    .locator(".add-to-cart-btn")
+    .click();
+  expect((await addCartResponsePromise).ok()).toBe(true);
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+
+  await page.locator("#cart-icon-btn").click();
+  await expect(page.locator("#cart-drawer")).toBeVisible();
+  await page.locator("#checkout-btn").click();
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await page.fill("#phone", "0123456789");
+  await page.fill("#address", "123 Price Conflict Recovery Street");
+  await page.fill("#notes", "Review the refreshed server quote before retry");
+  const submitButton = page.locator('#checkout-form button[type="submit"]');
+  await expect(submitButton).toBeEnabled();
+
+  const checkoutRequests = [];
+  const idempotencyKeys = [];
+  let releaseSuccessfulResponse;
+  let signalSuccessfulCommit;
+  const successfulCommit = new Promise((resolve) => {
+    signalSuccessfulCommit = resolve;
+  });
+  const successfulResponseGate = new Promise((resolve) => {
+    releaseSuccessfulResponse = resolve;
+  });
+
+  page.on("request", (request) => {
+    if (
+      new URL(request.url()).pathname === "/api/checkout" &&
+      request.method() === "POST"
+    ) {
+      checkoutRequests.push(request);
+      idempotencyKeys.push(request.headers()["idempotency-key"]);
+    }
+  });
+
+  await page.route("**/api/checkout", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+
+    if (checkoutRequests.length === 1) {
+      await route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        body: JSON.stringify({
+          error:
+            "Checkout total changed. Refresh the total and review it before placing the order.",
+        }),
+      });
+      return;
+    }
+
+    const backendResponse = await route.fetch();
+    expect(backendResponse.ok()).toBe(true);
+    signalSuccessfulCommit();
+    await successfulResponseGate;
+    await route.fulfill({ response: backendResponse });
+  });
+
+  const conflictResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/checkout" &&
+      response.request().method() === "POST",
+  );
+  await submitButton.click();
+  const conflictResponse = await conflictResponsePromise;
+
+  expect(conflictResponse.status()).toBe(400);
+  await expect(page.locator(".toast-error").last()).toContainText(
+    "Checkout total changed",
+  );
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await expect(page.locator("#checkout-quote-status")).toContainText(
+    "Vui lòng cập nhật tổng tiền",
+  );
+  await expect(submitButton).toBeDisabled();
+  await expect(page.locator("#success-modal")).toBeHidden();
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+
+  const quoteResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/checkout/quote" &&
+      response.request().method() === "GET",
+  );
+  await page.locator("#apply-discount-btn").click();
+  const quoteResponse = await quoteResponsePromise;
+  expect(quoteResponse.ok()).toBe(true);
+  await expect(submitButton).toBeEnabled();
+
+  const successfulResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/checkout" &&
+      response.request().method() === "POST",
+  );
+  await submitButton.click();
+  await successfulCommit;
+
+  expect(checkoutRequests).toHaveLength(2);
+  expect(idempotencyKeys).toHaveLength(2);
+  expect(idempotencyKeys[0]).toBeTruthy();
+  expect(idempotencyKeys[1]).toBe(idempotencyKeys[0]);
+  await expect(submitButton).toBeDisabled();
+
+  // Dispatch a second browser submit event while the first retry is in flight.
+  await page.locator("#checkout-form").evaluate((form) => {
+    form.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true }),
+    );
+  });
+  expect(checkoutRequests).toHaveLength(2);
+
+  releaseSuccessfulResponse();
+  const successfulResponse = await successfulResponsePromise;
+  expect(successfulResponse.ok()).toBe(true);
+
+  const successfulPayload = await successfulResponse.json();
+  const order = successfulPayload?.data?.order;
+  expect(order?.id).toBeTruthy();
+  expect(order?.orderNumber).toBeTruthy();
+
+  await expect(page.locator("#success-modal")).toBeVisible();
+  await expect(page.locator("#success-order-id")).toHaveText(order.orderNumber);
+  await expect(page.locator("#cart-badge")).toHaveText("0");
+  await expect(page.locator(".cart-scroll")).toContainText("empty");
+
+  const ordersResponse = await page.request.get("/api/checkout/orders", {
+    params: { limit: 50 },
+  });
+  expect(ordersResponse.ok()).toBe(true);
+  const ordersPayload = await ordersResponse.json();
+  const matchingOrders = (ordersPayload?.data?.orders || []).filter(
+    (candidate) => candidate.id === order.id,
+  );
+  expect(matchingOrders).toHaveLength(1);
+});
