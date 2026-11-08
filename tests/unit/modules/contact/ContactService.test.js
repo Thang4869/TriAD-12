@@ -381,3 +381,35 @@ describe("ContactService registered callbacks", () => {
     expect(instance.retryCount).toBe(0);
   });
 });
+
+
+describe("ContactService retry timer callback", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = "";
+    Object.defineProperty(document, "readyState", {
+      value: "complete",
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    document.body.innerHTML = "";
+  });
+
+  it("runs the scheduled retry and aborts after the configured retry limit", async () => {
+    const { Logger } = await import("../../../../src/core/services/Logger.js");
+    Logger.warn.mockClear();
+
+    const instance = new ContactService();
+    expect(instance.retryCount).toBe(1);
+
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(instance.retryCount).toBe(2);
+    expect(Logger.warn).toHaveBeenCalledWith(
+      "Contact form not found after 2 retries. Aborting.",
+    );
+  });
+});
