@@ -75,3 +75,11 @@ describe("BaseRenderer missing container", () => {
     expect(renderer.findContainer()).toBeNull();
   });
 });
+
+describe("BaseRenderer clear guard", () => {
+  it("does nothing when no container is available", () => {
+    const renderer = new BaseRenderer("missing-container");
+    renderer.container = null;
+    expect(() => renderer.clear()).not.toThrow();
+  });
+});
