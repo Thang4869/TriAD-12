@@ -831,6 +831,39 @@ describe("ProductsController suggestion ordering branches", () => {
 });
 
 describe("ProductsController uncovered callback branches", () => {
+  let instance;
+  let service;
+  let renderer;
+
+  beforeEach(() => {
+    service = {
+      updateFilters: vi.fn().mockResolvedValue(undefined),
+      products: [{
+        id: "product-1",
+        name: "Product A",
+        matchesKeyword: vi.fn(() => true),
+      }],
+      getProductById: vi.fn(() => ({ id: "product-1", name: "Product A" })),
+      loadMore: vi.fn().mockResolvedValue([]),
+      hasMore: true,
+    };
+    renderer = {
+      searchInput: null,
+      loadMoreContainer: null,
+      renderSuggestions: vi.fn(),
+      append: vi.fn(),
+    };
+    instance = new ProductsController(service, renderer, { on: vi.fn() });
+  });
+
+  afterEach(() => {
+    delete window.IntersectionObserver;
+    delete window.cartController;
+    delete window.modalController;
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
   it("does not load more for a non-intersecting observer entry", () => {
     const container = document.createElement("div");
     renderer.loadMoreContainer = container;
@@ -842,24 +875,22 @@ describe("ProductsController uncovered callback branches", () => {
         this.observe = vi.fn();
       }),
     });
-    const loadMore = vi.spyOn(controller, "loadMore").mockResolvedValue(undefined);
-    controller.setupLoadMore();
+    const loadMore = vi.spyOn(instance, "loadMore").mockResolvedValue(undefined);
+    instance.setupLoadMore();
     observerCallback([{ isIntersecting: false }]);
     expect(loadMore).not.toHaveBeenCalled();
-    delete window.IntersectionObserver;
   });
 
   it("does not attach a load-more click handler when its button is absent", () => {
-    const container = document.createElement("div");
-    renderer.loadMoreContainer = container;
-    controller.setupLoadMore();
-    expect(container.querySelector("#load-more-btn")).toBeNull();
+    renderer.loadMoreContainer = document.createElement("div");
+    instance.setupLoadMore();
+    expect(renderer.loadMoreContainer.querySelector("#load-more-btn")).toBeNull();
   });
 
   it("skips search input assignment when the input is removed before selection", () => {
     const input = document.createElement("input");
     renderer.searchInput = input;
-    controller.setupSearch();
+    instance.setupSearch();
     input.value = "Product";
     input.dispatchEvent(new Event("input"));
     const selectSuggestion = renderer.renderSuggestions.mock.calls.at(-1)[2];
