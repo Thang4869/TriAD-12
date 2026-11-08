@@ -727,10 +727,15 @@ describe("ProductsRenderer remaining branches", () => {
 });
 
 describe("ProductsRenderer renderError", () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="product-grid"></div>';
+  });
+
   it("renders an error state when the product grid exists", () => {
+    const instance = new ProductsRenderer();
     const error = new Error("API unavailable");
     const log = vi.spyOn(Logger, "error").mockImplementation(() => {});
-    renderer.renderError(error);
+    instance.renderError(error);
     expect(document.getElementById("product-grid").textContent).toContain(
       "Không tải được danh sách sản phẩm",
     );
@@ -738,8 +743,9 @@ describe("ProductsRenderer renderError", () => {
   });
 
   it("does not render an error state when the product grid is missing", () => {
-    renderer.container = null;
-    vi.spyOn(renderer, "findContainer").mockReturnValue(null);
-    expect(() => renderer.renderError(new Error("missing"))).not.toThrow();
+    document.body.innerHTML = "";
+    const instance = new ProductsRenderer();
+    vi.spyOn(instance, "findContainer").mockReturnValue(null);
+    expect(() => instance.renderError(new Error("missing"))).not.toThrow();
   });
 });
