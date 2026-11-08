@@ -358,3 +358,13 @@ describe("ProductsService default maximum price", () => {
     expect(instance.defaultMaxPrice).toBe(10_000_000);
   });
 });
+
+describe("ProductsService zero-value query parameters", () => {
+  it("omits a zero maxPrice from repository query parameters", async () => {
+    await service.updateFilters({ maxPrice: 0 });
+
+    expect(repository.findPage).toHaveBeenLastCalledWith(
+      expect.objectContaining({ maxPrice: undefined }),
+    );
+  });
+});
