@@ -390,3 +390,24 @@ describe("RouterService empty and non-routable values", () => {
     expect(document.getElementById("data-link").getAttribute("href")).toBe("data:text/plain,hello");
   });
 });
+
+
+describe("RouterService header links outside rewrite patterns", () => {
+  it("leaves absolute, anchor, and ordinary relative header links unchanged", () => {
+    const router = new RouterService();
+    router.rootPath = "../";
+    document.body.innerHTML = `
+      <div id="header-container">
+        <a id="absolute" href="https://example.com/path">External</a>
+        <a id="anchor" href="#section">Section</a>
+        <a id="relative" href="catalog">Catalog</a>
+      </div>
+    `;
+
+    router.fixHeaderLinks();
+
+    expect(document.getElementById("absolute").getAttribute("href")).toBe("https://example.com/path");
+    expect(document.getElementById("anchor").getAttribute("href")).toBe("#section");
+    expect(document.getElementById("relative").getAttribute("href")).toBe("catalog");
+  });
+});
