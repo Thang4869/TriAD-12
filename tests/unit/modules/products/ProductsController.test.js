@@ -829,3 +829,43 @@ describe("ProductsController suggestion ordering branches", () => {
     expect(suggestions).toEqual([prefix, equalPrefix, nonPrefix]);
   });
 });
+
+describe("ProductsController uncovered callback branches", () => {
+  it("does not load more for a non-intersecting observer entry", () => {
+    const container = document.createElement("div");
+    renderer.loadMoreContainer = container;
+    let observerCallback;
+    Object.defineProperty(window, "IntersectionObserver", {
+      configurable: true,
+      value: vi.fn(function (callback) {
+        observerCallback = callback;
+        this.observe = vi.fn();
+      }),
+    });
+    const loadMore = vi.spyOn(controller, "loadMore").mockResolvedValue(undefined);
+    controller.setupLoadMore();
+    observerCallback([{ isIntersecting: false }]);
+    expect(loadMore).not.toHaveBeenCalled();
+    delete window.IntersectionObserver;
+  });
+
+  it("does not attach a load-more click handler when its button is absent", () => {
+    const container = document.createElement("div");
+    renderer.loadMoreContainer = container;
+    controller.setupLoadMore();
+    expect(container.querySelector("#load-more-btn")).toBeNull();
+  });
+
+  it("skips search input assignment when the input is removed before selection", () => {
+    const input = document.createElement("input");
+    renderer.searchInput = input;
+    controller.setupSearch();
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+    const selectSuggestion = renderer.renderSuggestions.mock.calls.at(-1)[2];
+    renderer.searchInput = null;
+    selectSuggestion("product-1");
+    expect(service.getProductById).toHaveBeenCalledWith("product-1");
+    expect(input.value).toBe("Product");
+  });
+});
