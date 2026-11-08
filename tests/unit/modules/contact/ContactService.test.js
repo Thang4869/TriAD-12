@@ -332,3 +332,33 @@ describe("ContactService validation helper", () => {
     expect(instance.isValidEmail("person@example.com")).toBe(true);
   });
 });
+
+describe("ContactService registered callbacks", () => {
+  it("runs the deferred DOMContentLoaded setup callback", () => {
+    Object.defineProperty(document, "readyState", {
+      value: "loading",
+      configurable: true,
+    });
+    const listener = vi.fn();
+    vi.spyOn(document, "addEventListener").mockImplementation((event, callback) => {
+      if (event === "DOMContentLoaded") listener.mockImplementation(callback);
+    });
+    const instance = new ContactService();
+    document.body.innerHTML = '<form id="contact-form"></form>';
+    listener();
+    expect(instance.retryCount).toBe(0);
+    expect(document.getElementById("contact-form")).toBeTruthy();
+  });
+
+  it("invokes the registered submit handler", () => {
+    document.body.innerHTML = '<form id="contact-form"></form>';
+    const form = document.getElementById("contact-form");
+    const add = vi.spyOn(form, "addEventListener");
+    const instance = new ContactService();
+    const submitHandler = add.mock.calls.find(([event]) => event === "submit")[1];
+    const event = { preventDefault: vi.fn() };
+    submitHandler(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(instance.retryCount).toBe(0);
+  });
+});
