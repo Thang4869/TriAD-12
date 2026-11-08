@@ -829,3 +829,89 @@ describe("ProductsController suggestion ordering branches", () => {
     expect(suggestions).toEqual([prefix, equalPrefix, nonPrefix]);
   });
 });
+
+describe("ProductsController uncovered callback branches", () => {
+  let instance;
+  let service;
+  let renderer;
+
+  beforeEach(() => {
+    service = {
+      updateFilters: vi.fn().mockResolvedValue(undefined),
+      products: [{
+        id: "product-1",
+        name: "Product A",
+        matchesKeyword: vi.fn(() => true),
+      }],
+      getProductById: vi.fn(() => ({ id: "product-1", name: "Product A" })),
+      loadMore: vi.fn().mockResolvedValue([]),
+      hasMore: true,
+    };
+    renderer = {
+      searchInput: null,
+      loadMoreContainer: null,
+      renderSuggestions: vi.fn(),
+      append: vi.fn(),
+    };
+    instance = new ProductsController(service, renderer, { on: vi.fn() });
+  });
+
+  afterEach(() => {
+    delete window.IntersectionObserver;
+    delete window.cartController;
+    delete window.modalController;
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("does not load more for a non-intersecting observer entry", () => {
+    const container = document.createElement("div");
+    renderer.loadMoreContainer = container;
+    let observerCallback;
+    Object.defineProperty(window, "IntersectionObserver", {
+      configurable: true,
+      value: vi.fn(function (callback) {
+        observerCallback = callback;
+        this.observe = vi.fn();
+      }),
+    });
+    const loadMore = vi.spyOn(instance, "loadMore").mockResolvedValue(undefined);
+    instance.setupLoadMore();
+    observerCallback([{ isIntersecting: false }]);
+    expect(loadMore).not.toHaveBeenCalled();
+  });
+
+  it("does not attach a load-more click handler when its button is absent", () => {
+    renderer.loadMoreContainer = document.createElement("div");
+    instance.setupLoadMore();
+    expect(renderer.loadMoreContainer.querySelector("#load-more-btn")).toBeNull();
+  });
+
+  it("handles a failed filter update after selecting a suggestion", async () => {
+    const input = document.createElement("input");
+    renderer.searchInput = input;
+    const error = new Error("filter update failed");
+    service.updateFilters.mockRejectedValueOnce(error);
+    instance.setupSearch();
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+    const selectSuggestion = renderer.renderSuggestions.mock.calls.at(-1)[2];
+    selectSuggestion("product-1");
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(service.updateFilters).toHaveBeenCalledWith({ keyword: "Product A" });
+  });
+
+  it("skips search input assignment when the input is removed before selection", () => {
+    const input = document.createElement("input");
+    renderer.searchInput = input;
+    instance.setupSearch();
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+    const selectSuggestion = renderer.renderSuggestions.mock.calls.at(-1)[2];
+    renderer.searchInput = null;
+    selectSuggestion("product-1");
+    expect(service.getProductById).toHaveBeenCalledWith("product-1");
+    expect(input.value).toBe("Product");
+  });
+});

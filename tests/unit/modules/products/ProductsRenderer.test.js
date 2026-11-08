@@ -725,3 +725,27 @@ describe("ProductsRenderer remaining branches", () => {
     expect(() => rendererWithoutControls.setLoading(true)).not.toThrow();
   });
 });
+
+describe("ProductsRenderer renderError", () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="product-grid"></div>';
+  });
+
+  it("renders an error state when the product grid exists", () => {
+    const instance = new ProductsRenderer();
+    const error = new Error("API unavailable");
+    const log = vi.spyOn(Logger, "error").mockImplementation(() => {});
+    instance.renderError(error);
+    expect(document.getElementById("product-grid").textContent).toContain(
+      "Không tải được danh sách sản phẩm",
+    );
+    expect(log).toHaveBeenCalledWith("Products render error:", error);
+  });
+
+  it("does not render an error state when the product grid is missing", () => {
+    document.body.innerHTML = "";
+    const instance = new ProductsRenderer();
+    vi.spyOn(instance, "findContainer").mockReturnValue(null);
+    expect(() => instance.renderError(new Error("missing"))).not.toThrow();
+  });
+});

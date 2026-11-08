@@ -210,3 +210,14 @@ describe("StorageService prefixed key enumeration", () => {
     expect(isolated.keys()).not.toContain("other_hidden");
   });
 });
+
+describe("StorageService duplicate key merge", () => {
+  it("does not duplicate a key already found in localStorage", () => {
+    const isolated = new StorageService("test_");
+    vi.spyOn(isolated, "_isAvailable").mockReturnValue(true);
+    vi.spyOn(Object, "keys").mockReturnValue(["test_shared"]);
+    isolated._memory.set("test_shared", "memory");
+
+    expect(isolated.keys()).toEqual(["shared"]);
+  });
+});

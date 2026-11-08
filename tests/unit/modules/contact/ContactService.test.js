@@ -332,3 +332,52 @@ describe("ContactService validation helper", () => {
     expect(instance.isValidEmail("person@example.com")).toBe(true);
   });
 });
+
+describe("ContactService registered callbacks", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    Object.defineProperty(document, "readyState", {
+      value: "complete",
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+    Object.defineProperty(document, "readyState", {
+      value: "complete",
+      configurable: true,
+    });
+  });
+
+  it("runs the deferred DOMContentLoaded setup callback", () => {
+    Object.defineProperty(document, "readyState", {
+      value: "loading",
+      configurable: true,
+    });
+    const originalAdd = document.addEventListener.bind(document);
+    let readyCallback;
+    vi.spyOn(document, "addEventListener").mockImplementation((event, callback, options) => {
+      if (event === "DOMContentLoaded") readyCallback = callback;
+      else originalAdd(event, callback, options);
+    });
+    const instance = new ContactService();
+    document.body.innerHTML = '<form id="contact-form"></form>';
+    readyCallback();
+    expect(instance.retryCount).toBe(0);
+    expect(document.getElementById("contact-form")).toBeTruthy();
+  });
+
+  it("invokes the registered submit handler", () => {
+    document.body.innerHTML = '<form id="contact-form"></form>';
+    const form = document.getElementById("contact-form");
+    const add = vi.spyOn(form, "addEventListener");
+    const instance = new ContactService();
+    const submitHandler = add.mock.calls.find(([event]) => event === "submit")[1];
+    const event = { preventDefault: vi.fn() };
+    submitHandler(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(instance.retryCount).toBe(0);
+  });
+});
