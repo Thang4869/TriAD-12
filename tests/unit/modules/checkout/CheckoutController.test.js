@@ -225,6 +225,28 @@ describe("CheckoutController", () => {
       randomUUID.mockRestore();
     });
 
+    it("should create a new idempotency key after a completed modal is closed and reopened", async () => {
+      mockCartController.getItems.mockReturnValue([
+        { id: 1, name: "Product", quantity: 1, subtotal: 100000 },
+      ]);
+      const randomUUID = vi
+        .spyOn(crypto, "randomUUID")
+        .mockReturnValueOnce("checkout-attempt-1")
+        .mockReturnValueOnce("checkout-attempt-2");
+
+      await controller.openCheckout();
+      expect(controller.idempotencyKey).toBe("checkout-attempt-1");
+
+      controller.closeCheckout();
+      vi.runAllTimers();
+      await controller.openCheckout();
+
+      expect(controller.idempotencyKey).toBe("checkout-attempt-2");
+      expect(controller.idempotencyKey).not.toBe("checkout-attempt-1");
+      expect(randomUUID).toHaveBeenCalledTimes(2);
+      randomUUID.mockRestore();
+    });
+
     it("should stop opening checkout while a submission is in progress", () => {
       controller.isSubmitting = true;
 
