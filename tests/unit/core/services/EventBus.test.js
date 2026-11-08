@@ -255,3 +255,18 @@ describe("EventBus once callback context", () => {
     expect(callback.mock.instances[0]).toBe(context);
   });
 });
+
+describe("EventBus once registration branches", () => {
+  it("registers another one-time callback for an existing event", () => {
+    const bus = new EventBus();
+    const first = vi.fn();
+    const second = vi.fn();
+
+    bus.once("shared", first);
+    bus.once("shared", second);
+    bus.emit("shared", "payload");
+
+    expect(first).toHaveBeenCalledWith("payload");
+    expect(second).toHaveBeenCalledWith("payload");
+  });
+});
