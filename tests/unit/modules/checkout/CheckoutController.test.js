@@ -468,6 +468,16 @@ describe("CheckoutController", () => {
       await controller.handleSubmit(firstEvent);
 
       expect(controller.idempotencyKey).toBe(firstKey);
+      expect(controller.hasAmbiguousCheckout).toBe(true);
+      controller.closeCheckout();
+      expect(controller.idempotencyKey).toBe(firstKey);
+      expect(
+        document.getElementById("checkout-modal").classList.contains("hidden"),
+      ).toBe(false);
+      expect(mockToast.warning).toHaveBeenCalledWith(
+        "Chưa xác định được trạng thái đơn hàng",
+        "Vui lòng thử lại cùng yêu cầu thanh toán để xác nhận kết quả trước khi đóng.",
+      );
       expect(mockCartController.resetLocal).not.toHaveBeenCalled();
       expect(mockToast.error).toHaveBeenCalledWith(
         "Lỗi",
