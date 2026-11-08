@@ -270,6 +270,11 @@ test("full stack: recovers a committed checkout after response loss", async ({
   await expect(page.locator(".toast-error")).toContainText(
     "Không xác định được trạng thái đơn hàng",
   );
+  await page.locator("#close-checkout-btn").click();
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await expect(page.locator(".toast-warning").last()).toContainText(
+    "Vui lòng thử lại cùng yêu cầu thanh toán",
+  );
   await expect(
     page.locator('#checkout-form button[type="submit"]'),
   ).toBeEnabled();
