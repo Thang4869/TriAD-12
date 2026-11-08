@@ -361,8 +361,12 @@ describe("ProductsService default maximum price", () => {
 
 describe("ProductsService zero-value query parameters", () => {
   it("omits a zero maxPrice from repository query parameters", async () => {
-    await service.updateFilters({ maxPrice: 0 });
-
+    const repository = { findPage: vi.fn().mockResolvedValue({
+      products: [], page: 1, totalPages: 1, total: 0,
+    }) };
+    const eventBus = { emit: vi.fn() };
+    const instance = new ProductsService(repository, eventBus);
+    await instance.updateFilters({ maxPrice: 0 });
     expect(repository.findPage).toHaveBeenLastCalledWith(
       expect.objectContaining({ maxPrice: undefined }),
     );
