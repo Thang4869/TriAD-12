@@ -887,6 +887,21 @@ describe("ProductsController uncovered callback branches", () => {
     expect(renderer.loadMoreContainer.querySelector("#load-more-btn")).toBeNull();
   });
 
+  it("handles a failed filter update after selecting a suggestion", async () => {
+    const input = document.createElement("input");
+    renderer.searchInput = input;
+    const error = new Error("filter update failed");
+    service.updateFilters.mockRejectedValueOnce(error);
+    instance.setupSearch();
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+    const selectSuggestion = renderer.renderSuggestions.mock.calls.at(-1)[2];
+    selectSuggestion("product-1");
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(service.updateFilters).toHaveBeenCalledWith({ keyword: "Product A" });
+  });
+
   it("skips search input assignment when the input is removed before selection", () => {
     const input = document.createElement("input");
     renderer.searchInput = input;
