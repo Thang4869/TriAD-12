@@ -669,3 +669,15 @@ describe("NotificationController initialization guard", () => {
     expect(instance._initialized).toBe(false);
   });
 });
+
+describe("NotificationController mobile-only initialization", () => {
+  it("attaches the mobile button when the desktop button is absent", () => {
+    document.body.innerHTML = '<button id="mobile-notification-btn"></button>';
+    const instance = new NotificationController();
+    const toggle = vi.spyOn(instance, "_toggleDropdown");
+    document.getElementById("mobile-notification-btn").click();
+    expect(instance.btn).toBeNull();
+    expect(toggle).toHaveBeenCalledTimes(1);
+    instance.destroy();
+  });
+});
