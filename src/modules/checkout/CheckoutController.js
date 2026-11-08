@@ -13,6 +13,7 @@ export class CheckoutController {
     this.items = [];
     this.isSubmitting = false;
     this.idempotencyKey = null;
+    this.hasAmbiguousCheckout = false;
     this.quote = null;
     this.quoteDiscountCode = undefined;
     this.quoteRequest = 0;
@@ -131,6 +132,13 @@ export class CheckoutController {
   }
 
   closeCheckout() {
+    if (this.hasAmbiguousCheckout) {
+      window.toast?.warning(
+        "Chưa xác định được trạng thái đơn hàng",
+        "Vui lòng thử lại cùng yêu cầu thanh toán để xác nhận kết quả trước khi đóng.",
+      );
+      return false;
+    }
     this.invalidateQuote();
     if (!this.isSubmitting) this.idempotencyKey = null;
     const modal = document.getElementById("checkout-modal");
@@ -182,6 +190,7 @@ export class CheckoutController {
 
       window.cartController?.resetLocal();
       window.cartController?.closeDrawer();
+      this.hasAmbiguousCheckout = false;
       this.idempotencyKey = null;
       this.closeCheckout();
       this.showSuccess(order);
@@ -197,6 +206,7 @@ export class CheckoutController {
       );
     } catch (error) {
       const isAmbiguousResult = error instanceof ApiError && error.status === 0;
+      if (isAmbiguousResult) this.hasAmbiguousCheckout = true;
       const message = isAmbiguousResult
         ? "Không xác định được trạng thái đơn hàng. Vui lòng thử lại để kiểm tra đơn đã được xử lý hay chưa."
         : error instanceof ApiError
