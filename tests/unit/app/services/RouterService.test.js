@@ -370,3 +370,23 @@ describe("RouterService unsupported content URLs", () => {
     expect(document.getElementById("external-image").getAttribute("src")).toBe("https://example.com/image.png");
   });
 });
+
+describe("RouterService empty and non-routable values", () => {
+  it("leaves content image sources and links absent or empty", () => {
+    const router = new RouterService();
+    router.rootPath = "./";
+    document.body.innerHTML = `
+      <div id="page-content">
+        <img>
+        <img src="">
+        <a>missing</a>
+        <a href="">empty</a>
+        <a href="data:text/plain,hello">data</a>
+      </div>
+    `;
+    expect(() => router.fixContentLinks()).not.toThrow();
+    expect(document.querySelectorAll("#page-content img")[0].getAttribute("src")).toBeNull();
+    expect(document.querySelectorAll("#page-content img")[1].getAttribute("src")).toBe("");
+    expect(document.querySelectorAll("#page-content a")[4].getAttribute("href")).toBe("data:text/plain,hello");
+  });
+});
