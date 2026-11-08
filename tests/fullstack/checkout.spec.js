@@ -257,6 +257,18 @@ test("full stack: recovers a committed checkout after response loss", async ({
     }
 
     interceptedCheckoutCount += 1;
+    if (checkoutRequests.length === 2) {
+      await route.fulfill({
+        status: 422,
+        contentType: "application/json",
+        body: JSON.stringify({
+          error:
+            "Delivery address is not serviceable. Choose another address.",
+        }),
+      });
+      return;
+    }
+
     const backendResponse = await route.fetch();
     expect(backendResponse.ok()).toBe(true);
     firstCommittedPayload = await backendResponse.json();
@@ -446,6 +458,24 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
   expect(quoteResponse.ok()).toBe(true);
   await expect(submitButton).toBeEnabled();
 
+  const validationResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/checkout" &&
+      response.request().method() === "POST",
+  );
+  await submitButton.click();
+  const validationResponse = await validationResponsePromise;
+  expect(validationResponse.status()).toBe(422);
+  await expect(page.locator(".toast-error").last()).toContainText(
+    "Delivery address is not serviceable",
+  );
+  await expect(page.locator("#checkout-modal")).toBeVisible();
+  await expect(page.locator("#success-modal")).toBeHidden();
+  await expect(page.locator("#cart-badge")).toHaveText("1");
+  await expect(submitButton).toBeEnabled();
+
+  await page.fill("#address", "124 Price Conflict Recovery Street");
+
   const successfulResponsePromise = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname === "/api/checkout" &&
@@ -454,10 +484,11 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
   await submitButton.click();
   await successfulCommit;
 
-  expect(checkoutRequests).toHaveLength(2);
-  expect(idempotencyKeys).toHaveLength(2);
+  expect(checkoutRequests).toHaveLength(3);
+  expect(idempotencyKeys).toHaveLength(3);
   expect(idempotencyKeys[0]).toBeTruthy();
   expect(idempotencyKeys[1]).toBe(idempotencyKeys[0]);
+  expect(idempotencyKeys[2]).toBe(idempotencyKeys[0]);
   await expect(submitButton).toBeDisabled();
 
   // Dispatch a second browser submit event while the first retry is in flight.
