@@ -257,18 +257,6 @@ test("full stack: recovers a committed checkout after response loss", async ({
     }
 
     interceptedCheckoutCount += 1;
-    if (checkoutRequests.length === 2) {
-      await route.fulfill({
-        status: 422,
-        contentType: "application/json",
-        body: JSON.stringify({
-          error:
-            "Delivery address is not serviceable. Choose another address.",
-        }),
-      });
-      return;
-    }
-
     const backendResponse = await route.fetch();
     expect(backendResponse.ok()).toBe(true);
     firstCommittedPayload = await backendResponse.json();
@@ -421,6 +409,18 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       return;
     }
 
+    if (checkoutRequests.length === 2) {
+      await route.fulfill({
+        status: 422,
+        contentType: "application/json",
+        body: JSON.stringify({
+          error:
+            "Delivery address is not serviceable. Choose another address.",
+        }),
+      });
+      return;
+    }
+
     const backendResponse = await route.fetch();
     expect(backendResponse.ok()).toBe(true);
     signalSuccessfulCommit();
@@ -497,7 +497,7 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new Event("submit", { bubbles: true, cancelable: true }),
     );
   });
-  expect(checkoutRequests).toHaveLength(2);
+  expect(checkoutRequests).toHaveLength(3);
 
   releaseSuccessfulResponse();
   const successfulResponse = await successfulResponsePromise;
