@@ -915,3 +915,39 @@ describe("ProductsController uncovered callback branches", () => {
     expect(input.value).toBe("Product");
   });
 });
+
+
+describe("ProductsController reverse prefix comparison", () => {
+  it("moves a later prefix match ahead of an earlier non-prefix match", () => {
+    const prefix = {
+      id: "prefix",
+      name: "Product Alpha",
+      matchesKeyword: vi.fn(() => true),
+    };
+    const nonPrefix = {
+      id: "contains",
+      name: "Premium Product",
+      matchesKeyword: vi.fn(() => true),
+    };
+    const input = document.createElement("input");
+    const renderer = {
+      searchInput: input,
+      renderSuggestions: vi.fn(),
+    };
+    const service = {
+      products: [prefix, nonPrefix],
+      updateFilters: vi.fn().mockResolvedValue(undefined),
+      getProductById: vi.fn(() => null),
+    };
+
+    new ProductsController(service, renderer, { on: vi.fn() });
+
+    input.value = "Product";
+    input.dispatchEvent(new Event("input"));
+
+    expect(renderer.renderSuggestions.mock.calls[0][1]).toEqual([
+      prefix,
+      nonPrefix,
+    ]);
+  });
+});
