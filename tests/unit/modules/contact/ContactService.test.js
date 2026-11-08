@@ -334,18 +334,37 @@ describe("ContactService validation helper", () => {
 });
 
 describe("ContactService registered callbacks", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    Object.defineProperty(document, "readyState", {
+      value: "complete",
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+    Object.defineProperty(document, "readyState", {
+      value: "complete",
+      configurable: true,
+    });
+  });
+
   it("runs the deferred DOMContentLoaded setup callback", () => {
     Object.defineProperty(document, "readyState", {
       value: "loading",
       configurable: true,
     });
-    const listener = vi.fn();
-    vi.spyOn(document, "addEventListener").mockImplementation((event, callback) => {
-      if (event === "DOMContentLoaded") listener.mockImplementation(callback);
+    const originalAdd = document.addEventListener.bind(document);
+    let readyCallback;
+    vi.spyOn(document, "addEventListener").mockImplementation((event, callback, options) => {
+      if (event === "DOMContentLoaded") readyCallback = callback;
+      else originalAdd(event, callback, options);
     });
     const instance = new ContactService();
     document.body.innerHTML = '<form id="contact-form"></form>';
-    listener();
+    readyCallback();
     expect(instance.retryCount).toBe(0);
     expect(document.getElementById("contact-form")).toBeTruthy();
   });
