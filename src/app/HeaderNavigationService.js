@@ -8,6 +8,7 @@ const PAGE_HREF_MAP = {
   location: "location.html",
   contact: "contact.html",
   "order-history": "order-history.html",
+  profile: "pages/profile.html",
   "order-detail": "order-history.html",
   "admin-dashboard": "admin-dashboard",
   "admin-products": "admin-products",
