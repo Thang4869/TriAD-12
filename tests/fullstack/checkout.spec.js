@@ -4,7 +4,7 @@ import { resetFullstackAuthRateLimit } from "./helpers/reset-auth-rate-limit.js"
 
 const formatPrice = (value) => Number(value).toLocaleString("vi-VN") + " ₫";
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async (_fixtures, testInfo) => {
   const origin = new URL(testInfo.project.use.baseURL);
 
   if (!["localhost", "127.0.0.1"].includes(origin.hostname)) {
