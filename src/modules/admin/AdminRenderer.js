@@ -58,31 +58,31 @@ export class AdminRenderer {
   renderStats(stats) {
     if (!stats) return;
 
-    const gmv = stats.grossMã đơnValue?.total30Days ?? 0;
-    const byDay = stats.grossMã đơnValue?.byDay ?? [];
+    const gmv = stats.grossOrderValue?.total30Days ?? 0;
+    const byDay = stats.grossOrderValue?.byDay ?? [];
     const statusBreakdown = stats.orders?.statusBreakdown ?? [];
     const products = stats.products ?? {};
     const users = stats.users ?? {};
 
-    const totalMã đơns = statusBreakdown.reduce(
+    const totalOrders = statusBreakdown.reduce(
       (sum, row) => sum + row.count,
       0,
     );
-    const đang chờ xử lýMã đơns =
+    const pendingOrders =
       statusBreakdown.find((row) => row.status === "PENDING")?.count ?? 0;
-    const lowTồn kho = products.lowTồn kho ?? [];
+    const lowStock = products.lowStock ?? [];
 
     this._setText("kpi-gmv", formatPrice(gmv));
-    this._setText("kpi-orders", totalMã đơns);
-    this._setText("kpi-orders-đang chờ xử lý", `${đang chờ xử lýMã đơns} đang chờ xử lý`);
+    this._setText("kpi-orders", totalOrders);
+    this._setText("kpi-orders-pending", `${pendingOrders} pending`);
     this._setText("kpi-users", users.total ?? 0);
     this._setText("kpi-users-new", `${users.new30Days ?? 0} new in 30d`);
     this._setText("kpi-products", products.total ?? 0);
-    this._setText("kpi-lowstock", `${lowTồn kho.length} low stock`);
+    this._setText("kpi-lowstock", `${lowStock.length} low stock`);
 
     this._renderChart(byDay);
-    this._renderTrạng thái(statusBreakdown);
-    this._renderLowTồn kho(lowTồn kho);
+    this._renderStatus(statusBreakdown);
+    this._renderLowStock(lowStock);
     this._renderTopSelling(products.topSelling ?? []);
   }
 
@@ -94,14 +94,14 @@ export class AdminRenderer {
         '<p class="text-sm text-gray-400 m-auto">Không có đơn hàng trong 30 ngày gần nhất</p>';
       return;
     }
-    const max = Math.max(...byDay.map((d) => d.grossMã đơnValue), 1);
+    const max = Math.max(...byDay.map((d) => d.grossOrderValue), 1);
     container.innerHTML = byDay
       .map((d) => {
-        const height = Math.max(4, Math.round((d.grossMã đơnValue / max) * 100));
+        const height = Math.max(4, Math.round((d.grossOrderValue / max) * 100));
         return `
           <div class="flex-1 flex flex-col items-center justify-end group relative">
             <div class="absolute -top-8 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-10">
-              ${d.date}<br>${formatPrice(d.grossMã đơnValue)}
+              ${d.date}<br>${formatPrice(d.grossOrderValue)}
             </div>
             <div class="w-full bg-brand-accent rounded-t hover:bg-brand-dark transition-colors" style="height:${height}%"></div>
           </div>
@@ -110,7 +110,7 @@ export class AdminRenderer {
       .join("");
   }
 
-  _renderTrạng thái(rows) {
+  _renderStatus(rows) {
     const container = this._el("admin-order-status");
     if (!container) return;
     if (!rows.length) {
@@ -130,7 +130,7 @@ export class AdminRenderer {
       .join("");
   }
 
-  _renderLowTồn kho(products) {
+  _renderLowStock(products) {
     const container = this._el("admin-low-stock");
     if (!container) return;
     if (!products.length) {
@@ -189,7 +189,7 @@ export class AdminRenderer {
             <tr class="border-b last:border-0">
               <td class="py-2">${p.name}</td>
               <td class="py-2">${p.totalQuantitySold}</td>
-              <td class="py-2 text-right font-medium">${formatPrice(p.totalMã đơnValue)}</td>
+              <td class="py-2 text-right font-medium">${formatPrice(p.totalOrderValue)}</td>
             </tr>
           `,
             )
@@ -199,7 +199,7 @@ export class AdminRenderer {
     `;
   }
 
-  renderMã đơns(data, { onTrạng tháiChange } = {}) {
+  renderOrders(data, { onStatusChange } = {}) {
     const container = this._el("admin-recent-orders");
     if (!container) return;
     const orders = data?.orders ?? [];
@@ -256,7 +256,7 @@ export class AdminRenderer {
         const orderId = e.target.dataset.orderId;
         const status = e.target.value;
         if (!status) return;
-        onTrạng tháiChange?.(orderId, status, e.target);
+        onStatusChange?.(orderId, status, e.target);
       });
     });
   }
