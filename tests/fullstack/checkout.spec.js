@@ -1,8 +1,11 @@
+
 import { test, expect } from "@playwright/test";
 
 const formatPrice = (value) => Number(value).toLocaleString("vi-VN") + " ₫";
+
 const clearCart = async (page) => {
   const origin = new URL(page.url());
+
   if (!["localhost", "127.0.0.1"].includes(origin.hostname)) {
     throw new Error("Cart cleanup requires disposable loopback CI fixtures");
   }
@@ -10,9 +13,11 @@ const clearCart = async (page) => {
   const csrf = (await page.context().cookies()).find(
     (cookie) => cookie.name === "csrfToken",
   );
+
   const response = await page.request.delete("/api/cart", {
     headers: { "x-csrf-token": csrf.value },
   });
+
   expect([200, 404]).toContain(response.status());
 };
 
@@ -72,9 +77,11 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   await page.fill("#phone", "0123456789");
   await page.fill("#address", "123 Full Stack CI Street");
   await page.fill("#notes", "Created by full frontend-backend CI journey");
+
   await expect(
     page.locator('#checkout-form button[type="submit"]'),
   ).toBeEnabled();
+
   const reviewedTotal = await page.locator("#checkout-total").textContent();
 
   const checkoutResponsePromise = page.waitForResponse(
@@ -96,6 +103,7 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   };
 
   page.on("request", trackCartDelete);
+
   page.on("request", (request) => {
     if (
       new URL(request.url()).pathname === "/api/checkout" &&
@@ -107,7 +115,7 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
 
   await page.locator('#checkout-form button[type="submit"]').click();
 
-  // Chính Backend thật phải tạo order.
+  // Backend thật phải tạo order.
   const checkoutResponse = await checkoutResponsePromise;
   expect(checkoutResponse.ok()).toBe(true);
 
@@ -118,15 +126,16 @@ test("full stack: login -> product -> cart -> checkout -> persisted order", asyn
   expect(order?.orderNumber).toBeTruthy();
   expect(Number(order?.total)).toBeGreaterThan(0);
   expect(reviewedTotal).toBe(formatPrice(order.total));
+
   expect(checkoutResponse.request().postDataJSON().expectedTotal).toBe(
     order.total,
   );
+
   expect(checkoutIdempotencyKeys).toHaveLength(1);
   expect(checkoutIdempotencyKeys[0]).toBeTruthy();
 
   // Frontend phải render chính dữ liệu server trả về.
   await expect(page.locator("#success-modal")).toBeVisible();
-
   await expect(page.locator("#success-order-id")).toHaveText(order.orderNumber);
 
   await expect(page.locator("#success-total")).toHaveText(
@@ -191,6 +200,7 @@ test("full stack: recovers a committed checkout after response loss", async ({
 
   await page.locator("#account-btn").click();
   await expect(page.locator("#auth-modal")).toBeVisible();
+
   await page.fill("#auth-email", "user@example.com");
   await page.fill("#auth-password", "user123");
 
@@ -199,8 +209,15 @@ test("full stack: recovers a committed checkout after response loss", async ({
       new URL(response.url()).pathname === "/api/auth/login" &&
       response.request().method() === "POST",
   );
+
   await page.locator("#auth-form button[type=submit]").click();
-  expect((await loginResponsePromise).ok()).toBe(true);
+
+  const loginResponse = await loginResponsePromise;
+  expect(
+    loginResponse.ok(),
+    `Login failed: ${loginResponse.status()} ${await loginResponse.text()}`,
+  ).toBe(true);
+
   await expect(page.locator("#auth-modal")).toBeHidden();
   await clearCart(page);
 
@@ -209,21 +226,26 @@ test("full stack: recovers a committed checkout after response loss", async ({
       new URL(response.url()).pathname === "/api/cart/items" &&
       response.request().method() === "POST",
   );
+
   await page
     .locator(".product-card")
     .first()
     .locator(".add-to-cart-btn")
     .click();
+
   expect((await addCartResponsePromise).ok()).toBe(true);
   await expect(page.locator("#cart-badge")).toHaveText("1");
 
   await page.locator("#cart-icon-btn").click();
   await expect(page.locator("#cart-drawer")).toBeVisible();
+
   await page.locator("#checkout-btn").click();
   await expect(page.locator("#checkout-modal")).toBeVisible();
+
   await page.fill("#phone", "0123456789");
   await page.fill("#address", "123 Response Loss Recovery Street");
   await page.fill("#notes", "Committed before the browser lost the response");
+
   await expect(
     page.locator('#checkout-form button[type="submit"]'),
   ).toBeEnabled();
@@ -232,6 +254,7 @@ test("full stack: recovers a committed checkout after response loss", async ({
   const checkoutIdempotencyKeys = [];
   let firstCommittedPayload;
   let interceptedCheckoutCount = 0;
+
   const cartDeleteRequests = [];
 
   page.on("request", (request) => {
@@ -242,6 +265,7 @@ test("full stack: recovers a committed checkout after response loss", async ({
       checkoutAttempts.push(request);
       checkoutIdempotencyKeys.push(request.headers()["idempotency-key"]);
     }
+
     if (
       new URL(request.url()).pathname === "/api/cart" &&
       request.method() === "DELETE"
@@ -257,28 +281,49 @@ test("full stack: recovers a committed checkout after response loss", async ({
     }
 
     interceptedCheckoutCount += 1;
+
     const backendResponse = await route.fetch();
     expect(backendResponse.ok()).toBe(true);
+
     firstCommittedPayload = await backendResponse.json();
     expect(firstCommittedPayload?.data?.order?.id).toBeTruthy();
+
     await route.abort("connectionfailed");
   });
 
   await page.locator('#checkout-form button[type="submit"]').click();
 
-  await expect.poll(() => checkoutAttempts.length, { timeout: 10000 }).toBe(1);
+  await expect
+    .poll(() => checkoutAttempts.length, { timeout: 10000 })
+    .toBe(1);
+
   await expect(page.locator(".toast-error")).toContainText(
     "Không xác định được trạng thái đơn hàng",
   );
-  await page.locator("#close-checkout-btn").click();
+
+  // Cuộn panel về đầu để nút đóng nằm trong viewport.
+  const checkoutPanel = page.locator("#checkout-modal > .bg-white");
+
+  await checkoutPanel.evaluate((panel) => {
+    panel.scrollTo({ top: 0, behavior: "instant" });
+  });
+
+  const closeCheckoutButton = page.locator("#close-checkout-btn");
+
+  await expect(closeCheckoutButton).toBeInViewport();
+  await closeCheckoutButton.click();
+
+  // Khi checkout chưa xác định trạng thái, modal phải tiếp tục mở.
   await expect(page.locator("#checkout-modal")).toBeVisible();
+
   await expect(page.locator(".toast-warning").last()).toContainText(
     "Vui lòng thử lại cùng yêu cầu thanh toán",
   );
+
   await expect(
     page.locator('#checkout-form button[type="submit"]'),
   ).toBeEnabled();
-  await expect(page.locator("#checkout-modal")).toBeVisible();
+
   await expect(page.locator("#cart-badge")).toHaveText("1");
 
   const recoveredResponsePromise = page.waitForResponse(
@@ -287,7 +332,9 @@ test("full stack: recovers a committed checkout after response loss", async ({
       response.request().method() === "POST" &&
       checkoutAttempts.length >= 2,
   );
+
   await page.locator('#checkout-form button[type="submit"]').click();
+
   const recoveredResponse = await recoveredResponsePromise;
   expect(recoveredResponse.ok()).toBe(true);
 
@@ -299,32 +346,39 @@ test("full stack: recovers a committed checkout after response loss", async ({
   expect(checkoutIdempotencyKeys).toHaveLength(2);
   expect(checkoutIdempotencyKeys[0]).toBeTruthy();
   expect(checkoutIdempotencyKeys[1]).toBe(checkoutIdempotencyKeys[0]);
+
   expect(recoveredOrder?.id).toBe(committedOrder.id);
   expect(recoveredOrder?.orderNumber).toBe(committedOrder.orderNumber);
   expect(Number(recoveredOrder?.total)).toBe(Number(committedOrder.total));
   expect(recoveredOrder?.paymentStatus).toBe("PENDING");
 
   await expect(page.locator("#success-modal")).toBeVisible();
+
   await expect(page.locator("#success-order-id")).toHaveText(
     recoveredOrder.orderNumber,
   );
+
   await expect(page.locator("#cart-badge")).toHaveText("0");
   await expect(page.locator(".cart-scroll")).toContainText("empty");
+
   expect(cartDeleteRequests).toHaveLength(0);
 
   const ordersResponse = await page.request.get("/api/checkout/orders", {
     params: { limit: 50 },
   });
+
   expect(ordersResponse.ok()).toBe(true);
+
   const ordersPayload = await ordersResponse.json();
+
   const matchingOrders = (ordersPayload?.data?.orders || []).filter(
     (order) => order.id === committedOrder.id,
   );
+
   expect(matchingOrders).toHaveLength(1);
   expect(matchingOrders[0].orderNumber).toBe(committedOrder.orderNumber);
   expect(matchingOrders[0].paymentStatus).toBe("PENDING");
 });
-
 
 test("full stack: recovers from a checkout price conflict and suppresses duplicate retry submissions", async ({
   page,
@@ -334,6 +388,7 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
 
   await page.locator("#account-btn").click();
   await expect(page.locator("#auth-modal")).toBeVisible();
+
   await page.fill("#auth-email", "user@example.com");
   await page.fill("#auth-password", "user123");
 
@@ -342,8 +397,11 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/auth/login" &&
       response.request().method() === "POST",
   );
+
   await page.locator("#auth-form button[type=submit]").click();
+
   expect((await loginResponsePromise).ok()).toBe(true);
+
   await expect(page.locator("#auth-modal")).toBeHidden();
   await clearCart(page);
 
@@ -352,31 +410,39 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/cart/items" &&
       response.request().method() === "POST",
   );
+
   await page
     .locator(".product-card")
     .first()
     .locator(".add-to-cart-btn")
     .click();
+
   expect((await addCartResponsePromise).ok()).toBe(true);
   await expect(page.locator("#cart-badge")).toHaveText("1");
 
   await page.locator("#cart-icon-btn").click();
   await expect(page.locator("#cart-drawer")).toBeVisible();
+
   await page.locator("#checkout-btn").click();
   await expect(page.locator("#checkout-modal")).toBeVisible();
+
   await page.fill("#phone", "0123456789");
   await page.fill("#address", "123 Price Conflict Recovery Street");
   await page.fill("#notes", "Review the refreshed server quote before retry");
+
   const submitButton = page.locator('#checkout-form button[type="submit"]');
   await expect(submitButton).toBeEnabled();
 
   const checkoutRequests = [];
   const idempotencyKeys = [];
+
   let releaseSuccessfulResponse;
   let signalSuccessfulCommit;
+
   const successfulCommit = new Promise((resolve) => {
     signalSuccessfulCommit = resolve;
   });
+
   const successfulResponseGate = new Promise((resolve) => {
     releaseSuccessfulResponse = resolve;
   });
@@ -406,6 +472,7 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
             "Checkout total changed. Refresh the total and review it before placing the order.",
         }),
       });
+
       return;
     }
 
@@ -414,16 +481,18 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
         status: 422,
         contentType: "application/json",
         body: JSON.stringify({
-          error:
-            "Delivery address is not serviceable. Choose another address.",
+          error: "Delivery address is not serviceable. Choose another address.",
         }),
       });
+
       return;
     }
 
     const backendResponse = await route.fetch();
     expect(backendResponse.ok()).toBe(true);
+
     signalSuccessfulCommit();
+
     await successfulResponseGate;
     await route.fulfill({ response: backendResponse });
   });
@@ -433,17 +502,23 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/checkout" &&
       response.request().method() === "POST",
   );
+
   await submitButton.click();
+
   const conflictResponse = await conflictResponsePromise;
 
   expect(conflictResponse.status()).toBe(400);
+
   await expect(page.locator(".toast-error").last()).toContainText(
     "Checkout total changed",
   );
+
   await expect(page.locator("#checkout-modal")).toBeVisible();
+
   await expect(page.locator("#checkout-quote-status")).toContainText(
     "Vui lòng cập nhật tổng tiền",
   );
+
   await expect(submitButton).toBeDisabled();
   await expect(page.locator("#success-modal")).toBeHidden();
   await expect(page.locator("#cart-badge")).toHaveText("1");
@@ -453,8 +528,11 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/checkout/quote" &&
       response.request().method() === "GET",
   );
+
   await page.locator("#apply-discount-btn").click();
+
   const quoteResponse = await quoteResponsePromise;
+
   expect(quoteResponse.ok()).toBe(true);
   await expect(submitButton).toBeEnabled();
 
@@ -463,12 +541,17 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/checkout" &&
       response.request().method() === "POST",
   );
+
   await submitButton.click();
+
   const validationResponse = await validationResponsePromise;
+
   expect(validationResponse.status()).toBe(422);
+
   await expect(page.locator(".toast-error").last()).toContainText(
     "Delivery address is not serviceable",
   );
+
   await expect(page.locator("#checkout-modal")).toBeVisible();
   await expect(page.locator("#success-modal")).toBeHidden();
   await expect(page.locator("#cart-badge")).toHaveText("1");
@@ -481,6 +564,7 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new URL(response.url()).pathname === "/api/checkout" &&
       response.request().method() === "POST",
   );
+
   await submitButton.click();
   await successfulCommit;
 
@@ -489,6 +573,7 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
   expect(idempotencyKeys[0]).toBeTruthy();
   expect(idempotencyKeys[1]).toBe(idempotencyKeys[0]);
   expect(idempotencyKeys[2]).toBe(idempotencyKeys[0]);
+
   await expect(submitButton).toBeDisabled();
 
   // Dispatch a second browser submit event while the first retry is in flight.
@@ -497,29 +582,39 @@ test("full stack: recovers from a checkout price conflict and suppresses duplica
       new Event("submit", { bubbles: true, cancelable: true }),
     );
   });
+
   expect(checkoutRequests).toHaveLength(3);
 
   releaseSuccessfulResponse();
+
   const successfulResponse = await successfulResponsePromise;
+
   expect(successfulResponse.ok()).toBe(true);
 
   const successfulPayload = await successfulResponse.json();
   const order = successfulPayload?.data?.order;
+
   expect(order?.id).toBeTruthy();
   expect(order?.orderNumber).toBeTruthy();
 
   await expect(page.locator("#success-modal")).toBeVisible();
+
   await expect(page.locator("#success-order-id")).toHaveText(order.orderNumber);
+
   await expect(page.locator("#cart-badge")).toHaveText("0");
   await expect(page.locator(".cart-scroll")).toContainText("empty");
 
   const ordersResponse = await page.request.get("/api/checkout/orders", {
     params: { limit: 50 },
   });
+
   expect(ordersResponse.ok()).toBe(true);
+
   const ordersPayload = await ordersResponse.json();
+
   const matchingOrders = (ordersPayload?.data?.orders || []).filter(
     (candidate) => candidate.id === order.id,
   );
+
   expect(matchingOrders).toHaveLength(1);
 });

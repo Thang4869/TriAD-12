@@ -97,10 +97,9 @@ describe("CartService", () => {
 
     await expect(oldRemove).rejects.toThrow("Phiên đăng nhập đã thay đổi");
     expect(service.items).toEqual([]);
-    expect(eventBus.emit).not.toHaveBeenCalledWith(
-      EVENTS.CART_ITEM_REMOVED,
-      { productId: 1 },
-    );
+    expect(eventBus.emit).not.toHaveBeenCalledWith(EVENTS.CART_ITEM_REMOVED, {
+      productId: 1,
+    });
   });
 
   it("does not apply an increase after the session resets", async () => {

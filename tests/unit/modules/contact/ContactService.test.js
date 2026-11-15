@@ -358,10 +358,12 @@ describe("ContactService registered callbacks", () => {
     });
     const originalAdd = document.addEventListener.bind(document);
     let readyCallback;
-    vi.spyOn(document, "addEventListener").mockImplementation((event, callback, options) => {
-      if (event === "DOMContentLoaded") readyCallback = callback;
-      else originalAdd(event, callback, options);
-    });
+    vi.spyOn(document, "addEventListener").mockImplementation(
+      (event, callback, options) => {
+        if (event === "DOMContentLoaded") readyCallback = callback;
+        else originalAdd(event, callback, options);
+      },
+    );
     const instance = new ContactService();
     document.body.innerHTML = '<form id="contact-form"></form>';
     readyCallback();
@@ -374,14 +376,15 @@ describe("ContactService registered callbacks", () => {
     const form = document.getElementById("contact-form");
     const add = vi.spyOn(form, "addEventListener");
     const instance = new ContactService();
-    const submitHandler = add.mock.calls.find(([event]) => event === "submit")[1];
+    const submitHandler = add.mock.calls.find(
+      ([event]) => event === "submit",
+    )[1];
     const event = { preventDefault: vi.fn() };
     submitHandler(event);
     expect(event.preventDefault).toHaveBeenCalled();
     expect(instance.retryCount).toBe(0);
   });
 });
-
 
 describe("ContactService retry timer callback", () => {
   beforeEach(() => {

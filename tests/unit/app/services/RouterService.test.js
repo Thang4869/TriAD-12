@@ -344,16 +344,22 @@ describe("RouterService ignored links", () => {
   it("leaves empty and external content links unchanged", () => {
     const router = new RouterService();
     router.rootPath = "../";
-    document.body.innerHTML = '<div id="page-content"><a id="empty"></a><a id="external" href="https://example.com">External</a><a id="anchor" href="#section">Anchor</a></div>';
+    document.body.innerHTML =
+      '<div id="page-content"><a id="empty"></a><a id="external" href="https://example.com">External</a><a id="anchor" href="#section">Anchor</a></div>';
     router.fixContentLinks();
     expect(document.getElementById("empty").getAttribute("href")).toBeNull();
-    expect(document.getElementById("external").getAttribute("href")).toBe("https://example.com");
-    expect(document.getElementById("anchor").getAttribute("href")).toBe("#section");
+    expect(document.getElementById("external").getAttribute("href")).toBe(
+      "https://example.com",
+    );
+    expect(document.getElementById("anchor").getAttribute("href")).toBe(
+      "#section",
+    );
   });
 
   it("leaves header links without href unchanged", () => {
     const router = new RouterService();
-    document.body.innerHTML = '<div id="header-container"><a id="missing">No href</a></div>';
+    document.body.innerHTML =
+      '<div id="header-container"><a id="missing">No href</a></div>';
     router.fixHeaderLinks();
     expect(document.getElementById("missing").hasAttribute("href")).toBe(false);
   });
@@ -363,11 +369,16 @@ describe("RouterService unsupported content URLs", () => {
   it("leaves non-rewritable relative links and images unchanged", () => {
     const router = new RouterService();
     router.rootPath = "../";
-    document.body.innerHTML = '<div id="page-content"><a id="relative" href="catalog">Catalog</a><img id="external-image" src="https://example.com/image.png"></div>';
+    document.body.innerHTML =
+      '<div id="page-content"><a id="relative" href="catalog">Catalog</a><img id="external-image" src="https://example.com/image.png"></div>';
     router.fixContentLinks();
     router.fixContentLinks();
-    expect(document.getElementById("relative").getAttribute("href")).toBe("catalog");
-    expect(document.getElementById("external-image").getAttribute("src")).toBe("https://example.com/image.png");
+    expect(document.getElementById("relative").getAttribute("href")).toBe(
+      "catalog",
+    );
+    expect(document.getElementById("external-image").getAttribute("src")).toBe(
+      "https://example.com/image.png",
+    );
   });
 });
 
@@ -385,12 +396,17 @@ describe("RouterService empty and non-routable values", () => {
       </div>
     `;
     expect(() => router.fixContentLinks()).not.toThrow();
-    expect(document.querySelectorAll("#page-content img")[0].getAttribute("src")).toBeNull();
-    expect(document.querySelectorAll("#page-content img")[1].getAttribute("src")).toBe("");
-    expect(document.getElementById("data-link").getAttribute("href")).toBe("data:text/plain,hello");
+    expect(
+      document.querySelectorAll("#page-content img")[0].getAttribute("src"),
+    ).toBeNull();
+    expect(
+      document.querySelectorAll("#page-content img")[1].getAttribute("src"),
+    ).toBe("");
+    expect(document.getElementById("data-link").getAttribute("href")).toBe(
+      "data:text/plain,hello",
+    );
   });
 });
-
 
 describe("RouterService header links outside rewrite patterns", () => {
   it("leaves absolute, anchor, and ordinary relative header links unchanged", () => {
@@ -406,8 +422,14 @@ describe("RouterService header links outside rewrite patterns", () => {
 
     router.fixHeaderLinks();
 
-    expect(document.getElementById("absolute").getAttribute("href")).toBe("https://example.com/path");
-    expect(document.getElementById("anchor").getAttribute("href")).toBe("#section");
-    expect(document.getElementById("relative").getAttribute("href")).toBe("catalog");
+    expect(document.getElementById("absolute").getAttribute("href")).toBe(
+      "https://example.com/path",
+    );
+    expect(document.getElementById("anchor").getAttribute("href")).toBe(
+      "#section",
+    );
+    expect(document.getElementById("relative").getAttribute("href")).toBe(
+      "catalog",
+    );
   });
 });

@@ -415,7 +415,9 @@ describe("ScrollReveal without product grid", () => {
   it("initializes section observers without requiring a product grid", () => {
     document.body.innerHTML = '<section class="reveal-section"></section>';
     const observe = vi.fn();
-    global.IntersectionObserver = vi.fn(function () { this.observe = observe; });
+    global.IntersectionObserver = vi.fn(function () {
+      this.observe = observe;
+    });
     expect(() => initScrollReveal()).not.toThrow();
     expect(observe).toHaveBeenCalled();
   });
@@ -450,7 +452,8 @@ describe("ScrollRevealService non-intersecting entries", () => {
   });
 
   it("keeps a section hidden when its observer entry is not intersecting", () => {
-    document.body.innerHTML = '<section class="section" id="not-visible"></section>';
+    document.body.innerHTML =
+      '<section class="section" id="not-visible"></section>';
     initScrollReveal();
 
     const section = document.getElementById("not-visible");
@@ -462,7 +465,8 @@ describe("ScrollRevealService non-intersecting entries", () => {
   });
 
   it("keeps a product card hidden and observed when it is not intersecting", () => {
-    document.body.innerHTML = '<div id="product-grid"><div class="product-card" id="not-visible-card"></div></div>';
+    document.body.innerHTML =
+      '<div id="product-grid"><div class="product-card" id="not-visible-card"></div></div>';
     initScrollReveal();
     vi.advanceTimersByTime(200);
 

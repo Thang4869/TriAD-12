@@ -270,7 +270,9 @@ describe("NotificationRenderer", () => {
 describe("NotificationRenderer fallback rendering", () => {
   it("uses the informational icon for an unknown notification type", () => {
     const instance = new NotificationRenderer();
-    expect(instance.getIconHtml("unrecognized")).toBe(instance.getIconHtml("info"));
+    expect(instance.getIconHtml("unrecognized")).toBe(
+      instance.getIconHtml("info"),
+    );
   });
 
   it("does not throw when optional badge and dropdown elements are absent", () => {
@@ -297,7 +299,8 @@ describe("NotificationRenderer dropdown without optional controls", () => {
   });
 
   it("shows the dropdown without positioning when its trigger and overlay are absent", () => {
-    document.body.innerHTML = '<div id="notification-dropdown" class="hidden"></div>';
+    document.body.innerHTML =
+      '<div id="notification-dropdown" class="hidden"></div>';
     const renderer = new NotificationRenderer();
 
     expect(() => renderer.showDropdown()).not.toThrow();

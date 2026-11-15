@@ -206,17 +206,26 @@ describe("CheckoutRenderer", () => {
       total: 130,
     });
 
-    expect(document.getElementById("success-discount-code").textContent).toBe("");
+    expect(document.getElementById("success-discount-code").textContent).toBe(
+      "",
+    );
     expect(document.getElementById("success-total").textContent).toBe("130 ₫");
   });
-
 });
 
 describe("CheckoutRenderer optional pricing elements", () => {
   it("renders success pricing when the discount code element is absent", () => {
     document.body.innerHTML = '<span id="success-total"></span>';
     const minimal = new CheckoutRenderer();
-    expect(() => minimal.renderSuccessPricing({ subtotal: 1, tax: 2, shippingFee: 3, discountAmount: 0, total: 6 })).not.toThrow();
+    expect(() =>
+      minimal.renderSuccessPricing({
+        subtotal: 1,
+        tax: 2,
+        shippingFee: 3,
+        discountAmount: 0,
+        total: 6,
+      }),
+    ).not.toThrow();
     expect(document.getElementById("success-total").textContent).toBe("6 ₫");
   });
 

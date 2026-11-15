@@ -160,7 +160,9 @@ describe("CheckoutController", () => {
     });
 
     it("should load a quote when the discount update button is clicked", () => {
-      const loadQuote = vi.spyOn(controller, "loadQuote").mockResolvedValue(false);
+      const loadQuote = vi
+        .spyOn(controller, "loadQuote")
+        .mockResolvedValue(false);
 
       document.getElementById("apply-discount-btn").click();
 
@@ -286,9 +288,7 @@ describe("CheckoutController", () => {
     });
 
     it("should tolerate missing optional submit and discount controls", () => {
-      document
-        .querySelector('#checkout-form button[type="submit"]')
-        .remove();
+      document.querySelector('#checkout-form button[type="submit"]').remove();
       document.getElementById("discount-code").remove();
 
       expect(() => controller.updateSubmitState()).not.toThrow();
@@ -511,13 +511,9 @@ describe("CheckoutController", () => {
 
       expect(mockServiceInstance.checkout).toHaveBeenCalledTimes(2);
 
-      expect(mockServiceInstance.checkout.mock.calls[0][1]).toBe(
-        firstKey,
-      );
+      expect(mockServiceInstance.checkout.mock.calls[0][1]).toBe(firstKey);
 
-      expect(mockServiceInstance.checkout.mock.calls[1][1]).toBe(
-        firstKey,
-      );
+      expect(mockServiceInstance.checkout.mock.calls[1][1]).toBe(firstKey);
       expect(mockCartController.resetLocal).toHaveBeenCalledTimes(1);
     });
 
@@ -577,9 +573,7 @@ describe("CheckoutController", () => {
       expect(controller.isSubmitting).toBe(true);
       expect(submitButton.disabled).toBe(true);
 
-      await controller.handleSubmit(
-        new Event("submit", { cancelable: true }),
-      );
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
 
       expect(mockServiceInstance.checkout).toHaveBeenCalledTimes(1);
       expect(mockCartController.resetLocal).not.toHaveBeenCalled();
@@ -771,7 +765,9 @@ describe("CheckoutController", () => {
     it("should display success when the optional order ID element is missing", () => {
       document.getElementById("success-order-id").remove();
 
-      expect(() => controller.showSuccess({ id: "order-without-display" })).not.toThrow();
+      expect(() =>
+        controller.showSuccess({ id: "order-without-display" }),
+      ).not.toThrow();
       expect(mockRendererInstance.renderSuccessPricing).toHaveBeenCalledWith({
         id: "order-without-display",
       });

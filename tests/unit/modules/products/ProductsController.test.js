@@ -775,7 +775,15 @@ describe("ProductsController", () => {
 
 describe("ProductsController load guards", () => {
   it("does not request another page while a load is already active", async () => {
-    const serviceStub = { loadMore: vi.fn(), hasMore: true, products: [], updateFilters: vi.fn(), resetFilters: vi.fn(), getCurrentPage: vi.fn(() => []), getProductById: vi.fn() };
+    const serviceStub = {
+      loadMore: vi.fn(),
+      hasMore: true,
+      products: [],
+      updateFilters: vi.fn(),
+      resetFilters: vi.fn(),
+      getCurrentPage: vi.fn(() => []),
+      getProductById: vi.fn(),
+    };
     const rendererStub = {};
     const busStub = { on: vi.fn() };
     const instance = new ProductsController(serviceStub, rendererStub, busStub);
@@ -785,13 +793,20 @@ describe("ProductsController load guards", () => {
   });
 
   it("does not request another page when the service has no more products", async () => {
-    const serviceStub = { loadMore: vi.fn(), hasMore: false, products: [], updateFilters: vi.fn(), resetFilters: vi.fn(), getCurrentPage: vi.fn(() => []), getProductById: vi.fn() };
+    const serviceStub = {
+      loadMore: vi.fn(),
+      hasMore: false,
+      products: [],
+      updateFilters: vi.fn(),
+      resetFilters: vi.fn(),
+      getCurrentPage: vi.fn(() => []),
+      getProductById: vi.fn(),
+    };
     const instance = new ProductsController(serviceStub, {}, { on: vi.fn() });
     await instance.loadMore();
     expect(serviceStub.loadMore).not.toHaveBeenCalled();
   });
 });
-
 
 describe("ProductsController suggestion ordering branches", () => {
   it("prioritizes prefix matches, demotes non-prefix matches, and preserves equal ordering", () => {
@@ -838,11 +853,13 @@ describe("ProductsController uncovered callback branches", () => {
   beforeEach(() => {
     service = {
       updateFilters: vi.fn().mockResolvedValue(undefined),
-      products: [{
-        id: "product-1",
-        name: "Product A",
-        matchesKeyword: vi.fn(() => true),
-      }],
+      products: [
+        {
+          id: "product-1",
+          name: "Product A",
+          matchesKeyword: vi.fn(() => true),
+        },
+      ],
       getProductById: vi.fn(() => ({ id: "product-1", name: "Product A" })),
       loadMore: vi.fn().mockResolvedValue([]),
       hasMore: true,
@@ -875,7 +892,9 @@ describe("ProductsController uncovered callback branches", () => {
         this.observe = vi.fn();
       }),
     });
-    const loadMore = vi.spyOn(instance, "loadMore").mockResolvedValue(undefined);
+    const loadMore = vi
+      .spyOn(instance, "loadMore")
+      .mockResolvedValue(undefined);
     instance.setupLoadMore();
     observerCallback([{ isIntersecting: false }]);
     expect(loadMore).not.toHaveBeenCalled();
@@ -884,7 +903,9 @@ describe("ProductsController uncovered callback branches", () => {
   it("does not attach a load-more click handler when its button is absent", () => {
     renderer.loadMoreContainer = document.createElement("div");
     instance.setupLoadMore();
-    expect(renderer.loadMoreContainer.querySelector("#load-more-btn")).toBeNull();
+    expect(
+      renderer.loadMoreContainer.querySelector("#load-more-btn"),
+    ).toBeNull();
   });
 
   it("handles a failed filter update after selecting a suggestion", async () => {
@@ -899,7 +920,9 @@ describe("ProductsController uncovered callback branches", () => {
     selectSuggestion("product-1");
     await Promise.resolve();
     await Promise.resolve();
-    expect(service.updateFilters).toHaveBeenCalledWith({ keyword: "Product A" });
+    expect(service.updateFilters).toHaveBeenCalledWith({
+      keyword: "Product A",
+    });
   });
 
   it("skips search input assignment when the input is removed before selection", () => {
@@ -915,7 +938,6 @@ describe("ProductsController uncovered callback branches", () => {
     expect(input.value).toBe("Product");
   });
 });
-
 
 describe("ProductsController reverse prefix comparison", () => {
   it("moves a later prefix match ahead of an earlier non-prefix match", () => {

@@ -313,7 +313,9 @@ describe("ProductsService", () => {
 describe("ProductsService default query branches", () => {
   const createService = () => {
     const repository = {
-      findPage: vi.fn().mockResolvedValue({ products: [], page: 1, totalPages: 1, total: 0 }),
+      findPage: vi
+        .fn()
+        .mockResolvedValue({ products: [], page: 1, totalPages: 1, total: 0 }),
     };
     const eventBus = { emit: vi.fn() };
     return { instance: new ProductsService(repository, eventBus), repository };
@@ -343,11 +345,17 @@ describe("ProductsService default query branches", () => {
     ["price-desc", "price", "desc"],
     ["name-asc", "name", "asc"],
     ["name-desc", "name", "desc"],
-  ])("maps %s sorting to repository parameters", async (sort, sortBy, sortOrder) => {
-    const { instance, repository } = createService();
-    await instance.updateFilters({ sort });
-    expect(repository.findPage.mock.calls.at(-1)[0]).toMatchObject({ sortBy, sortOrder });
-  });
+  ])(
+    "maps %s sorting to repository parameters",
+    async (sort, sortBy, sortOrder) => {
+      const { instance, repository } = createService();
+      await instance.updateFilters({ sort });
+      expect(repository.findPage.mock.calls.at(-1)[0]).toMatchObject({
+        sortBy,
+        sortOrder,
+      });
+    },
+  );
 });
 
 describe("ProductsService default maximum price", () => {
@@ -361,9 +369,14 @@ describe("ProductsService default maximum price", () => {
 
 describe("ProductsService zero-value query parameters", () => {
   it("omits a zero maxPrice from repository query parameters", async () => {
-    const repository = { findPage: vi.fn().mockResolvedValue({
-      products: [], page: 1, totalPages: 1, total: 0,
-    }) };
+    const repository = {
+      findPage: vi.fn().mockResolvedValue({
+        products: [],
+        page: 1,
+        totalPages: 1,
+        total: 0,
+      }),
+    };
     const eventBus = { emit: vi.fn() };
     const instance = new ProductsService(repository, eventBus);
     await instance.updateFilters({ maxPrice: 0 });
