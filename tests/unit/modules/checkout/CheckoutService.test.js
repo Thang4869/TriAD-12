@@ -121,12 +121,18 @@ describe("CheckoutService", () => {
       ["the order is null", { order: null }],
       ["the order is missing an id", { order: { orderNumber: "ORD-1" } }],
       ["the order is missing an order number", { order: { id: "order-1" } }],
-      ["the order has a non-string id", { order: { id: 123, orderNumber: "ORD-1" } }],
+      [
+        "the order has a non-string id",
+        { order: { id: 123, orderNumber: "ORD-1" } },
+      ],
       [
         "the order has a non-string order number",
         { order: { id: "order-1", orderNumber: 123 } },
       ],
-      ["the order has an empty id", { order: { id: "", orderNumber: "ORD-1" } }],
+      [
+        "the order has an empty id",
+        { order: { id: "", orderNumber: "ORD-1" } },
+      ],
       [
         "the order has an empty order number",
         { order: { id: "order-1", orderNumber: "" } },

@@ -1,7 +1,4 @@
-import {
-  ApiError,
-  apiService,
-} from "../../shared/services/api.service.js";
+import { ApiError, apiService } from "../../shared/services/api.service.js";
 import { EVENTS } from "../../shared/constants/Events.js";
 import { eventBus } from "../../core/services/EventBus.js";
 

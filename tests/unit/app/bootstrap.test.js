@@ -309,9 +309,8 @@ describe("bootstrap", () => {
   });
 
   it("initializes the admin products controller on its page", async () => {
-    const { AdminProductController } = await import(
-      "../../../src/modules/admin/AdminProductController.js"
-    );
+    const { AdminProductController } =
+      await import("../../../src/modules/admin/AdminProductController.js");
     Object.defineProperty(window, "location", {
       value: { pathname: "/pages/admin-products.html" },
       writable: true,
@@ -323,18 +322,24 @@ describe("bootstrap", () => {
     const instance = AdminProductController.mock.instances.at(-1);
     expect(instance.init).toHaveBeenCalledOnce();
   });
-
 });
 
 describe("bootstrap page-specific initialization", () => {
   it("initializes the admin dashboard only on its page", async () => {
-    Object.defineProperty(window, "location", { value: { pathname: "/pages/admin-dashboard.html" }, writable: true, configurable: true });
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-dashboard.html" },
+      writable: true,
+      configurable: true,
+    });
     await bootstrap();
   });
 
   it("initializes admin products only on its page", async () => {
-    Object.defineProperty(window, "location", { value: { pathname: "/pages/admin-products.html" }, writable: true, configurable: true });
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-products.html" },
+      writable: true,
+      configurable: true,
+    });
     await bootstrap();
   });
 });
-

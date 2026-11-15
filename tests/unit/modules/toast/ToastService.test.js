@@ -164,5 +164,4 @@ describe("ToastService", () => {
       expect(remove).toHaveBeenCalledTimes(1);
     });
   });
-
 });

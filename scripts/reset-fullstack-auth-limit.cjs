@@ -8,7 +8,7 @@ const candidates = [
   process.env.TRIAD_BACKEND_PATH
     ? path.resolve(
         process.env.TRIAD_BACKEND_PATH,
-        "scripts/reset-fullstack-auth-limit.cjs"
+        "scripts/reset-fullstack-auth-limit.cjs",
       )
     : null,
   path.resolve(__dirname, "../backend/scripts/reset-fullstack-auth-limit.cjs"),

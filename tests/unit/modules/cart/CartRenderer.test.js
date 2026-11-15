@@ -73,7 +73,9 @@ describe("CartRenderer", () => {
     document.body.innerHTML = "";
     const rendererWithoutContainer = new CartRenderer();
 
-    expect(() => rendererWithoutContainer.render([{ id: "item" }])).not.toThrow();
+    expect(() =>
+      rendererWithoutContainer.render([{ id: "item" }]),
+    ).not.toThrow();
     expect(rendererWithoutContainer.container).toBeNull();
   });
 
@@ -108,5 +110,4 @@ describe("CartRenderer", () => {
     expect(() => minimalRenderer.updateTotal(2000)).not.toThrow();
     expect(() => minimalRenderer.setCheckoutEnabled(true)).not.toThrow();
   });
-
 });

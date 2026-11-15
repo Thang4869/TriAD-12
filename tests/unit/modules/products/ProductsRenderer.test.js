@@ -630,7 +630,11 @@ describe("ProductsRenderer empty append and optional controls", () => {
     instance.searchInput = null;
     instance.sortSelect = null;
     instance.priceSlider = null;
-    expect(instance.getUIState()).toEqual({ keyword: "", sort: "default", maxPrice: 10_000_000 });
+    expect(instance.getUIState()).toEqual({
+      keyword: "",
+      sort: "default",
+      maxPrice: 10_000_000,
+    });
   });
 });
 

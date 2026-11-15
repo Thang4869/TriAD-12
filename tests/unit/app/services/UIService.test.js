@@ -195,7 +195,8 @@ describe("UIService optional controls", () => {
   });
 
   it("does not invoke cart callbacks when no cart controller is supplied", () => {
-    document.body.innerHTML = '<button id="cart-icon-btn"></button><button id="close-cart-btn"></button><div id="cart-overlay"></div>';
+    document.body.innerHTML =
+      '<button id="cart-icon-btn"></button><button id="close-cart-btn"></button><div id="cart-overlay"></div>';
     expect(() => {
       const instance = new UIService(null);
       document.getElementById("cart-icon-btn").click();

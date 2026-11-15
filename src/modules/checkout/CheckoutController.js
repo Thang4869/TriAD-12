@@ -69,6 +69,7 @@ export class CheckoutController {
     document.getElementById("checkout-form").reset();
 
     modal.classList.remove("hidden");
+    content.scrollTop = 0;
     requestAnimationFrame(() => {
       modal.classList.remove("opacity-0");
       content.classList.remove("scale-95");

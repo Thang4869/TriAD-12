@@ -501,7 +501,8 @@ describe("ModalController", () => {
 
 describe("ModalController missing dependencies", () => {
   it("does not add an item when the cart controller is unavailable", () => {
-    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    document.body.innerHTML =
+      '<div id="product-modal-overlay" class="hidden"></div>';
     window.productsController = { getProduct: vi.fn(() => null) };
     delete window.cartController;
     const instance = new ModalController();
@@ -511,7 +512,8 @@ describe("ModalController missing dependencies", () => {
   });
 
   it("does not throw when modal content is absent during show", () => {
-    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    document.body.innerHTML =
+      '<div id="product-modal-overlay" class="hidden"></div>';
     const instance = new ModalController();
     instance.content = null;
     expect(() => instance.show()).not.toThrow();
@@ -540,7 +542,8 @@ describe("ModalController optional render targets", () => {
   });
 
   it("renders a product when all optional detail elements are absent", () => {
-    document.body.innerHTML = '<div id="product-modal-overlay" class="hidden"></div>';
+    document.body.innerHTML =
+      '<div id="product-modal-overlay" class="hidden"></div>';
     window.productsController = {
       getProduct: vi.fn().mockReturnValue({
         id: "optional-targets",

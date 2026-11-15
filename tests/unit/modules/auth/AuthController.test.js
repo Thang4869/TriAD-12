@@ -150,9 +150,9 @@ describe("AuthController", () => {
     expect(modal.classList.contains("opacity-0")).toBe(true);
     expect(content.classList.contains("scale-95")).toBe(true);
     expect(document.body.style.overflow).toBe("");
-    expect(document.getElementById("auth-error").classList.contains("hidden")).toBe(
-      true,
-    );
+    expect(
+      document.getElementById("auth-error").classList.contains("hidden"),
+    ).toBe(true);
 
     vi.advanceTimersByTime(300);
     expect(modal.classList.contains("hidden")).toBe(true);
@@ -175,9 +175,13 @@ describe("AuthController", () => {
       "Tạo tài khoản",
     );
     expect(
-      document.getElementById("auth-register-fields").classList.contains("hidden"),
+      document
+        .getElementById("auth-register-fields")
+        .classList.contains("hidden"),
     ).toBe(false);
-    expect(document.getElementById("auth-submit-btn").textContent).toBe("Đăng ký");
+    expect(document.getElementById("auth-submit-btn").textContent).toBe(
+      "Đăng ký",
+    );
     expect(document.getElementById("auth-switch-text").textContent).toBe(
       "Đã có tài khoản?",
     );
@@ -192,7 +196,9 @@ describe("AuthController", () => {
       "Đăng nhập",
     );
     expect(
-      document.getElementById("auth-register-fields").classList.contains("hidden"),
+      document
+        .getElementById("auth-register-fields")
+        .classList.contains("hidden"),
     ).toBe(true);
     expect(document.getElementById("auth-submit-btn").textContent).toBe(
       "Đăng nhập",
@@ -221,9 +227,11 @@ describe("AuthController", () => {
     expect(document.getElementById("auth-error").textContent).toBe(
       "Check your inbox",
     );
-    expect(document.getElementById("auth-error").classList.contains("text-green-600")).toBe(
-      true,
-    );
+    expect(
+      document
+        .getElementById("auth-error")
+        .classList.contains("text-green-600"),
+    ).toBe(true);
     expect(document.getElementById("auth-submit-btn").disabled).toBe(false);
   });
 
@@ -247,7 +255,9 @@ describe("AuthController", () => {
 
     await controller.handleSubmit({ preventDefault: vi.fn() });
 
-    expect(document.getElementById("auth-error").textContent).toBe("Email exists");
+    expect(document.getElementById("auth-error").textContent).toBe(
+      "Email exists",
+    );
     expect(document.getElementById("auth-submit-btn").disabled).toBe(false);
   });
 
@@ -260,9 +270,9 @@ describe("AuthController", () => {
     await controller.handleSubmit({ preventDefault: vi.fn() });
 
     expect(document.getElementById("auth-error").textContent).toContain("2FA");
-    expect(document.getElementById("auth-modal").classList.contains("hidden")).toBe(
-      true,
-    );
+    expect(
+      document.getElementById("auth-modal").classList.contains("hidden"),
+    ).toBe(true);
     expect(document.getElementById("auth-submit-btn").disabled).toBe(false);
   });
 
@@ -298,7 +308,9 @@ describe("AuthController", () => {
   });
 
   it("shows ApiError messages but hides unexpected error details", async () => {
-    authService.login.mockRejectedValueOnce(new ApiError("Invalid password", 401));
+    authService.login.mockRejectedValueOnce(
+      new ApiError("Invalid password", 401),
+    );
 
     await controller.handleSubmit({ preventDefault: vi.fn() });
     expect(document.getElementById("auth-error").textContent).toBe(
@@ -432,7 +444,10 @@ describe("AuthController", () => {
 
     await controller.handleSubmit({ preventDefault: vi.fn() });
 
-    expect(authService.login).toHaveBeenCalledWith("user@example.com", "secret");
+    expect(authService.login).toHaveBeenCalledWith(
+      "user@example.com",
+      "secret",
+    );
   });
 
   it("updates the header when the account label is absent", () => {
@@ -463,5 +478,4 @@ describe("AuthController", () => {
     expect(action).not.toHaveBeenCalled();
     expect(controller._pendingAction).toBe(action);
   });
-
 });

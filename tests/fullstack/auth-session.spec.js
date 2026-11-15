@@ -179,6 +179,16 @@ test("keeps protected writes working after another tab renews the CSRF cookie", 
     await expect(page.locator("#cart-badge")).toHaveText("1");
 
     await page.locator("#cart-icon-btn").click();
+
+
+    const cartDrawer = page.locator("#cart-drawer");
+
+    const removeButton = page.locator(".cart-scroll .remove-btn");
+
+
+    await expect(cartDrawer).not.toHaveClass(/translate-x-full/);
+
+    await expect(removeButton).toBeVisible();
     const removed = page.waitForResponse(
       (response) =>
         new URL(response.url()).pathname.startsWith("/api/cart/items/") &&
@@ -264,6 +274,16 @@ test("does not replay an expired open-page write and preserves the saved cart on
   expect(deletes).toBe(0);
 
   await page.locator("#cart-icon-btn").click();
+
+
+  const cartDrawer = page.locator("#cart-drawer");
+
+  const removeButton = page.locator(".cart-scroll .remove-btn");
+
+
+  await expect(cartDrawer).not.toHaveClass(/translate-x-full/);
+
+  await expect(removeButton).toBeVisible();
   const removed = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname.startsWith("/api/cart/items/") &&
