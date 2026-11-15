@@ -1,7 +1,20 @@
 
 import { test, expect } from "@playwright/test";
+import { resetFullstackAuthRateLimit } from "./helpers/reset-auth-rate-limit.js";
 
 const formatPrice = (value) => Number(value).toLocaleString("vi-VN") + " ₫";
+
+test.beforeEach(async ({}, testInfo) => {
+  const origin = new URL(testInfo.project.use.baseURL);
+
+  if (!["localhost", "127.0.0.1"].includes(origin.hostname)) {
+    throw new Error(
+      "Checkout E2E checks require disposable loopback CI fixtures",
+    );
+  }
+
+  resetFullstackAuthRateLimit();
+});
 
 const clearCart = async (page) => {
   const origin = new URL(page.url());
