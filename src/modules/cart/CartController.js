@@ -115,6 +115,7 @@ export class CartController {
       drawer.classList.remove("translate-x-full");
     });
     this.isDrawerOpen = true;
+    drawer.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     eventBus.emit(EVENTS.DRAWER_OPENED);
   }
@@ -129,6 +130,7 @@ export class CartController {
     drawer.classList.add("translate-x-full");
     setTimeout(() => overlay.classList.add("hidden"), 300);
     this.isDrawerOpen = false;
+    drawer.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     eventBus.emit(EVENTS.DRAWER_CLOSED);
   }

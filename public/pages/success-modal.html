@@ -3,6 +3,10 @@
   class="fixed inset-0 bg-black/60 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
 >
   <div
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="success-modal-title"
+    tabindex="-1"
     class="bg-white w-full max-w-md rounded-xl shadow-2xl p-8 text-center transform scale-95 transition-transform duration-300"
   >
     <div
@@ -10,7 +14,7 @@
     >
       <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
     </div>
-    <h2 class="text-2xl font-bold mb-2">Order Placed Successfully!</h2>
+    <h2 id="success-modal-title" class="text-2xl font-bold mb-2">Order Placed Successfully!</h2>
     <p class="text-gray-500 mb-6">
       Thank you for your purchase. We'll send you a confirmation email shortly.
     </p>

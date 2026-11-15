@@ -1,13 +1,20 @@
 <div
   id="cart-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="cart-drawer-title"
+  aria-hidden="true"
+  tabindex="-1"
   class="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white z-[70] transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl"
 >
   <div
     class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50"
   >
-    <h2 class="text-xl font-medium tracking-wide">Shopping cart</h2>
+    <h2 id="cart-drawer-title" class="text-xl font-medium tracking-wide">Shopping cart</h2>
     <button
       id="close-cart-btn"
+      type="button"
+      aria-label="Close shopping cart"
       class="text-gray-400 hover:text-black transition-colors"
     >
       <i class="ph ph-x text-2xl"></i>

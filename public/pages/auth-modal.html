@@ -4,11 +4,15 @@
   class="fixed inset-0 bg-black/50 z-[70] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
 >
   <div
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="auth-modal-title"
+    tabindex="-1"
     class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-300"
   >
     <div class="flex justify-between items-center mb-6">
       <h2 id="auth-modal-title" class="text-2xl font-bold">Đăng nhập</h2>
-      <button id="close-auth-btn" class="text-gray-400 hover:text-black">
+      <button id="close-auth-btn" type="button" aria-label="Close sign in dialog" class="text-gray-400 hover:text-black">
         <i class="ph ph-x text-2xl"></i>
       </button>
     </div>
@@ -20,12 +24,14 @@
         <div class="grid grid-cols-2 gap-3">
           <input
             id="auth-first-name"
+            aria-label="First name"
             type="text"
             placeholder="Họ"
             class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
           />
           <input
             id="auth-last-name"
+            aria-label="Last name"
             type="text"
             placeholder="Tên"
             class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
@@ -33,6 +39,7 @@
         </div>
         <input
           id="auth-phone"
+            aria-label="Phone number"
           type="tel"
           placeholder="Số điện thoại"
           class="border rounded-xl px-4 py-3 w-full focus:outline-none focus:border-brand-accent"
@@ -41,6 +48,7 @@
 
       <input
         id="auth-email"
+            aria-label="Email"
         type="email"
         required
         placeholder="Email"
@@ -48,6 +56,7 @@
       />
       <input
         id="auth-password"
+            aria-label="Password"
         type="password"
         required
         minlength="6"

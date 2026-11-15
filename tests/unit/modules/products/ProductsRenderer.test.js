@@ -753,3 +753,31 @@ describe("ProductsRenderer renderError", () => {
     expect(() => instance.renderError(new Error("missing"))).not.toThrow();
   });
 });
+
+describe("ProductsRenderer retry lifecycle", () => {
+  it("does not access document when a pending retry fires after DOM teardown", () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = "";
+    const instance = new ProductsRenderer();
+    const originalDocument = global.document;
+
+    delete global.document;
+
+    expect(() => vi.advanceTimersByTime(100)).not.toThrow();
+
+    global.document = originalDocument;
+    instance.destroy();
+    vi.useRealTimers();
+  });
+
+  it("cancels pending container retries when destroyed", () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = "";
+    const instance = new ProductsRenderer();
+
+    instance.destroy();
+
+    expect(vi.getTimerCount()).toBe(0);
+    vi.useRealTimers();
+  });
+});
