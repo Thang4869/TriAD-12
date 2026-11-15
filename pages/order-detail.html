@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="vi" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết đơn hàng | TriAD</title>
+    <meta name="description" content="Xem chi tiết đơn hàng TriAD." />
+    <link rel="stylesheet" href="../src/styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body class="antialiased text-brand-dark">
+    <div id="header-container"></div>
+    <main id="page-content" class="min-h-screen bg-gray-50 pb-20 pt-28">
+      <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <a href="order-history.html" class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-brand-gray hover:text-brand-dark"><i class="ph ph-arrow-left"></i> Quay lại lịch sử đơn hàng</a>
+        <div class="mb-7">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">Tài khoản của bạn</p>
+          <h1 class="mt-2 text-3xl font-semibold tracking-tight text-brand-dark sm:text-4xl">Chi tiết đơn hàng</h1>
+          <p class="mt-2 text-sm text-brand-gray">Thông tin đơn hàng được tải trực tiếp từ hệ thống.</p>
+        </div>
+        <div id="orders-view" aria-live="polite" aria-busy="true"></div>
+      </section>
+    </main>
+    <div id="footer-container"></div>
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
+    <div id="cart-drawer-container"></div>
+    <div id="product-modal-container"></div>
+    <div id="checkout-modal-container"></div>
+    <div id="success-modal-container"></div>
+    <div id="auth-modal-container"></div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    <script type="module" src="../src/index.js"></script>
+  </body>
+</html>
