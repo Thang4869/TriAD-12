@@ -5,6 +5,7 @@ import { initHeaderNavigation } from "./HeaderNavigationService.js";
 import { RouterService } from "./services/RouterService.js";
 import { UIService } from "./services/UIService.js";
 import { KeyboardService } from "./services/KeyboardService.js";
+import { DialogAccessibilityService } from "./services/DialogAccessibilityService.js";
 import { ErrorHandler } from "./services/ErrorHandler.js";
 import { toast } from "../modules/toast/ToastService.js";
 import { notificationController } from "../modules/notification/index.js";
