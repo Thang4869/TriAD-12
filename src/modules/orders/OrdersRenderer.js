@@ -36,8 +36,13 @@ export class OrdersRenderer {
     this.container = container;
   }
 
+  setBusy(isBusy) {
+    this.container?.setAttribute("aria-busy", String(isBusy));
+  }
+
   renderLoading(message = "Đang tải đơn hàng...") {
     if (!this.container) return;
+    this.setBusy(true);
     this.container.replaceChildren(
       createElement("p", "py-16 text-center text-brand-gray", message),
     );
@@ -45,6 +50,7 @@ export class OrdersRenderer {
 
   renderError(message, actionLabel = "Thử lại", onRetry) {
     if (!this.container) return;
+    this.setBusy(false);
     const panel = createElement(
       "div",
       "mx-auto max-w-xl rounded-2xl border border-red-100 bg-red-50 p-8 text-center",
@@ -68,6 +74,7 @@ export class OrdersRenderer {
 
   renderEmpty() {
     if (!this.container) return;
+    this.setBusy(false);
     const panel = createElement(
       "div",
       "rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center",
@@ -95,6 +102,7 @@ export class OrdersRenderer {
       return;
     }
 
+    this.setBusy(false);
     const list = createElement("div", "space-y-4");
     orders.forEach((order) => list.append(this.createOrderCard(order)));
 
@@ -167,6 +175,7 @@ export class OrdersRenderer {
 
   renderDetail(order) {
     if (!this.container) return;
+    this.setBusy(false);
     const card = createElement("article", "rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8");
     const header = createElement("div", "flex flex-col gap-3 border-b border-gray-100 pb-6 sm:flex-row sm:items-start sm:justify-between");
     header.append(
