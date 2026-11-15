@@ -70,8 +70,11 @@ describe("ProfileController", () => {
     onLogin();
 
     expect(open).toHaveBeenCalledWith("login", expect.any(Function));
-    await open.mock.calls[0][1]();
-    expect(service.getProfile).toHaveBeenCalledOnce();
+    authState.isAuthenticated = true;
+    open.mock.calls[0][1]();
+    await vi.waitFor(() => {
+      expect(service.getProfile).toHaveBeenCalledOnce();
+    });
     delete window.authController;
   });
 
