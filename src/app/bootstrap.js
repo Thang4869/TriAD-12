@@ -29,6 +29,7 @@ import { authService } from "../modules/auth/AuthService.js";
 
 import { AdminController } from "../modules/admin/AdminController.js";
 import { AdminProductController } from "../modules/admin/AdminProductController.js";
+import { AdminManagementController } from "../modules/admin/AdminManagementController.js";
 
 function getCurrentPage() {
   const pathname = window.location.pathname;
@@ -45,6 +46,7 @@ function getCurrentPage() {
     contact: "contact",
     "admin-dashboard": "admin-dashboard",
     "admin-products": "admin-products",
+    "admin-management": "admin-management",
     "order-history": "order-history",
     profile: "profile",
     "order-detail": "order-detail",
@@ -160,6 +162,12 @@ function getComponentsForPage(page) {
         filePath: `${root}pages/admin-products-content.html`,
       },
     ],
+    "admin-management": [
+      {
+        elementId: "admin-management-container",
+        filePath: `${root}pages/admin-management-content.html`,
+      },
+    ],
     profile: [
       {
         elementId: "profile-content",
@@ -255,6 +263,9 @@ export async function bootstrap() {
     }
     if (currentPage === "admin-products") {
       await new AdminProductController().init();
+    }
+    if (currentPage === "admin-management") {
+      await new AdminManagementController().init();
     }
     if (currentPage === "profile") {
       await new ProfileController().init();
