@@ -23,11 +23,43 @@ export class AuthController {
 
   setupEventListeners() {
     document.getElementById("account-btn")?.addEventListener("click", () => {
-      if (authService.isAuthenticated) {
-        this.handleLogout();
-      } else {
+      if (!authService.isAuthenticated) {
         this.open("login");
+        return;
       }
+      this.toggleAccountMenu();
+    });
+
+    document
+      .getElementById("account-logout-btn")
+      ?.addEventListener("click", () => this.handleLogout());
+
+    document
+      .getElementById("account-profile-link")
+      ?.addEventListener("click", () => this.closeAccountMenu());
+
+    document
+      .getElementById("account-orders-link")
+      ?.addEventListener("click", () => this.closeAccountMenu());
+
+    document
+      .getElementById("account-admin-link")
+      ?.addEventListener("click", () => this.closeAccountMenu());
+
+    document.addEventListener("click", (event) => {
+      const menu = document.getElementById("account-menu");
+      const button = document.getElementById("account-btn");
+      if (
+        menu &&
+        !menu.contains(event.target) &&
+        !button?.contains(event.target)
+      ) {
+        this.closeAccountMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") this.closeAccountMenu();
     });
 
     document
@@ -167,7 +199,23 @@ export class AuthController {
     }
   }
 
+  toggleAccountMenu() {
+    const menu = document.getElementById("account-menu");
+    const button = document.getElementById("account-btn");
+    if (!menu || !button) return;
+
+    const isOpen = !menu.classList.contains("hidden");
+    menu.classList.toggle("hidden", isOpen);
+    button.setAttribute("aria-expanded", String(!isOpen));
+  }
+
+  closeAccountMenu() {
+    document.getElementById("account-menu")?.classList.add("hidden");
+    document.getElementById("account-btn")?.setAttribute("aria-expanded", "false");
+  }
+
   async handleLogout() {
+    this.closeAccountMenu();
     await authService.logout();
     window.toast?.info("Đã đăng xuất", "Hẹn gặp lại!");
   }
@@ -181,10 +229,26 @@ export class AuthController {
     if (label) {
       label.textContent = user ? user.firstName || user.email : "Đăng nhập";
     }
-    btn.title = user ? "Đăng xuất" : "Đăng nhập";
+    btn.title = user ? "Mở menu tài khoản" : "Đăng nhập";
+    btn.setAttribute("aria-expanded", "false");
 
-    // Toggle admin links based on role
     const isAdmin = user?.role === "ADMIN";
+    const menu = document.getElementById("account-menu");
+    const menuName = document.getElementById("account-menu-name");
+    const menuEmail = document.getElementById("account-menu-email");
+    const profileLink = document.getElementById("account-profile-link");
+    const ordersLink = document.getElementById("account-orders-link");
+    const accountAdminLink = document.getElementById("account-admin-link");
+    const logoutButton = document.getElementById("account-logout-btn");
+
+    if (menuName) menuName.textContent = user?.firstName || user?.email || "Tài khoản";
+    if (menuEmail) menuEmail.textContent = user?.email || "";
+    profileLink?.classList.toggle("hidden", !user);
+    ordersLink?.classList.toggle("hidden", !user);
+    accountAdminLink?.classList.toggle("hidden", !isAdmin);
+    logoutButton?.classList.toggle("hidden", !user);
+    this.closeAccountMenu();
+
     const adminLink = document.getElementById("admin-nav-link");
     const mobileAdminLink = document.getElementById("mobile-admin-nav-link");
     adminLink?.classList.toggle("hidden", !isAdmin);
