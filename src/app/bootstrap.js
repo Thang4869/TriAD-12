@@ -18,6 +18,7 @@ import { ModalController } from "../modules/modal/ModalController.js";
 import { CheckoutController } from "../modules/checkout/CheckoutController.js";
 import { BlogController } from "../modules/blog/BlogController.js";
 import { ReviewsController } from "../modules/reviews/ReviewsController.js";
+import { OrdersController } from "../modules/orders/OrdersController.js";
 
 import { ProductsRepository } from "../modules/products/repositories/ProductsRepository.js";
 import { ProductsService } from "../modules/products/services/ProductsService.js";
@@ -42,6 +43,8 @@ function getCurrentPage() {
     contact: "contact",
     "admin-dashboard": "admin-dashboard",
     "admin-products": "admin-products",
+    "order-history": "order-history",
+    "order-detail": "order-detail",
   };
   return pageMap[page] || "home";
 }
@@ -154,6 +157,18 @@ function getComponentsForPage(page) {
         filePath: `${root}pages/admin-products-content.html`,
       },
     ],
+    "order-history": [
+      {
+        elementId: "orders-content",
+        filePath: `${root}pages/order-history-content.html`,
+      },
+    ],
+    "order-detail": [
+      {
+        elementId: "orders-content",
+        filePath: `${root}pages/order-detail-content.html`,
+      },
+    ],
   };
 
   const pageSpecific = pageComponents[page];
@@ -230,6 +245,9 @@ export async function bootstrap() {
     }
     if (currentPage === "admin-products") {
       await new AdminProductController().init();
+    }
+    if (currentPage === "order-history" || currentPage === "order-detail") {
+      await new OrdersController().init();
     }
     initHeaderNavigation(currentPage);
 
