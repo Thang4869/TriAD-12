@@ -1,9 +1,32 @@
+import { readdir, readFile } from "node:fs/promises";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
 
+function emitPagePartials() {
+  return {
+    name: "emit-page-partials",
+    apply: "build",
+    async generateBundle() {
+      const pagesDirectory = resolve(import.meta.dirname, "pages");
+      const pageFiles = await readdir(pagesDirectory);
+      const partialFiles = pageFiles.filter((file) =>
+        file.endsWith("-content.html"),
+      );
+
+      for (const file of partialFiles) {
+        this.emitFile({
+          type: "asset",
+          fileName: `pages/${file}`,
+          source: await readFile(resolve(pagesDirectory, file), "utf8"),
+        });
+      }
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [tailwindcss()],
+  plugins: [tailwindcss(), emitPagePartials()],
   base: "./",
 
   build: {
@@ -28,10 +51,14 @@ export default defineConfig({
           import.meta.dirname,
           "pages/terms-of-service.html",
         ),
-        adminDashboard: resolve(import.meta.dirname, "pages/admin-dashboard.html"),
+        adminDashboard: resolve(
+          import.meta.dirname,
+          "pages/admin-dashboard.html",
+        ),
         adminProducts: resolve(import.meta.dirname, "pages/admin-products.html"),
         orderHistory: resolve(import.meta.dirname, "pages/order-history.html"),
         orderDetail: resolve(import.meta.dirname, "pages/order-detail.html"),
+        profile: resolve(import.meta.dirname, "pages/profile.html"),
       },
     },
   },
