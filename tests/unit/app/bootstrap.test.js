@@ -322,6 +322,26 @@ describe("bootstrap", () => {
     const instance = AdminProductController.mock.instances.at(-1);
     expect(instance.init).toHaveBeenCalledOnce();
   });
+
+  it.each([
+    ["/pages/admin-dashboard.html", "admin-dashboard-container", "../pages/admin-dashboard-content.html"],
+    ["/pages/admin-products.html", "admin-products-container", "../pages/admin-products-content.html"],
+    ["/pages/order-history.html", "orders-content", "../pages/order-history-content.html"],
+    ["/pages/order-detail.html", "orders-content", "../pages/order-detail-content.html"],
+  ])("loads the expected page partial for %s", async (pathname, elementId, filePath) => {
+    Object.defineProperty(window, "location", {
+      value: { pathname },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const componentsArg = loadComponentsMock.mock.calls[0][0];
+    expect(componentsArg).toContainEqual(
+      expect.objectContaining({ elementId, filePath }),
+    );
+  });
 });
 
 describe("bootstrap page-specific initialization", () => {
