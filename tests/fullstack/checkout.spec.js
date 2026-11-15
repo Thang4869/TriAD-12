@@ -301,16 +301,21 @@ test("full stack: recovers a committed checkout after response loss", async ({
     "Không xác định được trạng thái đơn hàng",
   );
 
-  // Cuộn panel về đầu để nút đóng nằm trong viewport.
+  // Cuộn panel về đầu và chờ vị trí cuộn ổn định trước khi đóng.
   const checkoutPanel = page.locator("#checkout-modal > .bg-white");
 
   await checkoutPanel.evaluate((panel) => {
     panel.scrollTo({ top: 0, behavior: "instant" });
   });
 
+  await expect
+    .poll(() => checkoutPanel.evaluate((panel) => panel.scrollTop))
+    .toBe(0);
+
   const closeCheckoutButton = page.locator("#close-checkout-btn");
 
   await expect(closeCheckoutButton).toBeInViewport();
+  await expect(closeCheckoutButton).toBeVisible();
   await closeCheckoutButton.click();
 
   // Khi checkout chưa xác định trạng thái, modal phải tiếp tục mở.
