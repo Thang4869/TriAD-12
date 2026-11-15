@@ -60,6 +60,7 @@ describe("ProfileController", () => {
   });
 
   it("opens login and retries initialization after successful login", async () => {
+    authState.isAuthenticated = false;
     const open = vi.fn();
     window.authController = { open };
     const controller = new ProfileController(service, renderer);
