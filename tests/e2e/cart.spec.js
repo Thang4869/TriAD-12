@@ -136,6 +136,19 @@ test("authenticated user can add a product and complete checkout", async ({
   await expect(page.locator("#cart-drawer")).toBeVisible();
   await page.locator("#checkout-btn").click();
   await expect(page.locator("#checkout-modal")).toBeVisible();
+  const checkoutDialog = page.locator('#checkout-modal [role="dialog"]');
+  await expect(checkoutDialog).toHaveAttribute("aria-modal", "true");
+  await expect(checkoutDialog).toHaveAttribute(
+    "aria-labelledby",
+    "checkout-modal-title",
+  );
+  await expect(page.locator("#close-checkout-btn")).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(
+    page.locator('#checkout-form button[type="submit"]'),
+  ).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#close-checkout-btn")).toBeFocused();
 
   await page.fill("#phone", "0123456789");
   await page.fill("#address", "123 Main St");

@@ -188,6 +188,7 @@ export async function bootstrap() {
     }, 100);
 
     const container = new Container();
+    container.register("dialogAccessibilityService", new DialogAccessibilityService());
     container.register("eventBus", new EventBus());
     container.register("storage", new StorageService());
 

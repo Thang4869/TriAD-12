@@ -4,10 +4,16 @@
 >
   <div
     id="product-modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    tabindex="-1"
     class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col md:flex-row transform scale-95 transition-transform duration-300 relative"
   >
     <button
       id="close-modal-btn"
+      type="button"
+      aria-label="Close product details"
       class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
     >
       <i class="ph ph-x text-lg"></i>
@@ -37,6 +43,8 @@
         <div class="flex items-center border border-gray-300 w-max rounded-sm">
           <button
             id="qty-minus"
+            type="button"
+            aria-label="Decrease quantity"
             class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg"
           >
             -
@@ -48,6 +56,8 @@
           >
           <button
             id="qty-plus"
+            type="button"
+            aria-label="Increase quantity"
             class="px-4 py-2 hover:bg-gray-100 transition-colors text-lg"
           >
             +
