@@ -26,6 +26,14 @@ const renderAuthDom = () => {
   document.body.innerHTML = `
     <button id="account-btn"><span id="account-btn-label"></span></button>
     <button id="mobile-account-btn"></button>
+    <div id="account-menu" class="hidden">
+      <p id="account-menu-name"></p>
+      <p id="account-menu-email"></p>
+      <a id="account-profile-link"></a>
+      <a id="account-orders-link"></a>
+      <a id="account-admin-link" class="hidden"></a>
+      <button id="account-logout-btn" class="hidden"></button>
+    </div>
     <button id="close-auth-btn"></button>
     <a id="auth-switch-mode"></a>
     <span id="auth-switch-text"></span>
@@ -121,14 +129,17 @@ describe("AuthController", () => {
     expect(accountClick).toHaveBeenCalledOnce();
   });
 
-  it("logs out from the account control when already authenticated", () => {
+  it("opens the account menu for authenticated users and logs out only from its action", () => {
     authService.isAuthenticated = true;
     const logoutSpy = vi
       .spyOn(controller, "handleLogout")
       .mockResolvedValue(undefined);
 
     document.getElementById("account-btn").click();
+    expect(document.getElementById("account-menu").classList.contains("hidden")).toBe(false);
+    expect(logoutSpy).not.toHaveBeenCalled();
 
+    document.getElementById("account-logout-btn").click();
     expect(logoutSpy).toHaveBeenCalledOnce();
   });
 
@@ -353,7 +364,11 @@ describe("AuthController", () => {
     });
     controller.updateHeaderUI();
     expect(label.textContent).toBe("admin@example.com");
-    expect(account.title).toBe("Đăng xuất");
+    expect(account.title).toBe("Mở menu tài khoản");
+    expect(document.getElementById("account-menu-name").textContent).toBe("admin@example.com");
+    expect(document.getElementById("account-profile-link").classList.contains("hidden")).toBe(false);
+    expect(document.getElementById("account-logout-btn").classList.contains("hidden")).toBe(false);
+    expect(document.getElementById("account-admin-link").classList.contains("hidden")).toBe(false);
     expect(admin.classList.contains("hidden")).toBe(false);
     expect(mobileAdmin.classList.contains("hidden")).toBe(false);
 
@@ -459,7 +474,7 @@ describe("AuthController", () => {
     });
 
     expect(() => controller.updateHeaderUI()).not.toThrow();
-    expect(document.getElementById("account-btn").title).toBe("Đăng xuất");
+    expect(document.getElementById("account-btn").title).toBe("Mở menu tài khoản");
   });
 
   it("tolerates a missing auth message element", () => {
