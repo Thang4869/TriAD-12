@@ -58,31 +58,31 @@ export class AdminRenderer {
   renderStats(stats) {
     if (!stats) return;
 
-    const gmv = stats.grossOrderValue?.total30Days ?? 0;
-    const byDay = stats.grossOrderValue?.byDay ?? [];
+    const gmv = stats.grossMã đơnValue?.total30Days ?? 0;
+    const byDay = stats.grossMã đơnValue?.byDay ?? [];
     const statusBreakdown = stats.orders?.statusBreakdown ?? [];
     const products = stats.products ?? {};
     const users = stats.users ?? {};
 
-    const totalOrders = statusBreakdown.reduce(
+    const totalMã đơns = statusBreakdown.reduce(
       (sum, row) => sum + row.count,
       0,
     );
-    const pendingOrders =
+    const đang chờ xử lýMã đơns =
       statusBreakdown.find((row) => row.status === "PENDING")?.count ?? 0;
-    const lowStock = products.lowStock ?? [];
+    const lowTồn kho = products.lowTồn kho ?? [];
 
     this._setText("kpi-gmv", formatPrice(gmv));
-    this._setText("kpi-orders", totalOrders);
-    this._setText("kpi-orders-pending", `${pendingOrders} pending`);
+    this._setText("kpi-orders", totalMã đơns);
+    this._setText("kpi-orders-đang chờ xử lý", `${đang chờ xử lýMã đơns} đang chờ xử lý`);
     this._setText("kpi-users", users.total ?? 0);
     this._setText("kpi-users-new", `${users.new30Days ?? 0} new in 30d`);
     this._setText("kpi-products", products.total ?? 0);
-    this._setText("kpi-lowstock", `${lowStock.length} low stock`);
+    this._setText("kpi-lowstock", `${lowTồn kho.length} low stock`);
 
     this._renderChart(byDay);
-    this._renderStatus(statusBreakdown);
-    this._renderLowStock(lowStock);
+    this._renderTrạng thái(statusBreakdown);
+    this._renderLowTồn kho(lowTồn kho);
     this._renderTopSelling(products.topSelling ?? []);
   }
 
@@ -91,17 +91,17 @@ export class AdminRenderer {
     if (!container) return;
     if (!byDay.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400 m-auto">No orders in the last 30 days</p>';
+        '<p class="text-sm text-gray-400 m-auto">Không có đơn hàng trong 30 ngày gần nhất</p>';
       return;
     }
-    const max = Math.max(...byDay.map((d) => d.grossOrderValue), 1);
+    const max = Math.max(...byDay.map((d) => d.grossMã đơnValue), 1);
     container.innerHTML = byDay
       .map((d) => {
-        const height = Math.max(4, Math.round((d.grossOrderValue / max) * 100));
+        const height = Math.max(4, Math.round((d.grossMã đơnValue / max) * 100));
         return `
           <div class="flex-1 flex flex-col items-center justify-end group relative">
             <div class="absolute -top-8 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-10">
-              ${d.date}<br>${formatPrice(d.grossOrderValue)}
+              ${d.date}<br>${formatPrice(d.grossMã đơnValue)}
             </div>
             <div class="w-full bg-brand-accent rounded-t hover:bg-brand-dark transition-colors" style="height:${height}%"></div>
           </div>
@@ -110,12 +110,12 @@ export class AdminRenderer {
       .join("");
   }
 
-  _renderStatus(rows) {
+  _renderTrạng thái(rows) {
     const container = this._el("admin-order-status");
     if (!container) return;
     if (!rows.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">No orders yet</p>';
+        '<p class="text-sm text-gray-400">Chưa có đơn hàng</p>';
       return;
     }
     container.innerHTML = rows
@@ -130,21 +130,21 @@ export class AdminRenderer {
       .join("");
   }
 
-  _renderLowStock(products) {
+  _renderLowTồn kho(products) {
     const container = this._el("admin-low-stock");
     if (!container) return;
     if (!products.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">All products are well stocked</p>';
+        '<p class="text-sm text-gray-400">Tất cả sản phẩm đều đủ hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Product</th>
-            <th class="pb-2">Stock</th>
-            <th class="pb-2 text-right">Action</th>
+            <th class="pb-2">Sản phẩm</th>
+            <th class="pb-2">Tồn kho</th>
+            <th class="pb-2 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -155,7 +155,7 @@ export class AdminRenderer {
               <td class="py-2">${p.name}</td>
               <td class="py-2"><span class="text-red-600 font-semibold">${p.stock}</span></td>
               <td class="py-2 text-right">
-                <a href="./products.html" class="text-brand-accent hover:underline text-sm">Restock</a>
+                <a href="./products.html" class="text-brand-accent hover:underline text-sm">Quản lý kho</a>
               </td>
             </tr>
           `,
@@ -170,16 +170,16 @@ export class AdminRenderer {
     const container = this._el("admin-top-selling");
     if (!container) return;
     if (!products.length) {
-      container.innerHTML = '<p class="text-sm text-gray-400">No sales yet</p>';
+      container.innerHTML = '<p class="text-sm text-gray-400">Chưa có dữ liệu bán hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Product</th>
-            <th class="pb-2">Qty sold</th>
-            <th class="pb-2 text-right">Revenue</th>
+            <th class="pb-2">Sản phẩm</th>
+            <th class="pb-2">Số lượng bán</th>
+            <th class="pb-2 text-right">Doanh thu</th>
           </tr>
         </thead>
         <tbody>
@@ -189,7 +189,7 @@ export class AdminRenderer {
             <tr class="border-b last:border-0">
               <td class="py-2">${p.name}</td>
               <td class="py-2">${p.totalQuantitySold}</td>
-              <td class="py-2 text-right font-medium">${formatPrice(p.totalOrderValue)}</td>
+              <td class="py-2 text-right font-medium">${formatPrice(p.totalMã đơnValue)}</td>
             </tr>
           `,
             )
@@ -199,25 +199,25 @@ export class AdminRenderer {
     `;
   }
 
-  renderOrders(data, { onStatusChange } = {}) {
+  renderMã đơns(data, { onTrạng tháiChange } = {}) {
     const container = this._el("admin-recent-orders");
     if (!container) return;
     const orders = data?.orders ?? [];
     if (!orders.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">No orders yet</p>';
+        '<p class="text-sm text-gray-400">Chưa có đơn hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Order</th>
-            <th class="pb-2">Customer</th>
-            <th class="pb-2">Total</th>
-            <th class="pb-2">Status</th>
-            <th class="pb-2">Created</th>
-            <th class="pb-2">Action</th>
+            <th class="pb-2">Mã đơn</th>
+            <th class="pb-2">Khách hàng</th>
+            <th class="pb-2">Tổng tiền</th>
+            <th class="pb-2">Trạng thái</th>
+            <th class="pb-2">Ngày tạo</th>
+            <th class="pb-2">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -237,7 +237,7 @@ export class AdminRenderer {
               <td class="py-2 text-xs text-gray-500">${formatDate(o.createdAt)}</td>
               <td class="py-2">
                 <select class="status-update p-1 border rounded text-xs" data-order-id="${o.id}">
-                  <option value="">Change status</option>
+                  <option value="">Đổi trạng thái</option>
                   <option value="PROCESSING">PROCESSING</option>
                   <option value="SHIPPED">SHIPPED</option>
                   <option value="DELIVERED">DELIVERED</option>
@@ -256,7 +256,7 @@ export class AdminRenderer {
         const orderId = e.target.dataset.orderId;
         const status = e.target.value;
         if (!status) return;
-        onStatusChange?.(orderId, status, e.target);
+        onTrạng tháiChange?.(orderId, status, e.target);
       });
     });
   }
