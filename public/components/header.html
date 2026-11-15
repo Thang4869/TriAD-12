@@ -91,6 +91,9 @@
           id="account-btn"
           class="hover:text-brand-accent transition-colors flex items-center gap-1 text-sm font-medium p-1"
           title="Tài khoản"
+          aria-haspopup="true"
+          aria-controls="account-menu"
+          aria-expanded="false"
         >
           <i class="ph ph-user-circle text-xl"></i>
           <span id="account-btn-label" class="hidden xl:inline">Đăng nhập</span>
@@ -191,6 +194,33 @@
     </div>
   </div>
 </header>
+
+<!-- Account menu: profile navigation and session actions are kept separate. -->
+<div
+  id="account-menu"
+  class="hidden fixed right-4 top-20 z-[70] w-64 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl"
+  role="menu"
+  aria-label="Menu tài khoản"
+>
+  <div class="border-b border-gray-100 px-4 py-3">
+    <p id="account-menu-name" class="truncate text-sm font-semibold text-brand-dark">Tài khoản</p>
+    <p id="account-menu-email" class="truncate text-xs text-brand-gray"></p>
+  </div>
+  <nav class="p-2">
+    <a id="account-profile-link" href="./pages/profile.html" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-gray-50" role="menuitem">
+      <i class="ph ph-user text-lg"></i> Hồ sơ cá nhân
+    </a>
+    <a id="account-orders-link" href="./pages/order-history.html" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-gray-50" role="menuitem">
+      <i class="ph ph-receipt text-lg"></i> Lịch sử đơn hàng
+    </a>
+    <a id="account-admin-link" href="./pages/admin-dashboard.html" class="hidden flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-gray-50" role="menuitem">
+      <i class="ph ph-shield-check text-lg"></i> Quản trị hệ thống
+    </a>
+    <button id="account-logout-btn" type="button" class="hidden w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-red-600 hover:bg-red-50" role="menuitem">
+      <i class="ph ph-sign-out text-lg"></i> Đăng xuất
+    </button>
+  </nav>
+</div>
 
 <!-- Notification Dropdown -->
 <div

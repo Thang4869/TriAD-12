@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { resetFullstackAuthRateLimit } from "./helpers/reset-auth-rate-limit.js";
 
 const clearCart = async (page) => {
   const origin = new URL(page.url());
@@ -26,6 +27,8 @@ test.beforeEach(async ({ page }, testInfo) => {
       "Auth replay checks require disposable loopback CI fixtures",
     );
   }
+
+  resetFullstackAuthRateLimit();
 
   await page.goto("/pages/products.html");
   await expect(page.locator(".product-card").first()).toBeVisible();
@@ -76,7 +79,7 @@ test("refreshes a missing access session and enforces CSRF and logout revocation
   await expect(page.locator(".product-card").first()).toBeVisible();
   await expect(page.locator("#account-btn")).toHaveAttribute(
     "title",
-    "Đăng xuất",
+    "Mở menu tài khoản",
   );
   expect(refreshRequests).toBe(1);
   expect((await page.request.get("/api/cart")).status()).toBe(200);
@@ -127,6 +130,8 @@ test("refreshes a missing access session and enforces CSRF and logout revocation
       response.request().method() === "POST",
   );
   await page.locator("#account-btn").click();
+  await expect(page.locator("#account-menu")).toBeVisible();
+  await page.locator("#account-logout-btn").click();
   expect((await logoutResponse).status()).toBe(200);
   await expect(page.locator("#account-btn")).toContainText("Đăng nhập");
   await page.reload();
@@ -299,6 +304,8 @@ test("does not replay an expired open-page write and preserves the saved cart on
       response.request().method() === "POST",
   );
   await page.locator("#account-btn").click();
+  await expect(page.locator("#account-menu")).toBeVisible();
+  await page.locator("#account-logout-btn").click();
   expect((await logout).status()).toBe(200);
   await expect(page.locator("#account-btn")).toContainText("Đăng nhập");
   expect(deletes).toBe(0);

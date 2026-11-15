@@ -1,0 +1,52 @@
+<section class="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
+  <div class="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+    <aside class="h-fit rounded-3xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-28">
+      <div class="px-3 pb-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">TriAD Workspace</p>
+        <h1 class="mt-1 text-xl font-bold">Quản trị hệ thống</h1>
+      </div>
+      <nav class="space-y-1" aria-label="Điều hướng quản trị">
+        <a href="./admin-dashboard.html" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-squares-four text-lg"></i> Tổng quan</a>
+        <a href="./admin-products.html" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-package text-lg"></i> Sản phẩm</a>
+        <a href="#orders" class="flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-700"><i class="ph ph-receipt text-lg"></i> Đơn hàng</a>
+        <a href="#reviews" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-star text-lg"></i> Đánh giá</a>
+        <a href="#audit-logs" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-shield-check text-lg"></i> Nhật ký hoạt động</a>
+      </nav>
+      <div class="mt-5 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">
+        Quản lý tài khoản và phân quyền chưa được mở vì Backend hiện chưa có Admin User Management API.
+      </div>
+    </aside>
+
+    <div id="admin-management-content" class="min-w-0 space-y-6">
+      <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Operations</p>
+          <h2 class="mt-1 text-3xl font-bold tracking-tight">Trung tâm vận hành</h2>
+          <p class="mt-2 text-sm text-slate-500">Theo dõi đơn hàng, kiểm duyệt đánh giá và kiểm tra lịch sử thao tác quản trị.</p>
+        </div>
+        <button id="admin-management-refresh" type="button" class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold hover:border-slate-500"><i class="ph ph-arrows-clockwise"></i> Làm mới dữ liệu</button>
+      </header>
+
+      <div id="admin-management-loading" class="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center text-sm text-slate-500">Đang tải dữ liệu quản trị...</div>
+      <div id="admin-management-gate" class="hidden rounded-2xl border border-red-100 bg-white px-6 py-10 text-center text-sm text-red-600"></div>
+
+      <section id="orders" class="scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+          <div><p class="text-xs font-semibold uppercase tracking-wider text-brand-accent">Commerce</p><h3 class="mt-1 text-xl font-bold">Quản lý đơn hàng</h3><p class="mt-1 text-sm text-slate-500">Cập nhật trạng thái theo quy trình xử lý hiện có.</p></div>
+          <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">20 đơn gần nhất</span>
+        </div>
+        <div id="admin-orders-table" class="text-sm text-slate-500">Đang tải...</div>
+      </section>
+
+      <section id="reviews" class="scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <div class="mb-5"><p class="text-xs font-semibold uppercase tracking-wider text-brand-accent">Customer feedback</p><h3 class="mt-1 text-xl font-bold">Quản lý đánh giá</h3><p class="mt-1 text-sm text-slate-500">Xem đánh giá và gỡ nội dung không phù hợp. Thao tác xóa được audit.</p></div>
+        <div id="admin-reviews-table" class="text-sm text-slate-500">Đang tải...</div>
+      </section>
+
+      <section id="audit-logs" class="scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <div class="mb-5"><p class="text-xs font-semibold uppercase tracking-wider text-brand-accent">Security & compliance</p><h3 class="mt-1 text-xl font-bold">Nhật ký hoạt động quản trị</h3><p class="mt-1 text-sm text-slate-500">Theo dõi hành động, đối tượng, kết quả và request ID.</p></div>
+        <div id="admin-audit-table" class="text-sm text-slate-500">Đang tải...</div>
+      </section>
+    </div>
+  </div>
+</section>

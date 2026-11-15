@@ -91,7 +91,7 @@ export class AdminRenderer {
     if (!container) return;
     if (!byDay.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400 m-auto">No orders in the last 30 days</p>';
+        '<p class="text-sm text-gray-400 m-auto">Không có đơn hàng trong 30 ngày gần nhất</p>';
       return;
     }
     const max = Math.max(...byDay.map((d) => d.grossOrderValue), 1);
@@ -115,7 +115,7 @@ export class AdminRenderer {
     if (!container) return;
     if (!rows.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">No orders yet</p>';
+        '<p class="text-sm text-gray-400">Chưa có đơn hàng</p>';
       return;
     }
     container.innerHTML = rows
@@ -135,16 +135,16 @@ export class AdminRenderer {
     if (!container) return;
     if (!products.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">All products are well stocked</p>';
+        '<p class="text-sm text-gray-400">Tất cả sản phẩm đều đủ hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Product</th>
-            <th class="pb-2">Stock</th>
-            <th class="pb-2 text-right">Action</th>
+            <th class="pb-2">Sản phẩm</th>
+            <th class="pb-2">Tồn kho</th>
+            <th class="pb-2 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -155,7 +155,7 @@ export class AdminRenderer {
               <td class="py-2">${p.name}</td>
               <td class="py-2"><span class="text-red-600 font-semibold">${p.stock}</span></td>
               <td class="py-2 text-right">
-                <a href="./products.html" class="text-brand-accent hover:underline text-sm">Restock</a>
+                <a href="./products.html" class="text-brand-accent hover:underline text-sm">Quản lý kho</a>
               </td>
             </tr>
           `,
@@ -170,16 +170,16 @@ export class AdminRenderer {
     const container = this._el("admin-top-selling");
     if (!container) return;
     if (!products.length) {
-      container.innerHTML = '<p class="text-sm text-gray-400">No sales yet</p>';
+      container.innerHTML = '<p class="text-sm text-gray-400">Chưa có dữ liệu bán hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Product</th>
-            <th class="pb-2">Qty sold</th>
-            <th class="pb-2 text-right">Revenue</th>
+            <th class="pb-2">Sản phẩm</th>
+            <th class="pb-2">Số lượng bán</th>
+            <th class="pb-2 text-right">Doanh thu</th>
           </tr>
         </thead>
         <tbody>
@@ -205,19 +205,19 @@ export class AdminRenderer {
     const orders = data?.orders ?? [];
     if (!orders.length) {
       container.innerHTML =
-        '<p class="text-sm text-gray-400">No orders yet</p>';
+        '<p class="text-sm text-gray-400">Chưa có đơn hàng</p>';
       return;
     }
     container.innerHTML = `
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-brand-gray border-b">
-            <th class="pb-2">Order</th>
-            <th class="pb-2">Customer</th>
-            <th class="pb-2">Total</th>
-            <th class="pb-2">Status</th>
-            <th class="pb-2">Created</th>
-            <th class="pb-2">Action</th>
+            <th class="pb-2">Mã đơn</th>
+            <th class="pb-2">Khách hàng</th>
+            <th class="pb-2">Tổng tiền</th>
+            <th class="pb-2">Trạng thái</th>
+            <th class="pb-2">Ngày tạo</th>
+            <th class="pb-2">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -237,7 +237,7 @@ export class AdminRenderer {
               <td class="py-2 text-xs text-gray-500">${formatDate(o.createdAt)}</td>
               <td class="py-2">
                 <select class="status-update p-1 border rounded text-xs" data-order-id="${o.id}">
-                  <option value="">Change status</option>
+                  <option value="">Đổi trạng thái</option>
                   <option value="PROCESSING">PROCESSING</option>
                   <option value="SHIPPED">SHIPPED</option>
                   <option value="DELIVERED">DELIVERED</option>

@@ -56,6 +56,7 @@ export default defineConfig({
           "pages/admin-dashboard.html",
         ),
         adminProducts: resolve(import.meta.dirname, "pages/admin-products.html"),
+        adminManagement: resolve(import.meta.dirname, "pages/admin-management.html"),
         orderHistory: resolve(import.meta.dirname, "pages/order-history.html"),
         orderDetail: resolve(import.meta.dirname, "pages/order-detail.html"),
         profile: resolve(import.meta.dirname, "pages/profile.html"),
