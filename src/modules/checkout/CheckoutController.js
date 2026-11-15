@@ -228,6 +228,14 @@ export class CheckoutController {
     const content = modal.querySelector(".bg-white");
     const orderIdEl = document.getElementById("success-order-id");
     if (orderIdEl) orderIdEl.textContent = order.orderNumber || order.id;
+    const viewOrderLink = document.getElementById("success-view-order-btn");
+    if (viewOrderLink && order.id) {
+      const pagePrefix = window.location.pathname.includes("/pages/") ? "" : "pages/";
+      viewOrderLink.href = `${pagePrefix}order-detail.html?orderId=${encodeURIComponent(order.id)}`;
+      viewOrderLink.classList.remove("hidden");
+    } else if (viewOrderLink) {
+      viewOrderLink.classList.add("hidden");
+    }
     this.renderer.renderSuccessPricing(order);
 
     modal.classList.remove("hidden");
