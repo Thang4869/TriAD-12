@@ -1,29 +1,25 @@
-/**
- * Main CSS - Import all partials
- */
-
+/** Main CSS - Import all partials */
 @import "tailwindcss";
 
 /* Base */
 @import "./base/variables.css";
 @import "./base/reset.css";
 
-/* Components - từ src/styles/components/ */
+/* Components */
 @import "./components/header.css";
 @import "./components/hero.css";
 @import "./components/cart.css";
 @import "./components/accordion.css";
-
-/* Components - đã di dời từ css/components/ */
 @import "./components/toast.css";
 @import "./components/checkout.css";
 @import "./components/product-card.css";
+@import "./components/admin-dashboard.css";
 
 /* Utilities */
 @import "./utilities/slider.css";
 @import "./utilities/shimmer.css";
 
-/* Animations - đã di dời từ css/animations/ */
+/* Animations */
 @import "./animations/fly-to-cart.css";
 
 /* Tailwind Sources */
@@ -35,7 +31,6 @@
 /* Tailwind Theme */
 @theme {
   --font-sans: "Jost", sans-serif;
-
   --color-brand-light: #f9f6f0;
   --color-brand-accent: #4a90e2;
   --color-brand-dark: #1a1a1a;
@@ -47,113 +42,24 @@
 
 /* Responsive */
 @media (max-width: 1023px) {
-  :root {
-    --header-height: 64px;
-  }
-  html {
-    scroll-padding-top: var(--header-height);
-  }
-  section {
-    scroll-margin-top: var(--header-height);
-  }
-  #main-header .h-20 {
-    height: var(--header-height) !important;
-  }
-  .header-shrink .h-20 {
-    height: 56px !important;
-  }
+  :root { --header-height: 64px; }
+  html { scroll-padding-top: var(--header-height); }
+  section { scroll-margin-top: var(--header-height); }
+  #main-header .h-20 { height: var(--header-height) !important; }
+  .header-shrink .h-20 { height: 56px !important; }
 }
-
 @media (max-width: 1279px) {
-  .header-shrink .w-72 {
-    width: 140px !important;
-  }
-  .header-shrink .space-x-10 {
-    gap: 1rem !important;
-  }
+  .header-shrink .w-72 { width: 140px !important; }
+  .header-shrink .space-x-10 { gap: 1rem !important; }
 }
-
-/* Avatar fix */
-.avatar-placeholder {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-  color: white;
-  flex-shrink: 0;
-}
-
-/* Notification Styles */
-#notification-dropdown {
-  transform-origin: top right;
-}
-
-#notification-dropdown:not(.hidden) {
-  animation: dropdownSlide 0.2s ease forwards;
-}
-
-@keyframes dropdownSlide {
-  0% {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.notification-item {
-  transition: all 0.2s ease;
-}
-
-.notification-item:hover {
-  background: #f3f4f6 !important;
-}
-
-@keyframes bellRing {
-  0% {
-    transform: rotate(0);
-  }
-
-  25% {
-    transform: rotate(15deg);
-  }
-
-  50% {
-    transform: rotate(-15deg);
-  }
-
-  75% {
-    transform: rotate(8deg);
-  }
-
-  100% {
-    transform: rotate(0);
-  }
-}
-
-#notification-btn:hover i,
-#mobile-notification-btn:hover i {
-  transform: scale(1.1);
-}
-
-#notification-btn i,
-#mobile-notification-btn i {
-  transition: transform 0.2s ease;
-}
-
-body {
-  padding-top: 80px;
-}
-
-@media (max-width: 1023px) {
-  body {
-    padding-top: 64px;
-  }
-}
+.avatar-placeholder {width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;color:white;flex-shrink:0}
+#notification-dropdown {transform-origin:top right}
+#notification-dropdown:not(.hidden) {animation:dropdownSlide .2s ease forwards}
+@keyframes dropdownSlide {0%{opacity:0;transform:scale(.95) translateY(-10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.notification-item {transition:all .2s ease}
+.notification-item:hover {background:#f3f4f6!important}
+@keyframes bellRing {0%{transform:rotate(0)}25%{transform:rotate(15deg)}50%{transform:rotate(-15deg)}75%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+#notification-btn:hover i,#mobile-notification-btn:hover i {transform:scale(1.1)}
+#notification-btn i,#mobile-notification-btn i {transition:transform .2s ease}
+body {padding-top:80px}
+@media(max-width:1023px){body{padding-top:64px}}
