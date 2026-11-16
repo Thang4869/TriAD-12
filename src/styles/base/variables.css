@@ -1,8 +1,12 @@
 /**
- * CSS Variables - Design Tokens
+ * CSS Variables - Shared Design Tokens
+ *
+ * Keep legacy brand variables available while new UI work adopts semantic tokens.
+ * Semantic tokens describe purpose; component styles should avoid inventing
+ * page-specific values when one of these tokens already fits.
  */
 :root {
-  /* Colors */
+  /* Brand palette (legacy names retained for compatibility) */
   --color-brand-dark: #1a1a1a;
   --color-brand-gray: #737373;
   --color-brand-border: #e5e5e5;
@@ -10,17 +14,87 @@
   --color-brand-orange: #ff6b35;
   --color-brand-success: #22c55e;
 
+  /* Semantic surfaces and content */
+  --color-surface-page: #ffffff;
+  --color-surface-card: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-inverse: #171717;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #737373;
+  --color-text-muted: #94a3b8;
+  --color-text-inverse: #ffffff;
+  --color-border-default: #e5e5e5;
+  --color-border-strong: #cbd5e1;
+  --color-border-focus: #4a90e2;
+
+  /* Semantic status */
+  --color-status-success: #16a34a;
+  --color-status-warning: #d97706;
+  --color-status-danger: #dc2626;
+  --color-status-info: #2563eb;
+
+  /* Admin dark surfaces */
+  --color-admin-canvas: #101114;
+  --color-admin-sidebar: #15161a;
+  --color-admin-card: #191a20;
+  --color-admin-border: #2b2d35;
+  --color-admin-text: #f5f5f5;
+  --color-admin-text-muted: #9295a1;
+
   /* Spacing */
+  --spacing-2xs: 0.125rem;
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
 
   /* Typography */
   --font-family: "Jost", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
 
-  /* Transitions */
+  /* Layout */
+  --container-content: 80rem;
+  --container-reading: 48rem;
+  --header-height-desktop: 5rem;
+  --header-height-mobile: 4rem;
+
+  /* Shape */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-card-hover: 0 12px 32px rgb(15 23 42 / 0.12);
+  --shadow-popover: 0 16px 40px rgb(15 23 42 / 0.16);
+  --shadow-modal: 0 24px 64px rgb(15 23 42 / 0.2);
+
+  /* Motion: use for short feedback, standard UI transitions, and deliberate reveals. */
+  --motion-duration-fast: 160ms;
+  --motion-duration-standard: 240ms;
+  --motion-duration-deliberate: 640ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Legacy transitions retained for existing components */
   --transition-fast: 0.2s ease;
   --transition-medium: 0.3s ease;
   --transition-slow: 0.5s ease;
@@ -33,4 +107,13 @@
   --z-checkout: 90;
   --z-success: 100;
   --z-toast: 9999;
+}
+
+/* New motion-aware components automatically respect the user's system preference. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 1ms;
+    --motion-duration-standard: 1ms;
+    --motion-duration-deliberate: 1ms;
+  }
 }
