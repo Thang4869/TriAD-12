@@ -1,0 +1,150 @@
+/* Profile page — scoped premium account experience */
+.profile-page {
+  --profile-ink: #172033;
+  --profile-muted: #748096;
+  --profile-line: #e8edf4;
+  --profile-accent: #5278df;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+.profile-page__hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid #e8edf5;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(ellipse at 88% 8%, rgb(107 139 235 / 13%), transparent 34%),
+    linear-gradient(125deg, #fff 0%, #f7f9ff 100%);
+  box-shadow: 0 16px 45px rgb(29 48 86 / 5%);
+}
+.profile-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  color: #6177b4;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .19em;
+}
+.profile-page__eyebrow-dot {
+  width: .45rem;
+  height: .45rem;
+  border-radius: 50%;
+  background: #6688e8;
+  box-shadow: 0 0 0 4px rgb(102 136 232 / 12%);
+}
+.profile-page__title {
+  color: var(--profile-ink);
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 650;
+  letter-spacing: -.055em;
+  line-height: 1.08;
+}
+.profile-page__title span {
+  color: #7185bd;
+}
+.profile-page__description {
+  max-width: 42rem;
+  margin-top: .85rem;
+  color: var(--profile-muted);
+  font-size: .94rem;
+  line-height: 1.8;
+}
+.profile-page__orders-link {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  flex-shrink: 0;
+  padding: .75rem 1.1rem;
+  border: 1px solid #dfe6f2;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 88%);
+  color: #34425e;
+  font-size: .82rem;
+  font-weight: 650;
+  transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
+}
+.profile-page__orders-link:hover {
+  transform: translateY(-2px);
+  border-color: #b9c9f2;
+  background: #fff;
+  color: var(--profile-accent);
+}
+.profile-view > div {
+  align-items: start;
+}
+.profile-view section,
+.profile-view aside > section {
+  border-color: var(--profile-line) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 12px 34px rgb(28 43 71 / 5%) !important;
+}
+.profile-view aside > section:first-child {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0%, rgb(108 137 224 / 12%), transparent 45%),
+    #fff !important;
+}
+.profile-view aside > section:first-child > div:first-child {
+  border-radius: 1.4rem !important;
+  box-shadow: 0 9px 22px rgb(65 94 170 / 20%);
+}
+.profile-view aside > section:first-child h2 {
+  color: var(--profile-ink);
+  letter-spacing: -.025em;
+}
+.profile-view aside > section:first-child > span {
+  border: 1px solid #e1e9ff;
+}
+.profile-view aside > section:nth-child(2) a {
+  border: 1px solid transparent;
+}
+.profile-view aside > section:nth-child(2) a:hover {
+  border-color: #e1e9ff;
+}
+.profile-view main > section h2 {
+  color: var(--profile-ink);
+  letter-spacing: -.025em;
+}
+.profile-view main > section input {
+  min-height: 2.9rem;
+}
+.profile-view main > section input:focus-visible,
+.profile-page__orders-link:focus-visible,
+.profile-view button:focus-visible,
+.profile-view a:focus-visible {
+  outline: 3px solid rgb(82 120 223 / 28%);
+  outline-offset: 3px;
+}
+.profile-view main > section button[type="submit"] {
+  min-height: 2.85rem;
+  box-shadow: 0 7px 16px rgb(23 32 51 / 12%);
+}
+.profile-view main > section button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgb(23 32 51 / 16%);
+}
+.profile-view main > section:last-child .grid > div {
+  border: 1px solid #edf0f5;
+  background: #f8faff;
+}
+.profile-view [aria-busy="true"] {
+  min-height: 10rem;
+}
+@media (max-width: 640px) {
+  .profile-page { padding-top: .75rem; }
+  .profile-page__hero { border-radius: 1.25rem; }
+  .profile-page__orders-link { width: 100%; }
+  .profile-view section,
+  .profile-view aside > section { border-radius: 1.2rem !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-page__orders-link,
+  .profile-view * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .profile-page__orders-link:hover,
+  .profile-view main > section button[type="submit"]:hover { transform: none; }
+}
