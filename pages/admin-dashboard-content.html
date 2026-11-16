@@ -1,143 +1,94 @@
-<section class="py-16 bg-gray-50 min-h-screen">
+<section class="admin-dashboard-page min-h-screen py-10">
   <div class="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
-    <div class="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
-      <aside class="h-fit rounded-3xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-28">
-        <div class="px-3 pb-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">TriAD Workspace</p>
+    <div class="admin-dashboard-layout grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+      <aside class="admin-sidebar h-fit lg:sticky lg:top-28">
+        <div class="admin-sidebar-brand">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em]">TriAD Workspace</p>
           <h2 class="mt-1 text-xl font-bold">Quản trị hệ thống</h2>
         </div>
-        <nav class="space-y-1" aria-label="Điều hướng quản trị">
-          <a href="./admin-dashboard.html" class="flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-700"><i class="ph ph-squares-four text-lg"></i> Tổng quan</a>
-          <a href="./admin-products.html" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-package text-lg"></i> Sản phẩm</a>
-          <a href="./admin-management.html#orders" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-receipt text-lg"></i> Đơn hàng</a>
-          <a href="./admin-management.html#reviews" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-star text-lg"></i> Đánh giá</a>
-          <a href="./admin-management.html#audit-logs" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"><i class="ph ph-shield-check text-lg"></i> Nhật ký hoạt động</a>
+        <nav class="admin-sidebar-nav" aria-label="Điều hướng quản trị">
+          <a href="./admin-dashboard.html" class="is-active"><i class="ph ph-squares-four text-lg"></i> Tổng quan</a>
+          <a href="./admin-products.html"><i class="ph ph-package text-lg"></i> Sản phẩm</a>
+          <a href="./admin-management.html#orders"><i class="ph ph-receipt text-lg"></i> Đơn hàng</a>
+          <a href="./admin-management.html#reviews"><i class="ph ph-star text-lg"></i> Đánh giá</a>
+          <a href="./admin-management.html#audit-logs"><i class="ph ph-shield-check text-lg"></i> Nhật ký hoạt động</a>
         </nav>
-        <div class="mt-5 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">Quản lý tài khoản và phân quyền cần API quản trị chuyên biệt từ Backend.</div>
+        <div class="admin-sidebar-note">Quản lý tài khoản và phân quyền cần API quản trị chuyên biệt từ Backend.</div>
       </aside>
-      <main class="min-w-0">
-    <!-- Page header -->
-    <div
-      class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-    >
-      <div>
-        <span
-          class="text-sm font-medium text-brand-accent tracking-widest uppercase"
-          >Quản trị</span
-        >
-        <h1 class="text-3xl md:text-4xl font-bold mt-1">Tổng quan</h1>
-        <p class="text-brand-gray mt-1">Tình hình hoạt động cửa hàng trong nháy mắt</p>
-      </div>
-      <div class="flex gap-3">
-        <button
-          id="admin-refresh-btn"
-          class="px-5 py-2 border border-gray-300 rounded-full hover:bg-white transition-colors text-sm font-medium"
-        >
-          <i class="ph ph-arrow-clockwise"></i> Làm mới
-        </button>
-        <a
-          href="./admin-products.html"
-          class="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-sm font-medium"
-        >
-          Quản lý sản phẩm
-        </a>
-      </div>
-    </div>
 
-    <!-- Loading -->
-    <div id="admin-loading" class="py-20 text-center text-brand-gray">
-      <i class="ph ph-spinner text-4xl inline-block animate-spin"></i>
-      <p class="mt-3">Đang tải bảng điều khiển...</p>
-    </div>
-
-    <!-- Gate: unauthorized / error -->
-    <div id="admin-gate" class="hidden py-20 text-center"></div>
-
-    <!-- Tổng quan body -->
-    <div id="admin-dashboard-body" class="hidden space-y-6">
-      <!-- KPI CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <p class="text-sm text-brand-gray">Tổng giá trị đơn hàng (30 ngày)</p>
-            <i
-              class="ph ph-currency-circle-dollar text-2xl text-brand-accent"
-            ></i>
+      <main class="admin-dashboard-main min-w-0">
+        <header class="admin-page-header mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <span class="admin-eyebrow text-sm font-medium tracking-widest uppercase">Quản trị</span>
+            <h1 class="mt-1 text-3xl font-bold md:text-4xl">Tổng quan</h1>
+            <p class="mt-1">Tình hình hoạt động cửa hàng trong nháy mắt</p>
           </div>
-          <p id="kpi-gmv" class="text-3xl font-bold mt-3">—</p>
-          <p class="text-xs text-brand-gray mt-1">Không bao gồm đơn đã hủy</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <p class="text-sm text-brand-gray">Tổng đơn hàng</p>
-            <i class="ph ph-receipt text-2xl text-brand-accent"></i>
+          <div class="flex flex-wrap gap-3">
+            <button id="admin-refresh-btn" class="admin-button admin-button-secondary"><i class="ph ph-arrow-clockwise"></i> Làm mới</button>
+            <a href="./admin-products.html" class="admin-button admin-button-primary"><i class="ph ph-package"></i> Quản lý sản phẩm</a>
           </div>
-          <p id="kpi-orders" class="text-3xl font-bold mt-3">—</p>
-          <p id="kpi-orders-pending" class="text-xs text-brand-gray mt-1">—</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <p class="text-sm text-brand-gray">Người dùng</p>
-            <i class="ph ph-users text-2xl text-brand-accent"></i>
-          </div>
-          <p id="kpi-users" class="text-3xl font-bold mt-3">—</p>
-          <p id="kpi-users-new" class="text-xs text-brand-gray mt-1">—</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <p class="text-sm text-brand-gray">Sản phẩm</p>
-            <i class="ph ph-package text-2xl text-brand-accent"></i>
-          </div>
-          <p id="kpi-products" class="text-3xl font-bold mt-3">—</p>
-          <p id="kpi-lowstock" class="text-xs text-brand-gray mt-1">—</p>
-        </div>
-      </div>
+        </header>
 
-      <!-- CHART + STATUS -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl p-6 shadow-sm lg:col-span-2">
-          <h2 class="text-lg font-semibold mb-4">
-            Giá trị đơn hàng · 30 ngày gần nhất
-          </h2>
-          <div id="admin-chart" class="h-64 flex items-end gap-1"></div>
+        <div id="admin-loading" class="admin-loading py-20 text-center">
+          <i class="ph ph-spinner inline-block animate-spin text-4xl"></i>
+          <p class="mt-3">Đang tải bảng điều khiển...</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 class="text-lg font-semibold mb-4">Trạng thái đơn hàng</h2>
-          <div id="admin-order-status" class="space-y-2"></div>
-        </div>
-      </div>
+        <div id="admin-gate" class="hidden py-20 text-center"></div>
 
-      <!-- LOW STOCK + TOP SELLING -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 class="text-lg font-semibold mb-4">Cảnh báo tồn kho thấp</h2>
-          <div id="admin-low-stock" class="overflow-x-auto"></div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 class="text-lg font-semibold mb-4">Sản phẩm bán chạy</h2>
-          <div id="admin-top-selling" class="overflow-x-auto"></div>
-        </div>
-      </div>
+        <div id="admin-dashboard-body" class="hidden space-y-6">
+          <section class="admin-kpi-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Chỉ số tổng quan">
+            <article class="admin-panel admin-kpi-card">
+              <div class="admin-kpi-heading"><p>Tổng giá trị đơn hàng (30 ngày)</p><span class="admin-kpi-icon"><i class="ph ph-currency-circle-dollar"></i></span></div>
+              <p id="kpi-gmv" class="admin-kpi-value">—</p><p class="admin-kpi-caption">Không bao gồm đơn đã hủy</p>
+            </article>
+            <article class="admin-panel admin-kpi-card">
+              <div class="admin-kpi-heading"><p>Tổng đơn hàng</p><span class="admin-kpi-icon"><i class="ph ph-receipt"></i></span></div>
+              <p id="kpi-orders" class="admin-kpi-value">—</p><p id="kpi-orders-pending" class="admin-kpi-caption">—</p>
+            </article>
+            <article class="admin-panel admin-kpi-card">
+              <div class="admin-kpi-heading"><p>Người dùng</p><span class="admin-kpi-icon"><i class="ph ph-users"></i></span></div>
+              <p id="kpi-users" class="admin-kpi-value">—</p><p id="kpi-users-new" class="admin-kpi-caption">—</p>
+            </article>
+            <article class="admin-panel admin-kpi-card">
+              <div class="admin-kpi-heading"><p>Sản phẩm</p><span class="admin-kpi-icon"><i class="ph ph-package"></i></span></div>
+              <p id="kpi-products" class="admin-kpi-value">—</p><p id="kpi-lowstock" class="admin-kpi-caption">—</p>
+            </article>
+          </section>
 
-      <!-- RECENT ORDERS -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Đơn hàng gần đây</h2>
-          <select
-            id="admin-order-status-filter"
-            class="p-2 border border-gray-200 rounded text-sm"
-          >
-            <option value="">Tất cả trạng thái</option>
-            <option value="PENDING">PENDING</option>
-            <option value="PROCESSING">PROCESSING</option>
-            <option value="SHIPPED">SHIPPED</option>
-            <option value="DELIVERED">DELIVERED</option>
-            <option value="CANCELLED">CANCELLED</option>
-          </select>
+          <section class="admin-analytics-grid grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <article class="admin-panel admin-chart-panel lg:col-span-2">
+              <div class="admin-panel-heading"><div><p class="admin-panel-kicker">PHÂN TÍCH</p><h2>Giá trị đơn hàng</h2><p class="admin-panel-subtitle">30 ngày gần nhất</p></div><span class="admin-panel-icon"><i class="ph ph-chart-line-up"></i></span></div>
+              <div id="admin-chart" class="admin-chart h-64"></div>
+            </article>
+            <article class="admin-panel">
+              <div class="admin-panel-heading"><div><p class="admin-panel-kicker">ĐƠN HÀNG</p><h2>Trạng thái</h2></div><span class="admin-panel-icon"><i class="ph ph-chart-donut"></i></span></div>
+              <div id="admin-order-status" class="admin-status-list"></div>
+            </article>
+          </section>
+
+          <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            <article class="admin-panel">
+              <div class="admin-panel-heading"><div><p class="admin-panel-kicker">KHO HÀNG</p><h2>Cảnh báo tồn kho thấp</h2></div><span class="admin-panel-icon"><i class="ph ph-warning-circle"></i></span></div>
+              <div id="admin-low-stock" class="admin-data-table overflow-x-auto"></div>
+            </article>
+            <article class="admin-panel">
+              <div class="admin-panel-heading"><div><p class="admin-panel-kicker">HIỆU SUẤT</p><h2>Sản phẩm bán chạy</h2></div><span class="admin-panel-icon"><i class="ph ph-trend-up"></i></span></div>
+              <div id="admin-top-selling" class="admin-data-table overflow-x-auto"></div>
+            </article>
+          </section>
+
+          <section class="admin-panel admin-orders-panel">
+            <div class="admin-panel-heading admin-orders-heading">
+              <div><p class="admin-panel-kicker">GIAO DỊCH</p><h2>Đơn hàng gần đây</h2><p class="admin-panel-subtitle">Theo dõi và cập nhật trạng thái đơn hàng</p></div>
+              <label class="admin-filter-label" for="admin-order-status-filter">Lọc trạng thái
+                <select id="admin-order-status-filter" class="admin-filter">
+                  <option value="">Tất cả trạng thái</option><option value="PENDING">PENDING</option><option value="PROCESSING">PROCESSING</option><option value="SHIPPED">SHIPPED</option><option value="DELIVERED">DELIVERED</option><option value="CANCELLED">CANCELLED</option>
+                </select>
+              </label>
+            </div>
+            <div id="admin-recent-orders" class="admin-data-table overflow-x-auto"></div>
+          </section>
         </div>
-        <div id="admin-recent-orders" class="overflow-x-auto"></div>
-      </div>
-    </div>
       </main>
     </div>
   </div>
