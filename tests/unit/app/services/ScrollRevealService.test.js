@@ -444,6 +444,31 @@ describe("ScrollRevealService - additional coverage", () => {
   });
 });
 
+describe("ScrollReveal cleanup", () => {
+  it("disconnects observers, clears pending timers, and restores animated elements", () => {
+    document.body.innerHTML = `
+      <section id="home"></section>
+      <section class="section"></section>
+      <div id="product-grid"><div class="product-card"></div></div>
+    `;
+    const cleanup = initScrollReveal();
+
+    const sectionObserver = global.IntersectionObserver.mock.results[0].value;
+    const mutationObserver = global.MutationObserver.mock.results[0].value;
+    const hero = document.getElementById("home");
+    const section = document.querySelector(".section");
+
+    cleanup();
+
+    expect(sectionObserver.disconnect).toHaveBeenCalled();
+    expect(mutationObserver.disconnect).toHaveBeenCalled();
+    expect(hero.style.opacity).toBe("");
+    expect(section.style.opacity).toBe("");
+    expect(section.classList.contains("scroll-reveal")).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
 describe("ScrollReveal optional sections", () => {
   it("initializes safely when no hero, sections, or product grid exist", () => {
     document.body.innerHTML = "<main></main>";
