@@ -54,22 +54,20 @@ export function initScrollReveal() {
   }
 
   const sections = document.querySelectorAll("section:not(#home)");
-  if (sections.length > 0) {
-    sectionObserver = new IntersectionObserver(
-      (entries) => entries.forEach(revealObserverEntry),
-      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" },
-    );
+  sectionObserver = new IntersectionObserver(
+    (entries) => entries.forEach(revealObserverEntry),
+    { threshold: 0.15, rootMargin: "0px 0px -50px 0px" },
+  );
 
-    sections.forEach((section, index) => {
-      animatedElements.add(section);
-      section.style.opacity = "0";
-      section.style.transform = "translateY(50px)";
-      section.style.transition = "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
-      section.style.transitionDelay = `${index * 0.1}s`;
-      section.classList.add("scroll-reveal");
-      sectionObserver.observe(section);
-    });
-  }
+  sections.forEach((section, index) => {
+    animatedElements.add(section);
+    section.style.opacity = "0";
+    section.style.transform = "translateY(50px)";
+    section.style.transition = "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+    section.style.transitionDelay = `${index * 0.1}s`;
+    section.classList.add("scroll-reveal");
+    sectionObserver.observe(section);
+  });
 
   const grid = document.getElementById("product-grid");
   if (grid) {
