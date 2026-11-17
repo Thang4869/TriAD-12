@@ -193,8 +193,9 @@ describe("FlyToCart", () => {
 
     await new Promise((resolve) => {
       flyToCart.animateFly(element, start, end, () => {
-        expect(element.style.left).toBe("100px");
-        expect(element.style.top).toBe("100px");
+        expect(element.style.left).toBe("");
+        expect(element.style.top).toBe("");
+        expect(element.style.transform).toContain("translate3d(100px, 100px, 0)");
         expect(element.style.transform).toContain("scale");
         rafSpy.mockRestore();
         resolve();

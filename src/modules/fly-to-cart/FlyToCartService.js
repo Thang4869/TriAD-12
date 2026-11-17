@@ -135,15 +135,13 @@ export class FlyToCart {
           ? 4 * progress * progress * progress
           : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-      const currentX = startX + (endX - startX) * ease;
-      const currentY = startY + (endY - startY) * ease;
+      const currentX = (endX - startX) * ease;
+      const currentY = (endY - startY) * ease;
       const currentScale = 1 - ease * 0.7;
       const currentOpacity = 1 - ease * 0.3;
       const currentRotation = ease * 30;
 
-      element.style.left = currentX + "px";
-      element.style.top = currentY + "px";
-      element.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
+      element.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${currentScale}) rotate(${currentRotation}deg)`;
       element.style.opacity = currentOpacity;
 
       if (progress < 1) {
