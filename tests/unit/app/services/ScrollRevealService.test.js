@@ -42,7 +42,7 @@ describe("ScrollRevealService", () => {
 
   it("should keep all content visible when IntersectionObserver is unavailable", () => {
     document.body.innerHTML = `
-      <section id="home"></section>
+      <section id="home" style="color: red"></section>
       <section class="section"></section>
       <div id="product-grid"><div class="product-card"></div></div>
     `;
@@ -441,6 +441,61 @@ describe("ScrollRevealService - additional coverage", () => {
     initScrollReveal();
     const card = document.querySelector(".product-card");
     expect(card.style.opacity).toBe("");
+  });
+});
+
+describe("ScrollReveal cleanup", () => {
+  let originalIntersectionObserver;
+  let originalMutationObserver;
+
+  beforeEach(() => {
+    originalIntersectionObserver = global.IntersectionObserver;
+    originalMutationObserver = global.MutationObserver;
+    global.IntersectionObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    document.body.innerHTML = "";
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    global.IntersectionObserver = originalIntersectionObserver;
+    global.MutationObserver = originalMutationObserver;
+  });
+
+  it("disconnects observers, clears pending timers, and restores animated elements", () => {
+    document.body.innerHTML = `
+      <section id="home" style="color: red"></section>
+      <section class="section"></section>
+      <div id="product-grid"><div class="product-card"></div></div>
+    `;
+    const cleanup = initScrollReveal();
+
+    vi.advanceTimersByTime(200);
+    const sectionObserver = global.IntersectionObserver.mock.results[0].value;
+    const cardObserver = global.IntersectionObserver.mock.results[1].value;
+    const mutationObserver = global.MutationObserver.mock.results[0].value;
+    const hero = document.getElementById("home");
+    const section = document.querySelector(".section");
+
+    cleanup();
+
+    expect(sectionObserver.disconnect).toHaveBeenCalled();
+    expect(cardObserver.disconnect).toHaveBeenCalled();
+    expect(mutationObserver.disconnect).toHaveBeenCalled();
+    expect(hero.getAttribute("style")).toBe("color: red");
+    expect(section.style.opacity).toBe("");
+    expect(section.classList.contains("scroll-reveal")).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
 

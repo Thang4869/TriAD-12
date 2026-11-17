@@ -14,8 +14,10 @@ import { Logger } from "../../../../src/core/services/Logger.js";
 
 describe("FlyToCart", () => {
   let flyToCart;
+  let originalMatchMedia;
 
   beforeEach(() => {
+    originalMatchMedia = window.matchMedia;
     document.body.innerHTML = `
       <button id="cart-icon-btn"><span id="cart-badge">0</span></button>
       <img id="product-img" src="test.jpg">
@@ -30,6 +32,11 @@ describe("FlyToCart", () => {
   });
 
   afterEach(() => {
+    if (originalMatchMedia === undefined) {
+      delete window.matchMedia;
+    } else {
+      window.matchMedia = originalMatchMedia;
+    }
     vi.useRealTimers();
     vi.restoreAllMocks();
     document.body.innerHTML = "";
@@ -150,6 +157,27 @@ describe("FlyToCart", () => {
     flyToCart.fly(img, callback);
     expect(callback).toHaveBeenCalled();
     vi.runAllTimers();
+  });
+
+  it("should skip the fly animation when reduced motion is preferred", () => {
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    const img = document.getElementById("product-img");
+    const callback = vi.fn();
+    const badge = document.getElementById("cart-badge");
+    vi.spyOn(badge, "getBoundingClientRect").mockReturnValue({
+      left: 200, top: 100, width: 20, height: 20,
+    });
+    vi.spyOn(img, "getBoundingClientRect").mockReturnValue({
+      left: 50, top: 50, width: 100, height: 100,
+    });
+    const animateSpy = vi.spyOn(flyToCart, "animateFly");
+
+    flyToCart.fly(img, callback);
+
+    expect(animateSpy).not.toHaveBeenCalled();
+    expect(document.querySelector(".fly-element")).toBeNull();
+    expect(callback).toHaveBeenCalledOnce();
+    expect(flyToCart.isFlying).toBe(false);
   });
 
   it("should perform fly animation and callback", () => {
