@@ -15,7 +15,7 @@ export function initScrollReveal() {
   }
 
   const timers = new Set();
-  const animatedElements = new Set();
+  const originalElementStates = new Map();
   let sectionObserver = null;
   let cardObserver = null;
   let mutationObserver = null;
@@ -28,6 +28,15 @@ export function initScrollReveal() {
     }, delay);
     timers.add(timer);
     return timer;
+  };
+
+  const trackElement = (element) => {
+    if (originalElementStates.has(element)) return;
+    originalElementStates.set(element, {
+      style: element.getAttribute("style"),
+      hadScrollReveal: element.classList.contains("scroll-reveal"),
+      hadObserved: element.classList.contains("observed"),
+    });
   };
 
   const revealObserverEntry = (entry) => {
@@ -43,7 +52,7 @@ export function initScrollReveal() {
 
   const hero = document.querySelector("#home");
   if (hero) {
-    animatedElements.add(hero);
+    trackElement(hero);
     hero.style.opacity = "0";
     hero.style.transform = "translateY(30px)";
     hero.style.transition = "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)";
@@ -60,7 +69,7 @@ export function initScrollReveal() {
   );
 
   sections.forEach((section, index) => {
-    animatedElements.add(section);
+    trackElement(section);
     section.style.opacity = "0";
     section.style.transform = "translateY(50px)";
     section.style.transition = "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
@@ -83,7 +92,7 @@ export function initScrollReveal() {
       }
 
       cards.forEach((card, index) => {
-        animatedElements.add(card);
+        trackElement(card);
         card.classList.add("observed");
         card.style.opacity = "0";
         card.style.transform = "translateY(30px) scale(0.97)";
@@ -109,13 +118,15 @@ export function initScrollReveal() {
     cardObserver?.disconnect();
     mutationObserver?.disconnect();
 
-    animatedElements.forEach((element) => {
-      element.style.removeProperty("opacity");
-      element.style.removeProperty("transform");
-      element.style.removeProperty("transition");
-      element.style.removeProperty("transition-delay");
-      element.classList.remove("scroll-reveal", "observed");
+    originalElementStates.forEach((original, element) => {
+      if (original.style === null) {
+        element.removeAttribute("style");
+      } else {
+        element.setAttribute("style", original.style);
+      }
+      if (!original.hadScrollReveal) element.classList.remove("scroll-reveal");
+      if (!original.hadObserved) element.classList.remove("observed");
     });
-    animatedElements.clear();
+    originalElementStates.clear();
   };
 }
