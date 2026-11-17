@@ -16,7 +16,7 @@ describe("ModalController", () => {
           <button id="close-modal-btn"></button>
           <h2 id="modal-title"></h2>
           <p id="modal-price"></p>
-          <img id="modal-img" src="">
+          <img id="modal-img" src="" width="384" height="384" decoding="async">
           <div id="modal-image-thumbnails" hidden></div>
           <span id="modal-quantity">1</span>
           <button id="qty-plus"></button>
