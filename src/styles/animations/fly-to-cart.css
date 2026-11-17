@@ -28,3 +28,11 @@
 .cart-badge-pulse {
   animation: flyPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .fly-element,
+  .cart-badge-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+}
