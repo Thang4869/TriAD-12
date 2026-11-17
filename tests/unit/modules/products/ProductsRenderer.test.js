@@ -315,7 +315,7 @@ describe("ProductsRenderer", () => {
       expect(image.getAttribute("width")).toBe("288");
       expect(image.getAttribute("height")).toBe("288");
       expect(image.getAttribute("decoding")).toBe("async");
-      expect(image.loading).toBe("lazy");
+      expect(image.getAttribute("loading")).toBe("lazy");
       expect(card.querySelector('[data-action="add-to-cart"]')).toBeTruthy();
       expect(card.querySelector('[data-action="open-modal"]')).toBeTruthy();
     });
