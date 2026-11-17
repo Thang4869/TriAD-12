@@ -4,7 +4,7 @@ export function initScrollReveal() {
   Logger.debug("Initializing Scroll Reveal...");
 
   const prefersReducedMotion =
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
 
   if (
     prefersReducedMotion ||
@@ -33,11 +33,11 @@ export function initScrollReveal() {
   const revealObserverEntry = (entry) => {
     if (!entry.isIntersecting) return;
     entry.target.style.opacity = "1";
-    entry.target.style.transform = "translateY(0) scale(1)";
-    const observer =
-      entry.target.classList.contains("product-card")
-        ? cardObserver
-        : sectionObserver;
+    const isProductCard = entry.target.classList.contains("product-card");
+    entry.target.style.transform = isProductCard
+      ? "translateY(0) scale(1)"
+      : "translateY(0)";
+    const observer = isProductCard ? cardObserver : sectionObserver;
     observer?.unobserve(entry.target);
   };
 
