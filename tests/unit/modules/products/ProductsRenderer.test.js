@@ -310,7 +310,12 @@ describe("ProductsRenderer", () => {
       expect(card.dataset.productId).toBe(String(product.id));
       expect(card.querySelector("h3").textContent).toBe(product.name);
       expect(card.querySelector(".text-2xl").textContent).toBe("150.000 ₫");
-      expect(card.querySelector("img").src).toContain("21.jpg");
+      const image = card.querySelector("img");
+      expect(image.src).toContain("21.jpg");
+      expect(image.getAttribute("width")).toBe("288");
+      expect(image.getAttribute("height")).toBe("288");
+      expect(image.getAttribute("decoding")).toBe("async");
+      expect(image.loading).toBe("lazy");
       expect(card.querySelector('[data-action="add-to-cart"]')).toBeTruthy();
       expect(card.querySelector('[data-action="open-modal"]')).toBeTruthy();
     });
