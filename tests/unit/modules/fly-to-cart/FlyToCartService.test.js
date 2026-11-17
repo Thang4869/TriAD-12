@@ -14,8 +14,10 @@ import { Logger } from "../../../../src/core/services/Logger.js";
 
 describe("FlyToCart", () => {
   let flyToCart;
+  let originalMatchMedia;
 
   beforeEach(() => {
+    originalMatchMedia = window.matchMedia;
     document.body.innerHTML = `
       <button id="cart-icon-btn"><span id="cart-badge">0</span></button>
       <img id="product-img" src="test.jpg">
@@ -30,6 +32,11 @@ describe("FlyToCart", () => {
   });
 
   afterEach(() => {
+    if (originalMatchMedia === undefined) {
+      delete window.matchMedia;
+    } else {
+      window.matchMedia = originalMatchMedia;
+    }
     vi.useRealTimers();
     vi.restoreAllMocks();
     document.body.innerHTML = "";
