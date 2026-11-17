@@ -16,7 +16,7 @@ describe("ModalController", () => {
           <button id="close-modal-btn"></button>
           <h2 id="modal-title"></h2>
           <p id="modal-price"></p>
-          <img id="modal-img" src="">
+          <img id="modal-img" src="" width="384" height="384" decoding="async">
           <div id="modal-image-thumbnails" hidden></div>
           <span id="modal-quantity">1</span>
           <button id="qty-plus"></button>
@@ -150,6 +150,11 @@ describe("ModalController", () => {
       const thumbnails = modalController.imageThumbnails.querySelectorAll("button");
       expect(thumbnails).toHaveLength(3);
       expect(modalController.image.src).toContain("front.jpg");
+      expect(modalController.image.getAttribute("width")).toBe("384");
+      expect(modalController.image.getAttribute("height")).toBe("384");
+      expect(modalController.image.getAttribute("decoding")).toBe("async");
+      expect(thumbnails[0].querySelector("img").width).toBe(64);
+      expect(thumbnails[0].querySelector("img").height).toBe(64);
       expect(thumbnails[0].getAttribute("aria-pressed")).toBe("true");
       expect(thumbnails[1].getAttribute("aria-label")).toBe("Show product image 2");
 

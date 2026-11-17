@@ -71,6 +71,9 @@ export class ProductsRenderer extends BaseRenderer {
         <div class="bg-gray-50 p-8 relative overflow-hidden rounded-2xl shadow-inner">
           <img src="${product.image}" 
                alt="${product.name}" 
+               width="288"
+               height="288"
+               decoding="async"
                class="product-image w-full h-72 object-contain transition-transform duration-500 rounded-2xl group-hover:scale-150 ${product.filter || ""}"
                style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
                loading="lazy">
@@ -171,7 +174,7 @@ export class ProductsRenderer extends BaseRenderer {
       .map(
         (p) => `
       <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3" data-id="${p.id}">
-        <img src="${p.image}" alt="" class="w-10 h-10 object-contain rounded">
+        <img src="${p.image}" alt="" width="40" height="40" decoding="async" class="w-10 h-10 object-contain rounded">
         <div>
           <div class="font-medium text-sm">${p.name}</div>
           <div class="text-xs text-gray-500">${p.color} - ${p.formattedPrice}</div>

@@ -135,6 +135,9 @@ export class ModalController {
       const thumbnail = document.createElement("img");
       thumbnail.src = src;
       thumbnail.alt = "";
+      thumbnail.width = 64;
+      thumbnail.height = 64;
+      thumbnail.decoding = "async";
       thumbnail.className = "w-full h-full object-cover";
       button.append(thumbnail);
       this.imageThumbnails.append(button);
