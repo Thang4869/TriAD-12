@@ -14,14 +14,21 @@
     </button>
 
     <div
-      class="w-full md:w-1/2 bg-[#f8f8f8] p-8 flex items-center justify-center min-h-[300px]"
+      class="w-full md:w-1/2 bg-[#f8f8f8] p-8 flex flex-col items-center justify-center gap-4 min-h-[300px]"
     >
       <img
         id="modal-img"
         src=""
         alt="Product"
-        class="w-full max-w-sm h-auto object-contain transition-all duration-300"
+        class="w-full max-w-sm h-auto object-contain transition-opacity duration-200 opacity-100"
       />
+      <div
+        id="modal-image-thumbnails"
+        class="flex flex-wrap justify-center gap-2"
+        role="group"
+        aria-label="Product images"
+        hidden
+      ></div>
     </div>
 
     <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col">

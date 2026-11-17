@@ -12,7 +12,10 @@ export class ModalController {
     this.title = document.getElementById("modal-title");
     this.price = document.getElementById("modal-price");
     this.image = document.getElementById("modal-img");
+    this.imageThumbnails = document.getElementById("modal-image-thumbnails");
     this.quantityEl = document.getElementById("modal-quantity");
+    this.productImages = [];
+    this._imageSelectionVersion = 0;
     this._isClosing = false;
 
     this.setupEventListeners();
@@ -53,6 +56,12 @@ export class ModalController {
       if (e.target === this.overlay) this.close();
     });
 
+    this.imageThumbnails?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-image-index]");
+      if (!button || !this.imageThumbnails.contains(button)) return;
+      this.selectImage(Number(button.dataset.imageIndex));
+    });
+
     document.getElementById("qty-plus")?.addEventListener("click", () => {
       this.updateQuantity(1);
     });
@@ -89,13 +98,79 @@ export class ModalController {
 
     if (this.title) this.title.textContent = product.name;
     if (this.price) this.price.textContent = formatPrice(product.price);
+    const images = Array.isArray(product.images)
+      ? product.images.filter((src) => typeof src === "string" && src.trim())
+      : [];
+    this.productImages = images.length > 0 ? images : [product.image].filter(Boolean);
+    this._imageSelectionVersion += 1;
+
     if (this.image) {
-      this.image.src = product.image;
-      this.image.className = `w-full max-w-sm h-auto object-contain transition-all duration-300 filter ${product.filter || ""}`;
+      this.image.src = this.productImages[0] || "";
+      this.image.className = `w-full max-w-sm h-auto object-contain transition-opacity duration-200 opacity-100 filter ${product.filter || ""}`;
     }
+    this.renderImageThumbnails();
     if (this.quantityEl) this.quantityEl.textContent = 1;
 
     this.show();
+  }
+
+  renderImageThumbnails() {
+    if (!this.imageThumbnails) return;
+
+    this.imageThumbnails.replaceChildren();
+    const hasMultipleImages = this.productImages.length > 1;
+    this.imageThumbnails.hidden = !hasMultipleImages;
+    if (!hasMultipleImages) return;
+
+    this.productImages.forEach((src, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.imageIndex = String(index);
+      button.setAttribute("aria-label", `Show product image ${index + 1}`);
+      button.setAttribute("aria-pressed", String(index === 0));
+      button.className =
+        "w-16 h-16 rounded-md overflow-hidden border-2 border-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
+      if (index === 0) button.classList.add("border-black");
+
+      const thumbnail = document.createElement("img");
+      thumbnail.src = src;
+      thumbnail.alt = "";
+      thumbnail.className = "w-full h-full object-cover";
+      button.append(thumbnail);
+      this.imageThumbnails.append(button);
+    });
+  }
+
+  selectImage(index) {
+    if (
+      !this.image ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= this.productImages.length
+    ) {
+      return;
+    }
+
+    const selectedSrc = this.productImages[index];
+    if (this.image.src.endsWith(selectedSrc)) return;
+
+    this.imageThumbnails?.querySelectorAll("[data-image-index]").forEach((button) => {
+      const selected = Number(button.dataset.imageIndex) === index;
+      button.setAttribute("aria-pressed", String(selected));
+      button.classList.toggle("border-black", selected);
+    });
+
+    const selectionVersion = ++this._imageSelectionVersion;
+    this.image.classList.add("opacity-0");
+
+    requestAnimationFrame(() => {
+      if (selectionVersion !== this._imageSelectionVersion) return;
+      this.image.src = selectedSrc;
+      requestAnimationFrame(() => {
+        if (selectionVersion !== this._imageSelectionVersion) return;
+        this.image.classList.remove("opacity-0");
+      });
+    });
   }
 
   show() {

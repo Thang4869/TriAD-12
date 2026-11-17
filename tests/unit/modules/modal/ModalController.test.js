@@ -17,6 +17,7 @@ describe("ModalController", () => {
           <h2 id="modal-title"></h2>
           <p id="modal-price"></p>
           <img id="modal-img" src="">
+          <div id="modal-image-thumbnails" hidden></div>
           <span id="modal-quantity">1</span>
           <button id="qty-plus"></button>
           <button id="qty-minus"></button>
@@ -88,6 +89,9 @@ describe("ModalController", () => {
         document.getElementById("modal-price"),
       );
       expect(modalController.image).toBe(document.getElementById("modal-img"));
+      expect(modalController.imageThumbnails).toBe(
+        document.getElementById("modal-image-thumbnails"),
+      );
       expect(modalController.quantityEl).toBe(
         document.getElementById("modal-quantity"),
       );
@@ -130,6 +134,71 @@ describe("ModalController", () => {
       expect(modalController.image.className).toContain("grayscale");
       expect(modalController.quantityEl.textContent).toBe("1");
       expect(modalController.overlay.classList.contains("hidden")).toBe(false);
+    });
+
+    it("renders thumbnails and changes the main image with a crossfade", () => {
+      mockProduct = new ProductModel({
+        id: 3,
+        name: "Gallery Product",
+        price: 200000,
+        images: ["front.jpg", "side.jpg", "detail.jpg"],
+      });
+      window.productsController.getProduct.mockReturnValue(mockProduct);
+
+      modalController.open(3);
+
+      const thumbnails = modalController.imageThumbnails.querySelectorAll("button");
+      expect(thumbnails).toHaveLength(3);
+      expect(modalController.image.src).toContain("front.jpg");
+      expect(thumbnails[0].getAttribute("aria-pressed")).toBe("true");
+      expect(thumbnails[1].getAttribute("aria-label")).toBe("Show product image 2");
+
+      thumbnails[1].click();
+
+      expect(modalController.image.src).toContain("side.jpg");
+      expect(modalController.image.classList.contains("opacity-0")).toBe(false);
+      expect(thumbnails[0].getAttribute("aria-pressed")).toBe("false");
+      expect(thumbnails[1].getAttribute("aria-pressed")).toBe("true");
+    });
+
+    it("resets the selected image when a different product is opened", () => {
+      const galleryProduct = new ProductModel({
+        id: 4,
+        name: "First product",
+        price: 100,
+        images: ["first-a.jpg", "first-b.jpg"],
+      });
+      const nextProduct = new ProductModel({
+        id: 5,
+        name: "Second product",
+        price: 200,
+        images: ["second-a.jpg", "second-b.jpg"],
+      });
+      window.productsController.getProduct.mockImplementation((id) =>
+        id === 4 ? galleryProduct : nextProduct,
+      );
+
+      modalController.open(4);
+      modalController.imageThumbnails.querySelectorAll("button")[1].click();
+      expect(modalController.image.src).toContain("first-b.jpg");
+
+      modalController.open(5);
+
+      expect(modalController.image.src).toContain("second-a.jpg");
+      expect(
+        modalController.imageThumbnails.querySelectorAll("button")[0].getAttribute("aria-pressed"),
+      ).toBe("true");
+      expect(
+        modalController.imageThumbnails.querySelectorAll("button")[1].getAttribute("aria-pressed"),
+      ).toBe("false");
+    });
+
+    it("keeps a single image without showing thumbnails", () => {
+      modalController.open(1);
+
+      expect(modalController.image.src).toContain("test.jpg");
+      expect(modalController.imageThumbnails.hidden).toBe(true);
+      expect(modalController.imageThumbnails.children).toHaveLength(0);
     });
 
     it("should handle missing product gracefully (log error, no update)", () => {
