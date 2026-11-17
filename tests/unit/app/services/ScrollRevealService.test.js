@@ -474,7 +474,7 @@ describe("ScrollReveal cleanup", () => {
 
   it("disconnects observers, clears pending timers, and restores animated elements", () => {
     document.body.innerHTML = `
-      <section id="home"></section>
+      <section id="home" style="color: red"></section>
       <section class="section"></section>
       <div id="product-grid"><div class="product-card"></div></div>
     `;
