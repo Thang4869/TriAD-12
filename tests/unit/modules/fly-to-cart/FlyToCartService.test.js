@@ -152,6 +152,27 @@ describe("FlyToCart", () => {
     vi.runAllTimers();
   });
 
+  it("should skip the fly animation when reduced motion is preferred", () => {
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    const img = document.getElementById("product-img");
+    const callback = vi.fn();
+    const badge = document.getElementById("cart-badge");
+    vi.spyOn(badge, "getBoundingClientRect").mockReturnValue({
+      left: 200, top: 100, width: 20, height: 20,
+    });
+    vi.spyOn(img, "getBoundingClientRect").mockReturnValue({
+      left: 50, top: 50, width: 100, height: 100,
+    });
+    const animateSpy = vi.spyOn(flyToCart, "animateFly");
+
+    flyToCart.fly(img, callback);
+
+    expect(animateSpy).not.toHaveBeenCalled();
+    expect(document.querySelector(".fly-element")).toBeNull();
+    expect(callback).toHaveBeenCalledOnce();
+    expect(flyToCart.isFlying).toBe(false);
+  });
+
   it("should perform fly animation and callback", () => {
     const img = document.getElementById("product-img");
     const callback = vi.fn();
