@@ -4,10 +4,12 @@ import { initScrollReveal } from "../../../../src/app/services/ScrollRevealServi
 describe("ScrollRevealService", () => {
   let originalIntersectionObserver;
   let originalMutationObserver;
+  let originalMatchMedia;
 
   beforeEach(() => {
     originalIntersectionObserver = global.IntersectionObserver;
     originalMutationObserver = global.MutationObserver;
+    originalMatchMedia = window.matchMedia;
 
     global.IntersectionObserver = vi.fn(function (callback) {
       this.observe = vi.fn();
@@ -30,7 +32,45 @@ describe("ScrollRevealService", () => {
     vi.useRealTimers();
     global.IntersectionObserver = originalIntersectionObserver;
     global.MutationObserver = originalMutationObserver;
+    if (originalMatchMedia === undefined) {
+      delete window.matchMedia;
+    } else {
+      window.matchMedia = originalMatchMedia;
+    }
     vi.restoreAllMocks();
+  });
+
+  it("should keep all content visible when IntersectionObserver is unavailable", () => {
+    document.body.innerHTML = `
+      <section id="home"></section>
+      <section class="section"></section>
+      <div id="product-grid"><div class="product-card"></div></div>
+    `;
+    global.IntersectionObserver = undefined;
+
+    expect(() => initScrollReveal()).not.toThrow();
+
+    expect(document.getElementById("home").style.opacity).toBe("");
+    expect(document.querySelector(".section").style.opacity).toBe("");
+    expect(document.querySelector(".product-card").style.opacity).toBe("");
+    expect(global.MutationObserver).not.toHaveBeenCalled();
+  });
+
+  it("should skip animations when reduced motion is preferred", () => {
+    document.body.innerHTML = `
+      <section id="home"></section>
+      <section class="section"></section>
+      <div id="product-grid"><div class="product-card"></div></div>
+    `;
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+
+    expect(() => initScrollReveal()).not.toThrow();
+
+    expect(global.IntersectionObserver).not.toHaveBeenCalled();
+    expect(global.MutationObserver).not.toHaveBeenCalled();
+    expect(document.getElementById("home").style.opacity).toBe("");
+    expect(document.querySelector(".section").style.opacity).toBe("");
+    expect(document.querySelector(".product-card").style.opacity).toBe("");
   });
 
   it("should do nothing if no sections exist", () => {

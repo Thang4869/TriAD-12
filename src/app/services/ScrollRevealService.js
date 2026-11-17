@@ -3,6 +3,17 @@ import { Logger } from "../../core/services/Logger.js";
 export function initScrollReveal() {
   Logger.debug("Initializing Scroll Reveal...");
 
+  const prefersReducedMotion =
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
+  if (
+    prefersReducedMotion ||
+    typeof window.IntersectionObserver !== "function"
+  ) {
+    Logger.debug("Scroll Reveal skipped; content remains visible.");
+    return;
+  }
+
   const hero = document.querySelector("#home");
   if (hero) {
     hero.style.opacity = "0";
