@@ -445,6 +445,33 @@ describe("ScrollRevealService - additional coverage", () => {
 });
 
 describe("ScrollReveal cleanup", () => {
+  let originalIntersectionObserver;
+  let originalMutationObserver;
+
+  beforeEach(() => {
+    originalIntersectionObserver = global.IntersectionObserver;
+    originalMutationObserver = global.MutationObserver;
+    global.IntersectionObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    global.MutationObserver = vi.fn(function (callback) {
+      this.observe = vi.fn();
+      this.disconnect = vi.fn();
+      this._callback = callback;
+    });
+    document.body.innerHTML = "";
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    global.IntersectionObserver = originalIntersectionObserver;
+    global.MutationObserver = originalMutationObserver;
+  });
+
   it("disconnects observers, clears pending timers, and restores animated elements", () => {
     document.body.innerHTML = `
       <section id="home"></section>
