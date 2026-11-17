@@ -63,7 +63,7 @@ export class FlyToCart {
     }
 
     const prefersReducedMotion =
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
     if (prefersReducedMotion) {
       if (callback) callback();
       return;
