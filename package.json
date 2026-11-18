@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:fullstack": "node scripts/reset-fullstack-auth-limit.cjs && playwright test --config=playwright.fullstack.config.ts",
-    "test:e2e:staging": "playwright test --config=playwright.staging.config.ts"
+    "test:e2e:staging": "playwright test --config=playwright.staging.config.ts",
+    "performance:audit": "node scripts/performance/lighthouse-audit.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
