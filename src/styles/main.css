@@ -64,3 +64,18 @@
 #notification-btn i,#mobile-notification-btn i {transition:transform .2s ease}
 body {padding-top:80px}
 @media(max-width:1023px){body{padding-top:64px}}
+
+/* Reserve footer space before its HTML partial is injected asynchronously. */
+#footer-container {
+  min-height: 32rem;
+}
+
+#footer-container > footer {
+  min-height: inherit;
+}
+
+@media (min-width: 768px) {
+  #footer-container {
+    min-height: 21rem;
+  }
+}
