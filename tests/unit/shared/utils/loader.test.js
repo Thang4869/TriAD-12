@@ -173,6 +173,25 @@ describe("loader", () => {
       );
     });
 
+    it("should preserve a server-rendered component when requested", async () => {
+      document.body.innerHTML =
+        '<div id="test-container"><p>Server rendered</p></div>';
+
+      const results = await loadComponents([
+        {
+          elementId: "test-container",
+          filePath: "test.html",
+          skipIfPresent: true,
+        },
+      ]);
+
+      expect(global.fetch).not.toHaveBeenCalled();
+      expect(results[0].success).toBe(true);
+      expect(document.getElementById("test-container").innerHTML).toBe(
+        "<p>Server rendered</p>",
+      );
+    });
+
     it("should handle failure of one component and set success to false", async () => {
       global.fetch
         .mockResolvedValueOnce({

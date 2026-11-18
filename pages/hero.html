@@ -59,12 +59,19 @@
               class="absolute inset-0 rounded-2xl p-[3px] bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             ></div>
 
+            <picture>
+            <source
+              srcset="../images/11-480.webp 480w, ../images/11-768.webp 768w"
+              sizes="(max-width: 1023px) calc(100vw - 40px), 680px"
+              type="image/webp"
+            />
             <img
               src="../images/11.jpg"
               alt="AURA ThermoBox"
               loading="lazy"
               class="w-[680px] h-auto object-cover rounded-2xl transform group-hover:scale-150 transition-transform duration-700 ease-out"
             />
+            </picture>
 
             <div
               class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 rounded-2xl pointer-events-none"

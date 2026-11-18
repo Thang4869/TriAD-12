@@ -7,6 +7,16 @@ function emitPagePartials() {
   return {
     name: "emit-page-partials",
     apply: "build",
+    async transformIndexHtml(html) {
+      const hero = await readFile(
+        resolve(import.meta.dirname, "pages", "hero-content.html"),
+        "utf8",
+      );
+      return html.replace(
+        '<div id="hero-container"></div>',
+        `<div id="hero-container">${hero}</div>`,
+      );
+    },
     async generateBundle() {
       const pagesDirectory = resolve(import.meta.dirname, "pages");
       const pageFiles = await readdir(pagesDirectory);
@@ -19,6 +29,27 @@ function emitPagePartials() {
           type: "asset",
           fileName: `pages/${file}`,
           source: await readFile(resolve(pagesDirectory, file), "utf8"),
+        });
+      }
+      const optimizedImages = [
+        "11.webp",
+        "11-480.webp",
+        "11-768.webp",
+        "12.webp",
+        "12-384.webp",
+        "12-768.webp",
+        "13.webp",
+        "13-384.webp",
+        "13-768.webp",
+      ];
+
+      for (const file of optimizedImages) {
+        this.emitFile({
+          type: "asset",
+          fileName: `images/${file}`,
+          source: await readFile(
+            resolve(import.meta.dirname, "images", file),
+          ),
         });
       }
     },
