@@ -72,7 +72,7 @@ for (const profile of profiles) {
     const value = audits[id]?.numericValue;
     return Number.isFinite(value) ? Math.round(value * 100) / 100 : "not available";
   };
-  const score = audits.performance?.score;
+  const score = report.categories?.performance?.score;
 
   console.log(`Lighthouse ${profile.name} summary`);
   console.log(`Performance score: ${score == null ? "not available" : Math.round(score * 100)}`);
