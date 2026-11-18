@@ -42,8 +42,17 @@ const profiles = [
 
 for (const profile of profiles) {
   const outputPath = resolve(outputDirectory, `lighthouse-${profile.name}.json`);
+  const npmCli = process.env.npm_execpath;
+  if (!npmCli) {
+    throw new Error("Run this audit through npm so npm_execpath is available.");
+  }
+
   const commandArgs = [
+    npmCli,
+    "exec",
     "--yes",
+    "--package=lighthouse",
+    "--",
     "lighthouse",
     targetUrl,
     "--only-categories=performance",
@@ -53,10 +62,9 @@ for (const profile of profiles) {
     ...profile.flags,
   ];
 
-  console.log(`\\nRunning Lighthouse (${profile.name}) for ${targetUrl}`);
-  const result = spawnSync("npx", commandArgs, {
+  console.log(`\nRunning Lighthouse (${profile.name}) for ${targetUrl}`);
+  const result = spawnSync(process.execPath, commandArgs, {
     stdio: "inherit",
-    shell: process.platform === "win32",
   });
 
   if (result.error) {
