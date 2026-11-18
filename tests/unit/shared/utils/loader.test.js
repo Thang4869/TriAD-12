@@ -121,6 +121,58 @@ describe("loader", () => {
       expect(results[0].filePath).toBe("test1.html");
     });
 
+    it("should start independent component requests concurrently and preserve result order", async () => {
+      let resolveFirst;
+      let resolveSecond;
+
+      global.fetch
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              resolveFirst = resolve;
+            }),
+        )
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              resolveSecond = resolve;
+            }),
+        );
+
+      document.body.innerHTML =
+        '<div id="first-container"></div><div id="second-container"></div>';
+
+      const loading = loadComponents([
+        { elementId: "first-container", filePath: "first.html" },
+        { elementId: "second-container", filePath: "second.html" },
+      ]);
+
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+
+      resolveSecond({
+        ok: true,
+        text: async () => "<p>Second</p>",
+      });
+      resolveFirst({
+        ok: true,
+        text: async () => "<p>First</p>",
+      });
+
+      const results = await loading;
+
+      expect(results.map(({ filePath }) => filePath)).toEqual([
+        "first.html",
+        "second.html",
+      ]);
+      expect(results.every(({ success }) => success)).toBe(true);
+      expect(document.getElementById("first-container").innerHTML).toBe(
+        "<p>First</p>",
+      );
+      expect(document.getElementById("second-container").innerHTML).toBe(
+        "<p>Second</p>",
+      );
+    });
+
     it("should handle failure of one component and set success to false", async () => {
       global.fetch
         .mockResolvedValueOnce({
