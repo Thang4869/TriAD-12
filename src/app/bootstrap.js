@@ -95,6 +95,7 @@ function getComponentsForPage(page) {
       {
         elementId: "hero-container",
         filePath: `${root}pages/hero-content.html`,
+        skipIfPresent: true,
       },
       {
         elementId: "about-container",

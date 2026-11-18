@@ -27,6 +27,11 @@ export async function loadComponent(elementId, filePath, callback = null) {
 export async function loadComponents(components) {
   return Promise.all(
     components.map(async (config) => {
+      const existingElement = document.getElementById(config.elementId);
+      if (config.skipIfPresent && existingElement?.innerHTML.trim()) {
+        return { ...config, success: true };
+      }
+
       const result = await loadComponent(
         config.elementId,
         config.filePath,

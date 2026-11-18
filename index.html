@@ -19,7 +19,53 @@
       href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link
+      rel="preload"
+      as="image"
+      imagesrcset="images/11-480.webp 480w, images/11-768.webp 768w"
+      imagesizes="(max-width: 1023px) calc(100vw - 40px), 680px"
+      type="image/webp"
+      fetchpriority="high"
+    />
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <style>
+      #footer-container {
+        min-height: 32rem;
+      }
+
+      @media (min-width: 768px) {
+        #footer-container {
+          min-height: 21rem;
+        }
+      }
+
+      /* Reserve the measured home partial heights before asynchronous injection. */
+      #hero-container {
+        min-height: 45.9375rem;
+      }
+
+      #about-container {
+        min-height: 64.59375rem;
+      }
+
+      #features-container {
+        min-height: 68.5rem;
+      }
+
+      @media (min-width: 1024px) {
+        #hero-container {
+          min-height: 41.833rem;
+        }
+
+        #about-container {
+          min-height: 37.25rem;
+        }
+
+        #features-container {
+          min-height: 31.25rem;
+        }
+      }
+    </style>
 
     <!-- Styles -->
   </head>

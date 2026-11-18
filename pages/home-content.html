@@ -46,12 +46,19 @@
           <div
             class="relative rounded-2xl overflow-hidden shadow-2xl shadow-orange-200/50 border-4 border-white/80"
           >
+            <picture>
+            <source
+              srcset="../images/11-480.webp 480w, ../images/11-768.webp 768w"
+              sizes="(max-width: 1023px) calc(100vw - 40px), 680px"
+              type="image/webp"
+            />
             <img
               src="../images/11.jpg"
               alt="AURA ThermoBox"
               loading="lazy"
               class="w-[680px] h-auto object-cover rounded-2xl transform group-hover:scale-150 transition-transform duration-700 ease-out"
             />
+            </picture>
           </div>
         </div>
       </div>
@@ -135,11 +142,24 @@
       <div
         class="md:col-span-7 relative bg-[#7ec8d4]/20 rounded-3xl p-8 flex items-end justify-end h-[420px] overflow-hidden"
       >
+        <picture>
+        <source
+          srcset="../images/13-384.webp 384w, ../images/13-768.webp 768w"
+          sizes="224px"
+          type="image/webp"
+        />
         <img
           src="../images/13.jpg"
           alt="Plant"
           loading="lazy"
           class="absolute bottom-6 left-6 w-56 h-56 object-cover rounded-full shadow-lg z-10 border-4 border-white"
+        />
+        </picture>
+        <picture>
+        <source
+          srcset="../images/12-384.webp 384w, ../images/12-768.webp 768w"
+          sizes="(max-width: 767px) calc(100vw - 80px), 56vw"
+          type="image/webp"
         />
         <img
           src="../images/12.jpg"
@@ -147,6 +167,7 @@
           loading="lazy"
           class="w-[780px] h-auto object-cover rounded-xl shadow-2xl relative z-0 mb-2 filter drop-shadow-xl"
         />
+        </picture>
       </div>
     </div>
   </div>
