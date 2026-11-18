@@ -25,16 +25,17 @@ export async function loadComponent(elementId, filePath, callback = null) {
 }
 
 export async function loadComponents(components) {
-  const results = [];
-  for (const config of components) {
-    const result = await loadComponent(
-      config.elementId,
-      config.filePath,
-      config.callback,
-    );
-    results.push({ ...config, success: !!result });
-  }
-  return results;
+  return Promise.all(
+    components.map(async (config) => {
+      const result = await loadComponent(
+        config.elementId,
+        config.filePath,
+        config.callback,
+      );
+
+      return { ...config, success: !!result };
+    }),
+  );
 }
 
 export function injectComponent(selector, filePath, position = "afterbegin") {
