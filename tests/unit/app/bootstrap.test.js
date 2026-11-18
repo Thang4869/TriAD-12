@@ -91,6 +91,11 @@ vi.mock("../../../src/modules/admin/AdminProductController.js", () => ({
     this.init = vi.fn().mockResolvedValue(undefined);
   }),
 }));
+vi.mock("../../../src/modules/admin/AdminManagementController.js", () => ({
+  AdminManagementController: vi.fn().mockImplementation(function () {
+    this.init = vi.fn().mockResolvedValue(undefined);
+  }),
+}));
 vi.mock(
   "../../../src/modules/products/repositories/ProductsRepository.js",
   () => ({
@@ -294,6 +299,43 @@ describe("bootstrap", () => {
     expect(window.modalController).toBeDefined();
     expect(window.checkoutController).toBeDefined();
   });
+
+  it("does not load admin controllers on storefront pages", async () => {
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const { AdminController } =
+      await import("../../../src/modules/admin/AdminController.js");
+    const { AdminProductController } =
+      await import("../../../src/modules/admin/AdminProductController.js");
+    const { AdminManagementController } =
+      await import("../../../src/modules/admin/AdminManagementController.js");
+
+    expect(AdminController).not.toHaveBeenCalled();
+    expect(AdminProductController).not.toHaveBeenCalled();
+    expect(AdminManagementController).not.toHaveBeenCalled();
+  });
+
+  it("initializes admin management only on its page", async () => {
+    const { AdminManagementController } =
+      await import("../../../src/modules/admin/AdminManagementController.js");
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/pages/admin-management.html" },
+      writable: true,
+      configurable: true,
+    });
+
+    await bootstrap();
+
+    const instance = AdminManagementController.mock.instances.at(-1);
+    expect(instance.init).toHaveBeenCalledOnce();
+  });
+
   it("initializes the admin dashboard controller on its page", async () => {
     const { Container } = await import("../../../src/core/di/container.js");
     Object.defineProperty(window, "location", {
