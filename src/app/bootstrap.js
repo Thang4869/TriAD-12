@@ -27,9 +27,6 @@ import { ProductsService } from "../modules/products/services/ProductsService.js
 import { ProductsRenderer } from "../modules/products/renderers/ProductsRenderer.js";
 import { authService } from "../modules/auth/AuthService.js";
 
-import { AdminController } from "../modules/admin/AdminController.js";
-import { AdminProductController } from "../modules/admin/AdminProductController.js";
-import { AdminManagementController } from "../modules/admin/AdminManagementController.js";
 
 function getCurrentPage() {
   const pathname = window.location.pathname;
@@ -236,7 +233,11 @@ export async function bootstrap() {
     container.register("checkoutController", new CheckoutController());
     container.register("blogController", new BlogController());
     container.register("reviewsController", new ReviewsController());
-    container.register("adminController", new AdminController());
+    if (currentPage === "admin-dashboard") {
+      const { AdminController } =
+        await import("../modules/admin/AdminController.js");
+      container.register("adminController", new AdminController());
+    }
 
     const router = new RouterService();
     const uiService = new UIService(container.get("cartController"));
@@ -262,9 +263,13 @@ export async function bootstrap() {
       await container.get("adminController").init();
     }
     if (currentPage === "admin-products") {
+      const { AdminProductController } =
+        await import("../modules/admin/AdminProductController.js");
       await new AdminProductController().init();
     }
     if (currentPage === "admin-management") {
+      const { AdminManagementController } =
+        await import("../modules/admin/AdminManagementController.js");
       await new AdminManagementController().init();
     }
     if (currentPage === "profile") {
