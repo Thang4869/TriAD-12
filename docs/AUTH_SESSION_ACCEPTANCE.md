@@ -19,7 +19,7 @@ See [Authenticated API proxy](AUTHENTICATED_API_PROXY.md) for the proxy trust bo
 
 The original fix snapshot recorded **887 tests in 57 files**, a successful production build and 22 deployment-configuration safeguards. Those counts are historical measurements from that change, not the current test-suite total.
 
-The latest recorded main-branch workflow at the time of this update is [run #238](https://github.com/Thang4869/TriAD-12/actions/runs/44606843216), source 3a010cf29097c0d575d36eaf900c8ecd514017ce, dated 19 November 2026. All three jobs completed successfully:
+The latest recorded main-branch workflow is [run #44655347922](https://github.com/Thang4869/TriAD-12/actions/runs/44655347922), source `0779307564a218fd9d66a8e4d00fe8cb3852b38c` (`0779307`), dated 20 November 2026. All three jobs completed successfully:
 
 - Unit/coverage, deployment safeguards, production build and browser E2E.
 - Deployed HTTPS-origin/cookie acceptance job.
