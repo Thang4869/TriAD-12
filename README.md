@@ -161,7 +161,7 @@ The Test & Coverage workflow runs:
 3. Deployed HTTPS-origin checks.
 4. Fullstack auth and checkout journeys against disposable PostgreSQL and Redis services, with the backend main branch checked out separately.
 
-The main-branch workflow run on 19 November 2026 ([run #238](https://github.com/Thang4869/TriAD-12/actions/runs/44606843216)) completed successfully across all three jobs. A successful hosted-staging job is not, by itself, proof that every credentialed scenario ran; check the workflow summary and uploaded result artifact before making that claim.
+The main-branch workflow run on 20 November 2026 ([run #44655347922](https://github.com/Thang4869/TriAD-12/actions/runs/44655347922)) completed successfully across all three jobs. A successful hosted-staging job is not, by itself, proof that every credentialed scenario ran; check the workflow summary and uploaded result artifact before making that claim.
 
 ## Deployment
 
