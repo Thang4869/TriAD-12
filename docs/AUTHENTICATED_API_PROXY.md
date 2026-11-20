@@ -59,16 +59,20 @@ For rollback, disable the backend edge gate first. Only then revert the frontend
 - OAuth callback URLs must use the frontend /api origin after edge-gate activation. Direct Render API callbacks are intentionally rejected by the gated topology.
 - The checked-in upstream is the Render staging API. Review the destination and backend trust configuration before using this proxy for another environment.
 
-## Acceptance status and remaining verification
+## Acceptance status — live ingress canary passed
 
-Backend [Issue #140](https://github.com/Thang4869/TriAD-Backend/issues/140) is closed. Its recorded hosted canary nevertheless observed req.ip=::1 on both direct Render and the earlier Vercel rewrite path; that observation did **not** prove independent public-client IP attribution. The edge proxy in this repository now forwards the Vercel-ingress address through the authenticated edge headers, but the code and local tests alone do not prove the deployed end-to-end identity boundary.
+Backend [Issue #140](https://github.com/Thang4869/TriAD-Backend/issues/140) is
+closed. The 24 Oct hosted canary evidence recorded in the backend
+[Operations runbook](https://github.com/Thang4869/TriAD-Backend/blob/main/docs/OPERATIONS.md)
+verified stable `x-vercel-forwarded-for` source identity at the trusted ingress,
+rejection of spoofed XFF/edge inputs as identity overrides, distinct source
+buckets, 429 enforcement for the exhausted source, and direct Render-origin
+403 while the Vercel proxy path was accepted. This supersedes the earlier
+statement in this document that live attribution had not been verified.
 
-Before treating public client-IP attribution as verified, capture a controlled live canary that demonstrates all of the following:
-
-- Render receives the expected client identity through the authenticated edge path.
-- Forged client XFF/real-IP headers cannot change that identity.
-- Direct-origin API requests cannot bypass the edge gate.
-- Independent network sources receive independent budgets, while shared-NAT behavior is understood.
-- The deployed HTTPS cookie/CSRF journey remains successful.
-
-The backend Redis-outage/readiness drill is a separate acceptance item. Do not infer its result from this proxy document or from a successful frontend CI run.
+The canary is bounded evidence, not a guarantee for every proxy/provider
+configuration. Shared public NATs intentionally share IP-wide limits. Preserve
+the fixed-upstream and authenticated-header trust boundary, and repeat the
+canary after material Vercel/Render proxy or middleware changes. The backend
+Redis-outage/readiness drill and authenticated cookie/CSRF journey remain
+separate acceptance evidence; do not infer their status from this document.

@@ -55,7 +55,7 @@ Lighthouse results vary with CPU load, browser version, network conditions, cach
 
 ## Current project status — 20 November 2026
 
-[Issue #92](https://github.com/Thang4869/TriAD-12/issues/92) remains open. Recent implementation changes associated with the performance work have merged:
+[Issue #92](https://github.com/Thang4869/TriAD-12/issues/92) remains open even though its issue body currently has all acceptance checkboxes marked complete. Treat that checklist state as a tracking inconsistency, not proof that the measurement deliverable is accepted. Recent implementation changes associated with the performance work have merged:
 
 - [PR #97](https://github.com/Thang4869/TriAD-12/pull/97): reduce homepage layout shifts and image payload.
 - [PR #98](https://github.com/Thang4869/TriAD-12/pull/98): remove a mismatched hero-image preload.
