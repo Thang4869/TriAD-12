@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+﻿import { mkdir, readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
@@ -57,6 +57,7 @@ for (const profile of profiles) {
     targetUrl,
     "--only-categories=performance",
     "--output=json",
+    "--save-assets",
     `--output-path=${outputPath}`,
     "--chrome-flags=--headless --no-sandbox",
     ...profile.flags,
@@ -93,3 +94,4 @@ for (const profile of profiles) {
 }
 
 console.log("\\nBoth Lighthouse profiles completed. Review the reports before claiming a performance improvement.");
+
