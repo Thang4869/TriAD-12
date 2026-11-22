@@ -83,23 +83,24 @@ describe("ScrollRevealService", () => {
     expect(instance.observe).not.toHaveBeenCalled();
   });
 
-  it("should apply hero effect but skip sections if none", () => {
+  it("should keep the hero visible immediately when no sections exist", () => {
     document.body.innerHTML = `<section id="home"></section>`;
     initScrollReveal();
     const hero = document.getElementById("home");
-    expect(hero.style.opacity).toBe("0");
-    expect(hero.style.transform).toBe("translateY(30px)");
+
+    expect(hero.style.opacity).toBe("");
+    expect(hero.style.transform).toBe("");
 
     vi.advanceTimersByTime(400);
-    expect(hero.style.opacity).toBe("1");
-    expect(hero.style.transform).toBe("translateY(0)");
+    expect(hero.style.opacity).toBe("");
+    expect(hero.style.transform).toBe("");
 
     expect(global.IntersectionObserver).toHaveBeenCalled();
     const instance = global.IntersectionObserver.mock.results[0]?.value;
     expect(instance.observe).not.toHaveBeenCalled();
   });
 
-  it("should apply hero effect and observe sections", () => {
+  it("should keep the hero visible while observing sections", () => {
     document.body.innerHTML = `
       <section id="home"></section>
       <section class="section" id="s1"></section>
@@ -108,9 +109,9 @@ describe("ScrollRevealService", () => {
     initScrollReveal();
 
     const hero = document.getElementById("home");
-    expect(hero.style.opacity).toBe("0");
+    expect(hero.style.opacity).toBe("");
     vi.advanceTimersByTime(400);
-    expect(hero.style.opacity).toBe("1");
+    expect(hero.style.opacity).toBe("");
 
     const sections = document.querySelectorAll(".section");
     sections.forEach((s) => {
@@ -299,13 +300,13 @@ describe("ScrollRevealService - additional branches", () => {
     vi.useRealTimers();
   });
 
-  it("should handle missing sections gracefully", () => {
+  it("should keep hero visible without a section element", () => {
     document.body.innerHTML = `<div id="home"></div>`;
     initScrollReveal();
     const home = document.getElementById("home");
-    expect(home.style.opacity).toBe("0");
+    expect(home.style.opacity).toBe("");
     vi.advanceTimersByTime(400);
-    expect(home.style.opacity).toBe("1");
+    expect(home.style.opacity).toBe("");
   });
 
   it("should observe product cards even when grid exists but no cards initially", () => {
