@@ -41,6 +41,7 @@ yarn-error.log*
 *.temp
 
 # Playwright
+/playwright-fullstack-report/
 /test-results/
 /playwright-report/
 /blob-report/
