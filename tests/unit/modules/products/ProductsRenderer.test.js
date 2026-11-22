@@ -786,3 +786,61 @@ describe("ProductsRenderer retry lifecycle", () => {
     vi.useRealTimers();
   });
 });
+
+
+describe("ProductsRenderer stored XSS protection", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="product-grid"></div>
+      <div id="product-count"></div>
+      <div id="load-more-container" class="hidden"></div>
+      <div id="search-suggestion" class="hidden"></div>
+    `;
+  });
+
+  it("renders untrusted product fields as text and safe attributes", () => {
+    const instance = new ProductsRenderer();
+    const product = {
+      id: 'product-" onmouseover="alert(1)',
+      name: '<img src=x onerror="alert(1)">',
+      color: 'Red" onmouseover="alert(1)',
+      price: 100000,
+      image: 'photo.jpg" onerror="alert(1)',
+      filter: 'grayscale" onmouseover="alert(1)',
+      inStock: true,
+    };
+
+    const card = instance.createProductCard(product);
+
+    expect(card.querySelector("h3").textContent).toBe(product.name);
+    expect(card.querySelector("h3 img")).toBeNull();
+    expect(card.querySelector(".text-gray-500").textContent).toBe(product.color);
+    expect(card.querySelector("img").getAttribute("src")).toBe(product.image);
+    expect(card.querySelector("[data-action='open-modal']").dataset.id).toBe(product.id);
+    expect(card.querySelector("[data-action='add-to-cart']").dataset.id).toBe(product.id);
+    expect(card.querySelector("[onerror], [onmouseover]")).toBeNull();
+  });
+
+  it("renders untrusted suggestion fields as text and safe attributes", () => {
+    const instance = new ProductsRenderer();
+    const product = {
+      id: 'suggestion-" onmouseover="alert(1)',
+      name: '<img src=x onerror="alert(1)">',
+      color: 'Blue" onmouseover="alert(1)',
+      image: 'photo.jpg" onerror="alert(1)',
+      formattedPrice: '100.000 ₫" onmouseover="alert(1)',
+    };
+    const container = document.getElementById("search-suggestion");
+
+    instance.renderSuggestions("test", [product], vi.fn());
+
+    const suggestion = container.querySelector("[data-id]");
+    expect(suggestion.dataset.id).toBe(product.id);
+    expect(suggestion.querySelector("img").getAttribute("src")).toBe(product.image);
+    expect(suggestion.querySelector("img").getAttribute("onerror")).toBeNull();
+    expect(suggestion.querySelector("[onerror], [onmouseover]")).toBeNull();
+    expect(suggestion.textContent).toContain(product.name);
+    expect(suggestion.querySelector("img")).toBeTruthy();
+    expect(suggestion.querySelector(".font-medium.text-sm").textContent).toBe(product.name);
+  });
+});
