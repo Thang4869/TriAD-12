@@ -51,16 +51,7 @@ export function initScrollReveal() {
   };
 
   const hero = document.querySelector("#home");
-  if (hero) {
-    trackElement(hero);
-    hero.style.opacity = "0";
-    hero.style.transform = "translateY(30px)";
-    hero.style.transition = "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)";
-    schedule(() => {
-      hero.style.opacity = "1";
-      hero.style.transform = "translateY(0)";
-    }, 400);
-  }
+// Keep the hero visible immediately to avoid delaying Largest Contentful Paint.
 
   const sections = document.querySelectorAll("section:not(#home)");
   sectionObserver = new IntersectionObserver(
