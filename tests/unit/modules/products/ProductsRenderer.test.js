@@ -841,6 +841,6 @@ describe("ProductsRenderer stored XSS protection", () => {
     expect(suggestion.querySelector("[onerror], [onmouseover]")).toBeNull();
     expect(suggestion.textContent).toContain(product.name);
     expect(suggestion.querySelector("img")).toBeTruthy();
-    expect(suggestion.querySelector("div div").textContent).toBe(product.name);
+    expect(suggestion.querySelector(".font-medium.text-sm").textContent).toBe(product.name);
   });
 });
