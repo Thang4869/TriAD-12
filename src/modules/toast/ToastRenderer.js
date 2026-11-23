@@ -31,26 +31,55 @@ export class ToastRenderer {
       info: "ph-fill ph-info",
     };
 
-    const iconClass = icon || icons[type] || icons.info;
+    const safeType = Object.hasOwn(icons, type) ? type : "info";
+    const requestedIcon = icon || icons[safeType];
+    const iconClass =
+      typeof requestedIcon === "string" &&
+      /^[a-zA-Z0-9_-]+(?:\\s+[a-zA-Z0-9_-]+)*$/.test(requestedIcon)
+        ? requestedIcon
+        : icons.info;
+    const safeDuration =
+      Number.isFinite(Number(duration)) && Number(duration) >= 0
+        ? Number(duration)
+        : 3000;
 
     const wrapper = document.createElement("div");
-    wrapper.className = `toast toast-${type}`;
+    wrapper.classList.add("toast", `toast-${safeType}`);
     wrapper.setAttribute("role", "alert");
     wrapper.setAttribute("aria-live", "polite");
-    wrapper.dataset.duration = duration;
+    wrapper.dataset.duration = String(safeDuration);
 
-    wrapper.innerHTML = `
-            <i class="ph ${iconClass} icon"></i>
-            <div class="content">
-                <div class="title">${title}</div>
-                ${message ? `<div class="message">${message}</div>` : ""}
-            </div>
-            <button class="close-btn" aria-label="Close notification">
-                <i class="ph ph-x"></i>
-            </button>
-            <div class="progress-bar" style="animation-duration: ${duration}ms"></div>
-        `;
+    const iconElement = document.createElement("i");
+    iconElement.classList.add("ph", ...iconClass.split(/\\s+/), "icon");
 
+    const content = document.createElement("div");
+    content.className = "content";
+
+    const titleElement = document.createElement("div");
+    titleElement.className = "title";
+    titleElement.textContent = title == null ? "" : String(title);
+    content.appendChild(titleElement);
+
+    if (message) {
+      const messageElement = document.createElement("div");
+      messageElement.className = "message";
+      messageElement.textContent = String(message);
+      content.appendChild(messageElement);
+    }
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "close-btn";
+    closeButton.setAttribute("aria-label", "Close notification");
+
+    const closeIcon = document.createElement("i");
+    closeIcon.className = "ph ph-x";
+    closeButton.appendChild(closeIcon);
+
+    const progress = document.createElement("div");
+    progress.className = "progress-bar";
+    progress.style.animationDuration = `${safeDuration}ms`;
+
+    wrapper.append(iconElement, content, closeButton, progress);
     return wrapper;
   }
 
