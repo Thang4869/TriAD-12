@@ -61,4 +61,4 @@ The deployed identities recorded at that time were Render deployment dep-dbdm9n8
 
 ## Scope and limitations
 
-This evidence applies to the recorded Vercel/Render staging topology and the test dates above. It does not establish arbitrary cross-site deployment support, production availability during Redis failure, or live public-client IP attribution through the newer edge-proxy path. Those require their own deployment evidence.
+This document records auth/session acceptance for the Vercel/Render staging topology and the test dates above. It does not establish arbitrary cross-site deployment support or production availability during Redis failure. Live client-IP attribution through the newer edge-proxy path has separate, bounded canary evidence documented in [Authenticated API proxy](AUTHENTICATED_API_PROXY.md); do not infer Redis-outage/readiness or credentialed cookie/CSRF acceptance from that canary.
