@@ -35,7 +35,7 @@ export class ToastRenderer {
     const requestedIcon = icon || icons[safeType];
     const iconClass =
       typeof requestedIcon === "string" &&
-      /^[a-zA-Z0-9_-]+(?:\\s+[a-zA-Z0-9_-]+)*$/.test(requestedIcon)
+      /^[a-zA-Z0-9_-]+(?:\s+[a-zA-Z0-9_-]+)*$/.test(requestedIcon)
         ? requestedIcon
         : icons.info;
     const safeDuration =
@@ -50,7 +50,7 @@ export class ToastRenderer {
     wrapper.dataset.duration = String(safeDuration);
 
     const iconElement = document.createElement("i");
-    iconElement.classList.add("ph", ...iconClass.split(/\\s+/), "icon");
+    iconElement.classList.add("ph", ...iconClass.split(/\s+/), "icon");
 
     const content = document.createElement("div");
     content.className = "content";
