@@ -66,6 +66,52 @@ describe("ToastRenderer", () => {
       expect(el.querySelector(".icon").className).toContain("ph-star");
     });
 
+    it("should render an HTML-like title as plain text", () => {
+      const payload = '<img src=x onerror="alert(1)">';
+      const el = renderer.createElement({ title: payload });
+
+      expect(el.querySelector(".title").textContent).toBe(payload);
+      expect(el.querySelector("img")).toBeNull();
+      expect(el.querySelector("[onerror]")).toBeNull();
+    });
+
+    it("should render an HTML-like message as plain text", () => {
+      const payload = "<svg onload=alert(1)>";
+      const el = renderer.createElement({ title: "Notice", message: payload });
+
+      expect(el.querySelector(".message").textContent).toBe(payload);
+      expect(el.querySelector("svg")).toBeNull();
+      expect(el.querySelector("[onload]")).toBeNull();
+    });
+
+    it("should preserve normal toast structure and duration", () => {
+      const el = renderer.createElement({
+        title: "Saved",
+        message: "Changes saved",
+        type: "success",
+        duration: 2500,
+      });
+
+      expect(el.querySelector(".icon").className).toContain("ph-check-circle");
+      expect(el.querySelector(".title").textContent).toBe("Saved");
+      expect(el.querySelector(".message").textContent).toBe("Changes saved");
+      expect(el.querySelector(".progress-bar").style.animationDuration).toBe("2500ms");
+      expect(el.dataset.duration).toBe("2500");
+      expect(el.querySelector(".close-btn")).toBeTruthy();
+    });
+
+    it("should safely fall back for invalid icon classes and durations", () => {
+      const el = renderer.createElement({
+        title: "Safe",
+        icon: 'ph-star" onmouseover="alert(1)',
+        duration: "not-a-duration",
+      });
+
+      expect(el.querySelector(".icon").className).toContain("ph-info");
+      expect(el.querySelector(".icon").hasAttribute("onmouseover")).toBe(false);
+      expect(el.querySelector(".progress-bar").style.animationDuration).toBe("3000ms");
+    });
+
     it("should handle missing message", () => {
       const data = { title: "No Message" };
       const el = renderer.createElement(data);
