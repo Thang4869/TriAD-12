@@ -15,14 +15,28 @@ export class CartController {
     // Chỉ tải giỏ hàng thật nếu đã đăng nhập, tránh gọi API và nhận 401 vô ích
     // ngay khi tải trang cho khách chưa đăng nhập.
     if (authService.isAuthenticated) {
-      this.service.load();
+      void this.loadCart();
     }
 
     eventBus.on(EVENTS.AUTH_LOGIN, () => {
       this.service.reset();
-      this.service.load();
+      void this.loadCart();
     });
     eventBus.on(EVENTS.AUTH_LOGOUT, () => this.service.reset());
+  }
+
+  async loadCart() {
+    try {
+      return await this.service.load();
+    } catch (error) {
+      // ApiService emits AUTH_EXPIRED for 401; authentication owns that flow.
+      if (error?.status === 401) return this.service.items;
+      window.toast?.error(
+        "Không thể tải giỏ hàng",
+        error?.message || "Vui lòng kiểm tra kết nối và thử lại.",
+      );
+      return this.service.items;
+    }
   }
 
   setupEventListeners() {

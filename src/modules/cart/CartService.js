@@ -18,8 +18,9 @@ export class CartService {
     try {
       items = await this.repository.getCart();
     } catch (error) {
-      // Chưa đăng nhập (401) -> coi như giỏ trống, không phải lỗi cần báo cho user.
-      items = [];
+      // Ignore responses from an older session; preserve the current session state.
+      if (version !== this._sessionVersion) return this.items;
+      throw error;
     }
     this._apply(items, version);
     return this.items;
