@@ -174,20 +174,43 @@ describe("CartService", () => {
       });
     });
 
-    it("uses an empty cart when repository load fails", async () => {
-      repository.getCart.mockRejectedValue(new Error("Unauthorized"));
+    it.each([
+      ["expired session", 401],
+      ["server failure", 500],
+      ["network failure", 0],
+    ])("preserves the current cart when loading fails with %s", async (_label, status) => {
+      const currentItems = [item({ id: "existing-item" })];
+      const error = Object.assign(new Error("Cart load failed"), { status });
+      service.items = currentItems;
+      repository.getCart.mockRejectedValue(error);
 
-      const result = await service.load();
+      await expect(service.load()).rejects.toBe(error);
 
-      expect(result).toEqual([]);
-      expect(service.items).toEqual([]);
-      expect(service.isEmpty).toBe(true);
-      expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.CART_UPDATED, {
-        items: [],
-        total: 0,
-        count: 0,
-        isEmpty: true,
-      });
+      expect(service.items).toBe(currentItems);
+      expect(service.isEmpty).toBe(false);
+      expect(eventBus.emit).not.toHaveBeenCalledWith(
+        EVENTS.CART_UPDATED,
+        expect.anything(),
+      );
+    });
+
+    it("ignores a failed cart load after the session has changed", async () => {
+      let rejectLoad;
+      repository.getCart.mockImplementationOnce(
+        () =>
+          new Promise((_resolve, reject) => {
+            rejectLoad = reject;
+          }),
+      );
+      const oldLoad = service.load();
+      const currentItems = [item({ id: "new-session-item" })];
+      service.reset();
+      service.items = currentItems;
+
+      rejectLoad(Object.assign(new Error("Old session failed"), { status: 500 }));
+
+      await expect(oldLoad).resolves.toBe(currentItems);
+      expect(service.items).toBe(currentItems);
     });
   });
 

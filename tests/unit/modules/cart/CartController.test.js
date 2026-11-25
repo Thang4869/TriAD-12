@@ -146,6 +146,40 @@ describe("CartController", () => {
     });
   });
 
+  describe("loadCart", () => {
+    it.each([
+      ["server failure", 500],
+      ["network failure", 0],
+    ])("notifies the user when loading fails with %s", async (_label, status) => {
+      const error = Object.assign(new Error("Cart load failed"), { status });
+      service.load.mockRejectedValue(error);
+
+      await expect(controller.loadCart()).resolves.toBe(service.items);
+
+      expect(window.toast.error).toHaveBeenCalledWith(
+        "Không thể tải giỏ hàng",
+        "Cart load failed",
+      );
+    });
+
+    it("leaves expired-session handling to the authentication flow", async () => {
+      const error = Object.assign(new Error("Session expired"), { status: 401 });
+      service.load.mockRejectedValue(error);
+
+      await expect(controller.loadCart()).resolves.toBe(service.items);
+
+      expect(window.toast.error).not.toHaveBeenCalled();
+    });
+
+    it("returns loaded cart items on success", async () => {
+      const items = [{ id: "loaded-item" }];
+      service.load.mockResolvedValue(items);
+
+      await expect(controller.loadCart()).resolves.toBe(items);
+      expect(window.toast.error).not.toHaveBeenCalled();
+    });
+  });
+
   describe("CART_UPDATED", () => {
     it("renders current cart state", () => {
       const callback = eventBus.on.mock.calls.find(
