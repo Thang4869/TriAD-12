@@ -1,6 +1,32 @@
 import { AdminService } from "./AdminService.js";
 import { authService } from "../auth/AuthService.js";
 
+const FALLBACK_IMAGE = "https://via.placeholder.com/40";
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+}
+
+function sanitizeImageUrl(value) {
+  const candidate = String(value ?? "").trim();
+  if (!candidate) return FALLBACK_IMAGE;
+
+  try {
+    const url = new URL(candidate, window.location.origin);
+    return ["http:", "https:"].includes(url.protocol)
+      ? candidate
+      : FALLBACK_IMAGE;
+  } catch {
+    return FALLBACK_IMAGE;
+  }
+}
+
 export class AdminProductController {
   constructor() {
     this.service = new AdminService();
@@ -22,6 +48,8 @@ export class AdminProductController {
 
   async loadProducts() {
     const tbody = document.getElementById("admin-products-table-body");
+    if (!tbody) return;
+
     tbody.innerHTML =
       '<tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">Đang tải...</td></tr>';
 
@@ -30,12 +58,20 @@ export class AdminProductController {
       this.products = res.products || [];
       this.renderTable();
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-500">Lỗi: ${error.message}</td></tr>`;
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.className = "px-6 py-10 text-center text-red-500";
+      cell.textContent = `Lỗi: ${error?.message || "Không thể tải sản phẩm"}`;
+      row.append(cell);
+      tbody.replaceChildren(row);
     }
   }
 
   renderTable() {
     const tbody = document.getElementById("admin-products-table-body");
+    if (!tbody) return;
+
     if (this.products.length === 0) {
       tbody.innerHTML =
         '<tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">Chưa có sản phẩm nào</td></tr>';
@@ -43,37 +79,52 @@ export class AdminProductController {
     }
 
     tbody.innerHTML = this.products
-      .map(
-        (p) => `
-      <tr class="hover:bg-gray-50 transition-colors">
-        <td class="px-6 py-4">
-          <div class="flex items-center gap-3">
-            <img src="${p.images?.[0] || "https://via.placeholder.com/40"}" class="w-10 h-10 rounded object-cover border" alt="">
-            <div>
-              <p class="font-medium text-gray-900">${p.name}</p>
-              <p class="text-xs text-gray-500">${p.slug}</p>
-            </div>
-          </div>
-        </td>
-        <td class="px-6 py-4">${p.category}</td>
-        <td class="px-6 py-4 font-medium">${Number(p.price).toLocaleString("vi-VN")} ₫</td>
-        <td class="px-6 py-4">${p.stock}</td>
-        <td class="px-6 py-4">
-          <span class="px-2.5 py-1 rounded-full text-xs font-medium ${p.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}">
-            ${p.isActive ? "Hoạt động" : "Đã ẩn"}
-          </span>
-        </td>
-        <td class="px-6 py-4 text-right space-x-2">
-          <button data-action="edit" data-id="${p.id}" class="text-blue-600 hover:text-blue-800"><i class="ph ph-pencil-simple text-lg"></i></button>
-          ${
-            p.isActive
-              ? `<button data-action="delete" data-id="${p.id}" class="text-red-600 hover:text-red-800"><i class="ph ph-trash text-lg"></i></button>`
-              : `<button data-action="restore" data-id="${p.id}" class="text-green-600 hover:text-green-800"><i class="ph ph-arrow-counter-clockwise text-lg"></i></button>`
-          }
-        </td>
-      </tr>
-    `,
-      )
+      .map((product) => {
+        const imageUrl = escapeHtml(sanitizeImageUrl(product.images?.[0]));
+        const productId = escapeHtml(product.id);
+        const name = escapeHtml(product.name);
+        const slug = escapeHtml(product.slug);
+        const category = escapeHtml(product.category);
+        const price = Number(product.price).toLocaleString("vi-VN");
+        const stock = escapeHtml(product.stock);
+        const statusClass = product.isActive
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700";
+        const statusLabel = product.isActive ? "Hoạt động" : "Đã ẩn";
+        const action = product.isActive ? "delete" : "restore";
+        const actionClass = product.isActive
+          ? "text-red-600 hover:text-red-800"
+          : "text-green-600 hover:text-green-800";
+        const actionIcon = product.isActive
+          ? "ph-trash"
+          : "ph-arrow-counter-clockwise";
+
+        return `
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <img src="${imageUrl}" class="w-10 h-10 rounded object-cover border" alt="">
+                <div>
+                  <p class="font-medium text-gray-900">${name}</p>
+                  <p class="text-xs text-gray-500">${slug}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">${category}</td>
+            <td class="px-6 py-4 font-medium">${price} ₫</td>
+            <td class="px-6 py-4">${stock}</td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+                ${statusLabel}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right space-x-2">
+              <button data-action="edit" data-id="${productId}" class="text-blue-600 hover:text-blue-800"><i class="ph ph-pencil-simple text-lg"></i></button>
+              <button data-action="${action}" data-id="${productId}" class="${actionClass}"><i class="ph ${actionIcon} text-lg"></i></button>
+            </td>
+          </tr>
+        `;
+      })
       .join("");
   }
 
@@ -187,7 +238,7 @@ export class AdminProductController {
   }
 
   handleEdit(id) {
-    const product = this.products.find((p) => p.id === id);
+    const product = this.products.find((product) => product.id === id);
     if (product) this.openModal(product);
   }
 

@@ -8,6 +8,21 @@ const STATUS_COLORS = {
   CANCELLED: "bg-red-100 text-red-800",
 };
 
+const HTML_ESCAPES = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) => HTML_ESCAPES[character],
+  );
+}
+
 export class AdminRenderer {
   _el(id) {
     return document.getElementById(id);
@@ -28,7 +43,7 @@ export class AdminRenderer {
     const color = type === "error" ? "text-red-600" : "text-brand-gray";
     gate.innerHTML = `
       <i class="ph ph-lock-key text-6xl ${color}"></i>
-      <p class="mt-4 text-lg ${color}">${message}</p>
+      <p class="mt-4 text-lg ${color}">${escapeHtml(message)}</p>
       <div class="mt-6 flex gap-3 justify-center">
         ${
           showLogin
@@ -101,7 +116,7 @@ export class AdminRenderer {
         return `
           <div class="flex-1 flex flex-col items-center justify-end group relative">
             <div class="absolute -top-8 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-10">
-              ${d.date}<br>${formatPrice(d.grossOrderValue)}
+              ${escapeHtml(d.date)}<br>${escapeHtml(formatPrice(d.grossOrderValue))}
             </div>
             <div class="w-full bg-brand-accent rounded-t hover:bg-brand-dark transition-colors" style="height:${height}%"></div>
           </div>
@@ -122,8 +137,8 @@ export class AdminRenderer {
       .map(
         (r) => `
         <div class="flex justify-between items-center">
-          <span class="px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || "bg-gray-100 text-gray-700"}">${r.status}</span>
-          <span class="font-semibold">${r.count}</span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || "bg-gray-100 text-gray-700"}">${escapeHtml(r.status)}</span>
+          <span class="font-semibold">${escapeHtml(r.count)}</span>
         </div>
       `,
       )
@@ -152,8 +167,8 @@ export class AdminRenderer {
             .map(
               (p) => `
             <tr class="border-b last:border-0">
-              <td class="py-2">${p.name}</td>
-              <td class="py-2"><span class="text-red-600 font-semibold">${p.stock}</span></td>
+              <td class="py-2">${escapeHtml(p.name)}</td>
+              <td class="py-2"><span class="text-red-600 font-semibold">${escapeHtml(p.stock)}</span></td>
               <td class="py-2 text-right">
                 <a href="./products.html" class="text-brand-accent hover:underline text-sm">Quản lý kho</a>
               </td>
@@ -187,9 +202,9 @@ export class AdminRenderer {
             .map(
               (p) => `
             <tr class="border-b last:border-0">
-              <td class="py-2">${p.name}</td>
-              <td class="py-2">${p.totalQuantitySold}</td>
-              <td class="py-2 text-right font-medium">${formatPrice(p.totalOrderValue)}</td>
+              <td class="py-2">${escapeHtml(p.name)}</td>
+              <td class="py-2">${escapeHtml(p.totalQuantitySold)}</td>
+              <td class="py-2 text-right font-medium">${escapeHtml(formatPrice(p.totalOrderValue))}</td>
             </tr>
           `,
             )
@@ -225,18 +240,18 @@ export class AdminRenderer {
             .map(
               (o) => `
             <tr class="border-b last:border-0">
-              <td class="py-2 font-medium">${o.orderNumber}</td>
+              <td class="py-2 font-medium">${escapeHtml(o.orderNumber)}</td>
               <td class="py-2">
-                ${o.user?.firstName ?? ""} ${o.user?.lastName ?? ""}
-                <br><span class="text-xs text-gray-500">${o.user?.email ?? ""}</span>
+                ${escapeHtml(o.user?.firstName)} ${escapeHtml(o.user?.lastName)}
+                <br><span class="text-xs text-gray-500">${escapeHtml(o.user?.email)}</span>
               </td>
-              <td class="py-2">${formatPrice(o.total)}</td>
+              <td class="py-2">${escapeHtml(formatPrice(o.total))}</td>
               <td class="py-2">
-                <span class="px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[o.status] || "bg-gray-100 text-gray-700"}">${o.status}</span>
+                <span class="px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[o.status] || "bg-gray-100 text-gray-700"}">${escapeHtml(o.status)}</span>
               </td>
-              <td class="py-2 text-xs text-gray-500">${formatDate(o.createdAt)}</td>
+              <td class="py-2 text-xs text-gray-500">${escapeHtml(formatDate(o.createdAt))}</td>
               <td class="py-2">
-                <select class="status-update p-1 border rounded text-xs" data-order-id="${o.id}">
+                <select class="status-update p-1 border rounded text-xs" data-order-id="${escapeHtml(o.id)}">
                   <option value="">Đổi trạng thái</option>
                   <option value="PROCESSING">PROCESSING</option>
                   <option value="SHIPPED">SHIPPED</option>
