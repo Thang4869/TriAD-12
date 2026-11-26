@@ -344,13 +344,22 @@ describe("CheckoutController", () => {
       );
     });
 
+    it("normalizes whitespace in the phone number before sending checkout", async () => {
+      document.getElementById("phone").value = "0123 456 789";
+      await controller.handleSubmit(new Event("submit", { cancelable: true }));
+
+      expect(mockServiceInstance.checkout).toHaveBeenCalledWith(
+        expect.objectContaining({ phone: "0123456789" }),
+        null,
+      );
+    });
     it("should show error toast if validation fails", async () => {
       document.getElementById("phone").value = "123";
       const event = new Event("submit", { cancelable: true });
       await controller.handleSubmit(event);
       expect(mockToast.error).toHaveBeenCalledWith(
         "Thông tin chưa hợp lệ",
-        "Invalid phone number (10-12 digits)",
+        "Invalid phone number (10-11 digits)",
       );
       expect(mockServiceInstance.checkout).not.toHaveBeenCalled();
     });
