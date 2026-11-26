@@ -26,17 +26,28 @@ describe("CheckoutValidator", () => {
     expect(result.errors).toContain("Address is required");
   });
 
-  it("should validate phone number (10-12 digits)", () => {
-    const data = {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@example.com",
+  it.each(["0123456789", "01234567890"])(
+    "should accept a phone number with %s digits",
+    (phone) => {
+      expect(validator.isValidPhone(phone)).toBe(true);
+    },
+  );
+
+  it("should reject phone numbers with 12 digits", () => {
+    expect(validator.isValidPhone("012345678901")).toBe(false);
+  });
+
+  it("should accept phone numbers containing whitespace after normalization", () => {
+    expect(validator.isValidPhone("0123 456 789")).toBe(true);
+  });
+
+  it("should reject phone numbers outside the 10-11 digit contract", () => {
+    const result = validator.validate({
       phone: "123",
       address: "123 Main St",
-    };
-    const result = validator.validate(data);
+    });
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("Invalid phone number (10-12 digits)");
+    expect(result.errors).toContain("Invalid phone number (10-11 digits)");
   });
 
   it("should reject phone with whitespace only", () => {
@@ -49,6 +60,6 @@ describe("CheckoutValidator", () => {
     };
     const result = validator.validate(data);
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain("Invalid phone number (10-12 digits)");
+    expect(result.errors).toContain("Invalid phone number (10-11 digits)");
   });
 });

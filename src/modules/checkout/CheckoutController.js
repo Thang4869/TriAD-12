@@ -158,7 +158,7 @@ export class CheckoutController {
     // tên/email khách hàng đã có sẵn từ tài khoản đăng nhập, không cần gửi lại.
     const data = {
       address: document.getElementById("address").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
+      phone: document.getElementById("phone").value.replace(/\s/g, ""),
       notes: document.getElementById("notes")?.value.trim() || undefined,
       discountCode:
         document.getElementById("discount-code")?.value.trim() || undefined,

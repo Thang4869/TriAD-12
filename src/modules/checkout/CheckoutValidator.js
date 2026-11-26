@@ -6,7 +6,7 @@ export class CheckoutValidator {
     if (!data.address?.trim()) errors.push("Address is required");
 
     if (data.phone && !this.isValidPhone(data.phone)) {
-      errors.push("Invalid phone number (10-12 digits)");
+      errors.push("Invalid phone number (10-11 digits)");
     }
 
     return {
@@ -16,6 +16,6 @@ export class CheckoutValidator {
   }
 
   isValidPhone(phone) {
-    return /^[0-9]{10,12}$/.test(phone.replace(/\s/g, ""));
+    return /^[0-9]{10,11}$/.test(phone.replace(/\s/g, ""));
   }
 }
