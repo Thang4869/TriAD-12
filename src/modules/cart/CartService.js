@@ -10,6 +10,23 @@ export class CartService {
     this.repository = repository;
     this.items = [];
     this._sessionVersion = 0;
+    this._productMutationQueues = new Map();
+  }
+
+  async _enqueueProductMutation(productId, mutation) {
+    const previous = this._productMutationQueues.get(productId);
+    const pending = previous
+      ? previous.catch(() => undefined).then(mutation)
+      : mutation();
+    this._productMutationQueues.set(productId, pending);
+
+    try {
+      return await pending;
+    } finally {
+      if (this._productMutationQueues.get(productId) === pending) {
+        this._productMutationQueues.delete(productId);
+      }
+    }
   }
 
   async load() {
@@ -44,24 +61,35 @@ export class CartService {
 
   async increase(productId) {
     const version = this._sessionVersion;
-    const current = this.items.find((i) => i.id === productId);
-    const newQuantity = (current?.quantity || 0) + 1;
-    const items = await this.repository.updateItem(productId, newQuantity);
-    if (!this._apply(items, version)) throw new Error(SESSION_CHANGED);
-    return this.items;
+
+    return this._enqueueProductMutation(productId, async () => {
+      if (version !== this._sessionVersion) throw new Error(SESSION_CHANGED);
+
+      const current = this.items.find((i) => i.id === productId);
+      const newQuantity = (current?.quantity || 0) + 1;
+      const items = await this.repository.updateItem(productId, newQuantity);
+      if (!this._apply(items, version)) throw new Error(SESSION_CHANGED);
+      return this.items;
+    });
   }
 
   async decrease(productId) {
     const version = this._sessionVersion;
-    const current = this.items.find((i) => i.id === productId);
-    if (!current) return this.items;
-    const newQuantity = current.quantity - 1;
-    const items =
-      newQuantity <= 0
-        ? await this.repository.removeItem(productId)
-        : await this.repository.updateItem(productId, newQuantity);
-    if (!this._apply(items, version)) throw new Error(SESSION_CHANGED);
-    return this.items;
+
+    return this._enqueueProductMutation(productId, async () => {
+      if (version !== this._sessionVersion) throw new Error(SESSION_CHANGED);
+
+      const current = this.items.find((i) => i.id === productId);
+      if (!current) return this.items;
+
+      const newQuantity = current.quantity - 1;
+      const items =
+        newQuantity <= 0
+          ? await this.repository.removeItem(productId)
+          : await this.repository.updateItem(productId, newQuantity);
+      if (!this._apply(items, version)) throw new Error(SESSION_CHANGED);
+      return this.items;
+    });
   }
 
   async clear() {
