@@ -30,40 +30,76 @@ export class NotificationRenderer {
     }
 
     if (!notifications || notifications.length === 0) {
-      this.container.innerHTML = `
-        <div class="p-6 text-center text-gray-400 text-sm">
-          <i class="ph ph-check-circle text-3xl block mb-2"></i>
-          All caught up!
-        </div>
-      `;
+      const emptyState = document.createElement("div");
+      emptyState.className = "p-6 text-center text-gray-400 text-sm";
+
+      const emptyIcon = document.createElement("i");
+      emptyIcon.className = "ph ph-check-circle text-3xl block mb-2";
+      emptyState.append(emptyIcon, document.createTextNode("All caught up!"));
+      this.container.replaceChildren(emptyState);
       return;
     }
 
     const sorted = [...notifications];
     sorted.sort((a, b) => (a.read === b.read ? 0 : a.read ? 1 : -1));
 
-    this.container.innerHTML = sorted
-      .map(
-        (n) => `
-      <div class="notification-item p-3 hover:bg-gray-50 transition-colors border-b border-gray-50 cursor-pointer ${n.read ? "opacity-70" : "bg-blue-50/30"}"
-           data-id="${n.id}">
-        <div class="flex gap-3">
-          <div class="flex-shrink-0 mt-0.5">
-            ${this.getIconHtml(n.type)}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start">
-              <p class="text-sm font-medium ${n.read ? "text-gray-600" : "text-gray-900"}">${n.title}</p>
-              ${!n.read ? '<span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5"></span>' : ""}
-            </div>
-            <p class="text-xs text-gray-500 truncate">${n.message}</p>
-            <span class="text-xs text-gray-400">${this.formatTime(n.createdAt)}</span>
-          </div>
-        </div>
-      </div>
-    `,
-      )
-      .join("");
+    const fragment = document.createDocumentFragment();
+
+    sorted.forEach((notification) => {
+      const item = document.createElement("div");
+      item.className = [
+        "notification-item",
+        "p-3",
+        "hover:bg-gray-50",
+        "transition-colors",
+        "border-b",
+        "border-gray-50",
+        "cursor-pointer",
+        notification.read ? "opacity-70" : "bg-blue-50/30",
+      ].join(" ");
+      item.dataset.id = String(notification.id ?? "");
+
+      const content = document.createElement("div");
+      content.className = "flex gap-3";
+
+      const iconContainer = document.createElement("div");
+      iconContainer.className = "flex-shrink-0 mt-0.5";
+      // getIconHtml only returns hard-coded markup from the type allowlist.
+      iconContainer.innerHTML = this.getIconHtml(notification.type);
+
+      const details = document.createElement("div");
+      details.className = "flex-1 min-w-0";
+
+      const heading = document.createElement("div");
+      heading.className = "flex justify-between items-start";
+
+      const title = document.createElement("p");
+      title.className = `text-sm font-medium ${notification.read ? "text-gray-600" : "text-gray-900"}`;
+      title.textContent = String(notification.title ?? "");
+      heading.append(title);
+
+      if (!notification.read) {
+        const unreadIndicator = document.createElement("span");
+        unreadIndicator.className =
+          "w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5";
+        heading.append(unreadIndicator);
+      }
+
+      const message = document.createElement("p");
+      message.className = "text-xs text-gray-500 truncate";
+      message.textContent = String(notification.message ?? "");
+
+      const time = document.createElement("span");
+      time.className = "text-xs text-gray-400";
+      time.textContent = this.formatTime(notification.createdAt);
+
+      details.append(heading, message, time);
+      content.append(iconContainer, details);
+      item.append(content);
+      fragment.append(item);
+    });
+
+    this.container.replaceChildren(fragment);
   }
 
   getIconHtml(type) {

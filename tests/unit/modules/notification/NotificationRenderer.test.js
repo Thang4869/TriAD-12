@@ -40,6 +40,63 @@ describe("NotificationRenderer", () => {
       expect(container.innerHTML).toContain("Hello");
     });
 
+    it("renders malicious titles as text instead of creating HTML elements", () => {
+      renderer.renderList([
+        {
+          id: "safe-id",
+          title: '<img src=x onerror="alert(1)">',
+          message: "Safe message",
+          type: "info",
+          read: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+      const container = document.getElementById("notification-list");
+      expect(container.querySelector("img")).toBeNull();
+      expect(container.querySelector(".notification-item p").textContent).toBe(
+        '<img src=x onerror="alert(1)">',
+      );
+    });
+
+    it("renders malicious messages as text instead of creating SVG elements", () => {
+      renderer.renderList([
+        {
+          id: "safe-id",
+          title: "Safe title",
+          message: '<svg onload="alert(1)"></svg>',
+          type: "info",
+          read: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+      const container = document.getElementById("notification-list");
+      expect(container.querySelector("svg")).toBeNull();
+      expect(container.querySelector(".notification-item p.text-xs").textContent).toBe(
+        '<svg onload="alert(1)"></svg>',
+      );
+    });
+
+    it("stores notification IDs as data without allowing attribute injection", () => {
+      renderer.renderList([
+        {
+          id: 'item" data-injected="true',
+          title: "Safe title",
+          message: "Safe message",
+          type: "info",
+          read: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+      const container = document.getElementById("notification-list");
+      const item = container.querySelector(".notification-item");
+      expect(item.dataset.id).toBe('item" data-injected="true');
+      expect(item.hasAttribute("data-injected")).toBe(false);
+      expect(container.querySelector('[data-injected="true"]')).toBeNull();
+    });
+
     it("should render empty state when no notifications", () => {
       renderer.renderList([]);
       const container = document.getElementById("notification-list");
