@@ -275,6 +275,21 @@ describe("CartService", () => {
 
       expect(repository.updateItem).toHaveBeenCalledWith(99, 1);
     });
+
+    it("serializes concurrent increases for the same product", async () => {
+      service.items = [item({ quantity: 1 })];
+      repository.updateItem.mockImplementation(async (productId, quantity) => [
+        item({ quantity, subtotal: quantity * 100000 }),
+      ]);
+
+      await Promise.all([service.increase(1), service.increase(1)]);
+
+      expect(repository.updateItem.mock.calls).toEqual([
+        [1, 2],
+        [1, 3],
+      ]);
+      expect(service.items[0].quantity).toBe(3);
+    });
   });
 
   describe("decrease", () => {
@@ -309,6 +324,22 @@ describe("CartService", () => {
       expect(result).toBe(service.items);
       expect(repository.removeItem).not.toHaveBeenCalled();
       expect(repository.updateItem).not.toHaveBeenCalled();
+    });
+
+    it("serializes concurrent decreases for the same product", async () => {
+      service.items = [item({ quantity: 3, subtotal: 300000 })];
+      repository.updateItem.mockImplementation(async (productId, quantity) => [
+        item({ quantity, subtotal: quantity * 100000 }),
+      ]);
+
+      await Promise.all([service.decrease(1), service.decrease(1)]);
+
+      expect(repository.updateItem.mock.calls).toEqual([
+        [1, 2],
+        [1, 1],
+      ]);
+      expect(service.items[0].quantity).toBe(1);
+      expect(repository.removeItem).not.toHaveBeenCalled();
     });
   });
 
